@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Yorum Yönetim Programı v3.0</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* TEMEL TASARIM AYARLARI */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h2 { 
+            text-align: center; 
+            color: #2c3e50; 
+            margin-bottom: 20px; 
+        }
+        .input-group { 
+            margin-bottom: 15px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #34495e; 
+            font-weight: bold; 
+        }
+        input, select {
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #bdc3c7;
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-size: 14px;
+        }
+        button {
+            width: 100%; 
+            padding: 12px; 
+            background-color: #2980b9;
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 15px;
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+            margin-bottom: 10px;
+        }
+        button:hover { 
+            background-color: #3498db; 
+        }
+        button:disabled { 
+            background-color: #95a5a6; 
+            cursor: not-allowed; 
+        }
+        .divider {
+            text-align: center; 
+            margin: 20px 0; 
+            color: #7f8c8d;
+            font-weight: bold; 
+            font-size: 14px; 
+            border-bottom: 1px solid #ecf0f1; 
+            line-height: 0.1em;
+        }
+        .divider span { 
+            background: #fff; 
+            padding: 0 10px; 
+        }
+
+        /* GİRİŞ EKRANI VE ANA EKRAN GEÇİŞ AYARLARI */
+        #loginScreen { display: block; } 
+        #mainApp { display: none; } 
+        
+        .logout-btn {
+            background-color: #e74c3c; 
+            margin-top: 20px; 
+            font-size: 13px; 
+            padding: 8px;
+        }
+        .logout-btn:hover { 
+            background-color: #c0392b; 
+        }
+
+        /* VİDEO LİSTELEME TASARIMI */
+        #videoListContainer { margin-top: 20px; display: none; }
+        #paginationControls { display: none; justify-content: space-between; margin-bottom: 15px; }
+        #paginationControls button { width: 48%; margin: 0; }
+        #prevBtn { background-color: #7f8c8d; } 
+        #prevBtn:hover { background-color: #95a5a6; }
+        #nextBtn { background-color: #34495e; } 
+        #nextBtn:hover { background-color: #2c3e50; }
+        
+        .video-list { 
+            max-height: 450px; 
+            overflow-y: auto; 
+            border: 1px solid #ecf0f1; 
+            border-radius: 6px; 
+            padding: 10px; 
+            background-color: #fafbfc; 
+        }
+        .video-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px; 
+            border-bottom: 1px solid #eee; 
+            background-color: white; 
+            border-radius: 6px; 
+            margin-bottom: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+        }
+        .video-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .video-thumb { 
+            width: 120px; 
+            border-radius: 4px; 
+            margin-right: 15px; 
+            cursor: pointer; 
+            transition: opacity 0.3s; 
+        }
+        .video-thumb:hover { opacity: 0.8; }
+        .video-info { flex-grow: 1; }
+        .video-title { 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            margin: 0 0 5px 0; 
+            line-height: 1.4; 
+            cursor: pointer; 
+            text-decoration: none; 
+        }
+        .video-title:hover { color: #2980b9; text-decoration: underline; }
+        .video-stats { 
+            font-size: 12px; 
+            color: #e67e22; 
+            font-weight: bold; 
+            margin: 0 0 8px 0; 
+        }
+        .dl-btn { 
+            width: auto; 
+            padding: 8px 12px; 
+            font-size: 12px; 
+            margin: 0; 
+            background-color: #27ae60; 
+        }
+        .dl-btn:hover { background-color: #2ecc71; }
+        
+        /* EKSTRA ÖZELLİK TASARIMLARI */
+        .settings-box { 
+            background: #e8f4f8; 
+            padding: 15px; 
+            border-radius: 6px; 
+            border: 1px solid #b2dfee; 
+            margin-bottom: 15px; 
+        }
+        .settings-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+        }
+        .settings-row:last-child { margin-bottom: 0; }
+        .settings-box label { 
+            margin: 0; 
+            color: #2980b9; 
+            font-size: 14px; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+        }
+        
+        #progressContainer { 
+            display: none; 
+            text-align: center; 
+            margin-top: 15px; 
+            padding: 15px; 
+            background: #fff3e0; 
+            border-radius: 8px; 
+            border: 1px solid #ffe0b2; 
+        }
+        #progressText { 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #d35400; 
+            margin-bottom: 8px; 
+        }
+        
+        #status { 
+            margin-top: 15px; 
+            text-align: center; 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #27ae60; 
+        }
+        .developer-credit { 
+            margin-top: 30px; 
+            text-align: center; 
+            font-size: 13px; 
+            color: #7f8c8d; 
+            border-top: 1px solid #ecf0f1; 
+            padding-top: 15px; 
+        }
+        .developer-credit span { color: #2980b9; font-weight: bold; transition: color 0.3s ease; }
+        .developer-credit span:hover { color: #e67e22; cursor: pointer; }
+        .developer-credit a { text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginScreen">
+        <h2>Sisteme Giriş</h2>
+        <div class="input-group">
+            <label for="apiKeyInput">Lütfen Yetkili API Anahtarınızı Giriniz:</label>
+            <input type="password" id="apiKeyInput" placeholder="API Anahtarını Buraya Giriniz...">
+        </div>
+        <button id="loginBtn" onclick="sistemeGirisYap()" style="background-color: #27ae60;">GİRİŞ YAP VE DOĞRULA</button>
+        <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Girdiğiniz anahtar güvenli bir YouTube isteği ile anında doğrulanır.</p>
+    </div>
+
+    <div class="container" id="mainApp">
+        <h2>YouTube Yorum Yönetim Programı v3.0</h2>
+
+        <div class="settings-box">
+            <!-- DÜZELTİLEN KISIM: Alt Yanıtları Dahil Et Seçeneği -->
+            <div class="settings-row">
+                <label for="includeReplies">Alt Yanıtları da Dahil Et:</label>
+                <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
+                    <input type="checkbox" id="includeReplies" style="width: auto; transform: scale(1.2); margin: 0;"> 
+                </div>
+            </div>
+            
+            <div class="settings-row">
+                <label for="exportFormat">Çıktı Formatı:</label>
+                <select id="exportFormat" style="width: auto; max-width: 200px; padding: 6px; font-size: 13px;">
+                    <option value="xlsx">Excel Dosyası (.xlsx)</option>
+                    <option value="txt">Metin Belgesi (.txt)</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <label for="minLikes">Minimum Beğeni Sayısı:</label>
+                <input type="number" id="minLikes" placeholder="Örn: 5 (Boş = Tümü)" style="width: auto; max-width: 200px; padding: 6px; font-size: 13px;" min="0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="videoLink">1. Yöntem: Direkt Video Linki İle Yorumları İndir</label>
+            <input type="text" id="videoLink" placeholder="Örn: https://www.youtube.com/watch?v=VideoLinki">
+        </div>
+        <button id="fetchSingleBtn" onclick="tekilYorumCek()">BU VİDEONUN YORUMLARINI İNDİR</button>
+
+        <div class="divider"><span>VEYA</span></div>
+
+        <div class="input-group">
+            <label for="channelLink">2. Yöntem: Kanal Linki İle Videoları Listele</label>
+            <input type="text" id="channelLink" placeholder="Örn: https://www.youtube.com/@KanalAdi" style="margin-bottom: 10px;">
+            <select id="sortOrder">
+                <option value="date">Sıralama: Yeniden Eskiye</option>
+                <option value="oldest">Sıralama: Eskiden Yeniye</option>
+                <option value="viewCount">Sıralama: En Popüler</option>
+            </select>
+        </div>
+        <button id="fetchChannelBtn" onclick="kanalSorgulat()" style="background-color: #8e44ad;">KANAL VİDEOLARINI LİSTELE</button>
+
+        <div id="progressContainer">
+            <p id="progressText">Başlatılıyor...</p>
+            <progress id="downloadProgress" value="0" max="100" style="width: 100%; height: 20px;"></progress>
+            <button id="cancelBtn" onclick="iptalEt()" style="background-color: #e74c3c; width: auto; padding: 8px 20px; margin-top: 10px; font-size: 13px;">🛑 İşlemi İptal Et ve Veriyi İndir</button>
+        </div>
+
+        <div id="status"></div>
+
+        <div id="videoListContainer">
+            <div id="paginationControls">
+                <button id="prevBtn" onclick="sayfaDegistir('prev')" disabled>« Önceki Sayfa</button>
+                <button id="nextBtn" onclick="sayfaDegistir('next')" disabled>Sonraki Sayfa »</button>
+            </div>
+            <input type="text" id="searchInput" placeholder="🔍 Sayfadaki videolar içinde ara..." onkeyup="videolariFiltrele()">
+            <div class="video-list" id="videoList"></div>
+        </div>
+
+        <button class="logout-btn" onclick="sistemdenCikisYap()">Güvenli Çıkış Yap (API Anahtarını Sil)</button>
+
+        <div class="developer-credit">
+            Geliştirici: <a href="https://www.instagram.com/livaulhamd.official/" target="_blank"><span>Faruk Cesur</span></a> 🚀
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL DEĞİŞKENLER
+        let API_KEY = "";
+        let isCancelled = false; 
+        
+        let currentChannelId = ""; 
+        let currentUploadsId = ""; 
+        let currentPageToken = "";
+        let prevPageTokenStack = []; 
+        let nextTokenAvailable = "";
+        let allVideosList = []; 
+        let currentLocalPage = 0;
+
+        // SAYFA YÜKLENDİĞİNDE
+        document.addEventListener('DOMContentLoaded', function() {
+            const kayitliKey = localStorage.getItem("ytApiKey");
+            if(kayitliKey) {
+                API_KEY = kayitliKey;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+            }
+        });
+
+        // GİRİŞ YAP VE DOĞRULA 
+        async function sistemeGirisYap() {
+            const inputEl = document.getElementById('apiKeyInput');
+            if (!inputEl) {
+                alert("Hata: Arayüz elementi bulunamadı.");
+                return;
+            }
+
+            const girilenKey = inputEl.value.trim();
+            if(!girilenKey) { 
+                alert("Lütfen geçerli bir API Anahtarı giriniz!"); 
+                return; 
+            }
+            
+            const btn = document.getElementById('loginBtn');
+            btn.innerText = "Doğrulanıyor, Lütfen Bekleyin...";
+            btn.disabled = true;
+
+            try {
+                // Rastgele video yerine Google Developers kanalını kontrol ederek kesin doğrulama sağlıyoruz.
+                const testUrl = `https://www.googleapis.com/youtube/v3/channels?part=id&id=UC_x5XG1OV2P6uZZ5FSM9Ttw&key=${girilenKey}`;
+                const response = await fetch(testUrl);
+                
+                if(!response.ok) {
+                    throw new Error("API Anahtarı geçersiz veya kotanız dolmuş.");
+                }
+                
+                localStorage.setItem("ytApiKey", girilenKey);
+                API_KEY = girilenKey;
+                
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+            } catch (error) {
+                alert("Hata: " + error.message);
+                console.error(error);
+            } finally {
+                btn.innerText = "GİRİŞ YAP VE DOĞRULA";
+                btn.disabled = false;
+            }
+        }
+
+        // ÇIKIŞ YAP
+        function sistemdenCikisYap() {
+            localStorage.removeItem("ytApiKey");
+            location.reload(); 
+        }
+
+        // İŞLEMİ İPTAL ET
+        function iptalEt() {
+            isCancelled = true;
+            const btn = document.getElementById('cancelBtn');
+            btn.innerText = "Durduruluyor, Bekleyin...";
+            btn.disabled = true;
+        }
+
+        // LİNK ÇÖZÜCÜLER
+        function extractVideoID(url) {
+            let regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/gi;
+            let match = regex.exec(url); 
+            return match ? match[1] : null;
+        }
+
+        function extractChannelHandle(url) {
+            let regex = /@([\w.-]+)/; 
+            let match = regex.exec(url); 
+            return match ? match[1] : null;
+        }
+
+        const setStatus = (msg, color = "#e67e22") => {
+            const s = document.getElementById('status'); 
+            s.style.color = color; 
+            s.innerText = msg;
+        };
+
+        // ALT YANITLARI ÇEKME
+        async function fetchAllReplies(parentId, format) {
+            let replies = [];
+            let pageToken = '';
+            do {
+                const url = `https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=${parentId}&key=${API_KEY}&maxResults=100&textFormat=plainText` + (pageToken ? `&pageToken=${pageToken}` : '');
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if(data.items) {
+                    data.items.reverse().forEach(r => {
+                        const rs = r.snippet;
+                        const d = new Date(rs.publishedAt);
+                        const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                        
+                        if (format === 'xlsx') {
+                            replies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                        } else {
+                            replies.push(`   ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                        }
+                    });
+                }
+                pageToken = data.nextPageToken || null;
+                if(isCancelled) break;
+            } while(pageToken);
+            
+            return format === 'xlsx' ? replies.join("\n") : replies;
+        }
+
+        // YORUM MOTORU
+        async function yorumMotorunuCalistir(videoId, btnElement = null) {
+            if (btnElement) btnElement.disabled = true;
+            isCancelled = false;
+            
+            const includeReplies = document.getElementById('includeReplies').checked;
+            const exportFormat = document.getElementById('exportFormat').value;
+            
+            const minLikesInput = document.getElementById('minLikes').value.trim();
+            const minLikesFilter = minLikesInput === "" ? 0 : parseInt(minLikesInput, 10);
+            
+            const progressContainer = document.getElementById('progressContainer');
+            const progressText = document.getElementById('progressText');
+            const progressBar = document.getElementById('downloadProgress');
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            progressContainer.style.display = 'block';
+            cancelBtn.innerText = "🛑 İşlemi İptal Et ve Veriyi İndir";
+            cancelBtn.disabled = false;
+            setStatus("");
+
+            let excelData = [];
+            let txtLines = [];
+            let nextPageToken = '';
+            
+            let fetchedCount = 0; 
+            let processedCount = 0; 
+            let targetCommentCount = 0;
+
+            try {
+                const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${API_KEY}`);
+                const statsData = await statsRes.json();
+                
+                if(statsData.items && statsData.items.length > 0) {
+                    targetCommentCount = parseInt(statsData.items[0].statistics.commentCount) || 0;
+                }
+                
+                progressBar.max = targetCommentCount > 0 ? targetCommentCount : 100;
+                progressText.innerText = `0 / ${targetCommentCount} yorum tarandı...`;
+
+                const baseUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${API_KEY}&maxResults=100&textFormat=plainText`;
+
+                do {
+                    const response = await fetch(nextPageToken ? `${baseUrl}&pageToken=${nextPageToken}` : baseUrl);
+                    const data = await response.json();
+                    
+                    if(response.status === 400 || response.status === 403) {
+                        throw new Error("API Anahtarı geçersiz veya kotanız dolmuş! Lütfen çıkış yapın.");
+                    }
+                    if (data.error) {
+                        if (data.error.errors[0].reason === "commentsDisabled") throw new Error("Bu videonun yorumları kapalı.");
+                        throw new Error(data.error.message);
+                    }
+
+                    if (data.items) {
+                        for (const item of data.items) {
+                            const snippet = item.snippet.topLevelComment.snippet;
+                            const likes = snippet.likeCount || 0;
+                            
+                            if (likes < minLikesFilter) {
+                                processedCount += 1 + item.snippet.totalReplyCount;
+                                progressBar.value = processedCount;
+                                progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (İndirilen: ${fetchedCount})`;
+                                continue;
+                            }
+
+                            const dateObj = new Date(snippet.publishedAt);
+                            const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                            const timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                            const cleanedText = snippet.textDisplay.replace(/\n/g, ' ');
+                            const author = snippet.authorDisplayName;
+
+                            processedCount++;
+                            fetchedCount++;
+
+                            if (exportFormat === 'xlsx') {
+                                let row = {
+                                    "Yorum Tarihi ve Saati": `${dateStr} ${timeStr}`,
+                                    "Kullanıcı Adı": `${author}`,
+                                    "Beğeni Sayısı": likes,
+                                    "Orijinal Yorum": cleanedText,
+                                    "Alt Yanıtlar": ""
+                                };
+
+                                if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                    if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                        let localReplies = [];
+                                        [...item.replies.comments].reverse().forEach(c => {
+                                            const rs = c.snippet;
+                                            const d = new Date(rs.publishedAt);
+                                            const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                            const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                            localReplies.push(`(${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                        });
+                                        row["Alt Yanıtlar"] = localReplies.join("\n\n");
+                                        processedCount += localReplies.length;
+                                        fetchedCount += localReplies.length;
+                                    } else {
+                                        progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
+                                        row["Alt Yanıtlar"] = await fetchAllReplies(item.id, 'xlsx');
+                                        processedCount += item.snippet.totalReplyCount; 
+                                        fetchedCount += item.snippet.totalReplyCount;
+                                    }
+                                }
+                                excelData.push(row);
+                            } else {
+                                txtLines.push(`(${dateStr} - ${timeStr}) - [👍 ${likes} Beğeni] - ${author} : ${cleanedText}`);
+
+                                if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                    if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                        [...item.replies.comments].reverse().forEach(c => {
+                                            const rs = c.snippet;
+                                            const d = new Date(rs.publishedAt);
+                                            const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                            const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                            txtLines.push(`   ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                        });
+                                        processedCount += item.replies.comments.length;
+                                        fetchedCount += item.replies.comments.length;
+                                    } else {
+                                        progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
+                                        const rawTxtReplies = await fetchAllReplies(item.id, 'txt');
+                                        if(rawTxtReplies.length > 0) {
+                                            txtLines.push(rawTxtReplies);
+                                        }
+                                        processedCount += item.snippet.totalReplyCount;
+                                        fetchedCount += item.snippet.totalReplyCount;
+                                    }
+                                }
+                            }
+                            
+                            progressBar.value = processedCount;
+                            progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (İndirilen: ${fetchedCount})`;
+
+                            if (isCancelled) break;
+                        }
+                    }
+                    nextPageToken = data.nextPageToken || null;
+                } while (nextPageToken && !isCancelled);
+
+                if ((exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && txtLines.length === 0)) {
+                    setStatus(`Filtreye uyan veya indirilecek hiçbir yorum bulunamadı.`, "red");
+                    progressContainer.style.display = 'none';
+                    if (btnElement) btnElement.disabled = false; 
+                    return;
+                }
+
+                progressText.innerText = "Dosya hazırlanıyor, lütfen bekleyin...";
+
+                if (exportFormat === 'xlsx') {
+                    const worksheet = XLSX.utils.json_to_sheet(excelData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Yorumlar");
+                    XLSX.writeFile(workbook, `Yorumlar_${videoId}.xlsx`);
+                } else {
+                    const blob = new Blob([txtLines.join("\n")], { type: "text/plain;charset=utf-8" });
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `Yorumlar_${videoId}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(a.href);
+                }
+
+                if(isCancelled) {
+                    setStatus(`İşlem durduruldu! Filtreden geçen ${fetchedCount} yorum başarıyla indirildi.`, "#d35400");
+                } else {
+                    setStatus(`İşlem başarıyla tamamlandı! Filtreden geçen toplam ${fetchedCount} yorum indirildi.`, "green");
+                }
+
+            } catch (error) {
+                setStatus(`Hata: ${error.message}`, "red");
+            } finally {
+                progressContainer.style.display = 'none';
+                if (btnElement) btnElement.disabled = false;
+            }
+        }
+
+        function tekilYorumCek() {
+            const link = document.getElementById('videoLink').value.trim();
+            const videoId = extractVideoID(link);
+            if (!videoId) return setStatus("Geçersiz Video Linki!", "red");
+            yorumMotorunuCalistir(videoId, document.getElementById('fetchSingleBtn'));
+        }
+
+        // KANAL VİDEOLARINI SORGULA
+        async function kanalSorgulat() {
+            const channelLink = document.getElementById('channelLink').value.trim();
+            const handle = extractChannelHandle(channelLink);
+            if (!handle) return setStatus("Lütfen içinde @ işareti geçen bir kanal linki girin.", "red");
+
+            const btn = document.getElementById('fetchChannelBtn'); 
+            btn.disabled = true;
+            document.getElementById('videoListContainer').style.display = 'none';
+            setStatus("Kanal taranıyor...", "#2980b9");
+            
+            prevPageTokenStack = []; 
+            currentPageToken = ""; 
+            allVideosList = []; 
+            currentLocalPage = 0;
+
+            try {
+                const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails,id&forHandle=${handle}&key=${API_KEY}`);
+                if(chRes.status === 400 || chRes.status === 403) throw new Error("Geçersiz API Anahtarı! Çıkış yapıp tekrar deneyin.");
+                
+                const chData = await chRes.json();
+                if (!chData.items || chData.items.length === 0) throw new Error("Kanal bulunamadı.");
+                
+                currentChannelId = chData.items[0].id;
+                currentUploadsId = chData.items[0].contentDetails.relatedPlaylists.uploads;
+                await videolariGetirVeCiz();
+            } catch (error) {
+                setStatus(`Hata: ${error.message}`, "red");
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function sayfaDegistir(yon) {
+            const sortOrder = document.getElementById('sortOrder').value;
+            if (sortOrder === "oldest") {
+                if (yon === 'next') currentLocalPage++; else if (yon === 'prev') currentLocalPage--;
+            } else {
+                if (yon === 'next') { prevPageTokenStack.push(currentPageToken); currentPageToken = nextTokenAvailable; } 
+                else if (yon === 'prev') { currentPageToken = prevPageTokenStack.pop(); }
+            }
+            videolariGetirVeCiz();
+        }
+
+        async function videolariGetirVeCiz() {
+            const sortOrder = document.getElementById('sortOrder').value;
+            const videoListDOM = document.getElementById('videoList');
+            videoListDOM.innerHTML = "<p style='text-align:center;'>Videolar yükleniyor, lütfen bekleyin...</p>";
+            
+            try {
+                let pageItems = []; 
+                let isLocalPagination = false;
+                
+                if (sortOrder === "oldest") {
+                    isLocalPagination = true;
+                    if (allVideosList.length === 0) {
+                        setStatus("Kanal arşivi taranıyor, bu işlem kanal büyüklüğüne göre birkaç saniye sürebilir...", "#2980b9");
+                        let token = "";
+                        do {
+                            const plRes = await fetch(token ? 
+                                `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}&pageToken=${token}` :
+                                `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}`);
+                            const plData = await plRes.json();
+                            if (plData.items) allVideosList.push(...plData.items);
+                            token = plData.nextPageToken || null;
+                        } while (token);
+                        allVideosList.reverse();
+                    }
+                    const startIndex = currentLocalPage * 50; 
+                    const endIndex = startIndex + 50;
+                    pageItems = allVideosList.slice(startIndex, endIndex);
+                    if (pageItems.length === 0) throw new Error("Gösterilecek video kalmadı.");
+                    
+                    document.getElementById('prevBtn').disabled = currentLocalPage === 0;
+                    document.getElementById('nextBtn').disabled = endIndex >= allVideosList.length;
+                } else {
+                    setStatus("Videolar ve istatistikler çekiliyor...", "#2980b9");
+                    let apiUrl = sortOrder === "date" ? 
+                        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}` :
+                        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&channelId=${currentChannelId}&order=viewCount&type=video&key=${API_KEY}`;
+                    
+                    if (currentPageToken) apiUrl += `&pageToken=${currentPageToken}`;
+                    const plRes = await fetch(apiUrl); 
+                    const plData = await plRes.json();
+                    
+                    if (!plData.items || plData.items.length === 0) throw new Error("Bu kanalda hiç video yok.");
+                    pageItems = plData.items; 
+                    nextTokenAvailable = plData.nextPageToken || null;
+                    
+                    document.getElementById('prevBtn').disabled = prevPageTokenStack.length === 0;
+                    document.getElementById('nextBtn').disabled = !nextTokenAvailable;
+                }
+
+                const videoIds = pageItems.map(item => item.snippet.resourceId ? item.snippet.resourceId.videoId : item.id.videoId).join(',');
+                const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`);
+                const statsData = await statsRes.json();
+                
+                const commentsMap = {}; 
+                statsData.items.forEach(v => { commentsMap[v.id] = v.statistics.commentCount || 0; });
+
+                videoListDOM.innerHTML = "";
+                pageItems.forEach(item => {
+                    const title = item.snippet.title;
+                    const videoId = item.snippet.resourceId ? item.snippet.resourceId.videoId : item.id.videoId;
+                    const thumb = item.snippet.thumbnails?.medium?.url || "https://via.placeholder.com/120x90?text=Resim+Yok";
+                    const commentCount = commentsMap[videoId] ? parseInt(commentsMap[videoId]).toLocaleString('tr-TR') : "0";
+                    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                    
+                    const card = `
+                    <div class="video-item" data-title="${title.toLowerCase()}">
+                        <a href="${videoUrl}" target="_blank"><img src="${thumb}" class="video-thumb" alt="Kapak"></a>
+                        <div class="video-info">
+                            <a href="${videoUrl}" target="_blank" class="video-title">${title}</a>
+                            <p class="video-stats">💬 ${commentCount} Yorum</p>
+                            <button class="dl-btn" onclick="yorumMotorunuCalistir('${videoId}', this)">📥 Yorumları İndir</button>
+                        </div>
+                    </div>`;
+                    videoListDOM.insertAdjacentHTML('beforeend', card);
+                });
+                
+                document.getElementById('paginationControls').style.display = 'flex';
+                document.getElementById('videoListContainer').style.display = 'block';
+                setStatus(`Videolar başarıyla listelendi!`, "green");
+                
+            } catch (error) { 
+                setStatus(`Hata: ${error.message}`, "red"); 
+                videoListDOM.innerHTML = ""; 
+            }
+        }
+
+        // ARAMA FİLTRESİ
+        function videolariFiltrele() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.video-item');
+            items.forEach(item => {
+                const title = item.getAttribute('data-title');
+                item.style.display = title.includes(input) ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
