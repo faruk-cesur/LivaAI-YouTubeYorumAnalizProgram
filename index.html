@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Yorum Yönetim Programı v3.0</title>
+    <title>YouTube Yorum Yönetim Programı v3.1</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -222,7 +222,8 @@
 <body>
 
     <div class="container" id="loginScreen">
-        <h2>Sisteme Giriş</h2>
+        <h2>YouTube Yorum Yönetim Programı v3.1</h2>
+        <h2>(SİSTEME GİRİŞ)</h2>
         <div class="input-group">
             <label for="apiKeyInput">Lütfen Yetkili API Anahtarınızı Giriniz:</label>
             <input type="password" id="apiKeyInput" placeholder="API Anahtarını Buraya Giriniz...">
@@ -232,7 +233,7 @@
     </div>
 
     <div class="container" id="mainApp">
-        <h2>YouTube Yorum Yönetim Programı v3.0</h2>
+        <h2>YouTube Yorum Yönetim Programı v3.1</h2>
 
         <div class="settings-box">
             <!-- DÜZELTİLEN KISIM: Alt Yanıtları Dahil Et Seçeneği -->
@@ -416,7 +417,7 @@
                         if (format === 'xlsx') {
                             replies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
                         } else {
-                            replies.push(`   ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                            replies.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
                         }
                     });
                 }
@@ -424,7 +425,7 @@
                 if(isCancelled) break;
             } while(pageToken);
             
-            return format === 'xlsx' ? replies.join("\n") : replies;
+            return format === 'xlsx' ? replies.join("\n") : replies.join("\n");
         }
 
         // YORUM MOTORU
@@ -521,7 +522,7 @@
                                             const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
                                             localReplies.push(`(${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
                                         });
-                                        row["Alt Yanıtlar"] = localReplies.join("\n\n");
+                                        row["Alt Yanıtlar"] = localReplies.join("\n");
                                         processedCount += localReplies.length;
                                         fetchedCount += localReplies.length;
                                     } else {
@@ -542,7 +543,7 @@
                                             const d = new Date(rs.publishedAt);
                                             const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                                             const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                            txtLines.push(`   ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                            txtLines.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
                                         });
                                         processedCount += item.replies.comments.length;
                                         fetchedCount += item.replies.comments.length;
