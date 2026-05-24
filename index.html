@@ -3,217 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Yorum Yönetim Programı v3.1</title>
+    <title>YouTube Yorum Yönetim Programı v4.0 (Cloud Edition)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         /* TEMEL TASARIM AYARLARI */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
-        }
-        h2 { 
-            text-align: center; 
-            color: #2c3e50; 
-            margin-bottom: 20px; 
-        }
-        .input-group { 
-            margin-bottom: 15px; 
-        }
-        label { 
-            display: block; 
-            margin-bottom: 8px; 
-            color: #34495e; 
-            font-weight: bold; 
-        }
-        input, select {
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #bdc3c7;
-            border-radius: 6px; 
-            box-sizing: border-box; 
-            font-size: 14px;
-        }
-        button {
-            width: 100%; 
-            padding: 12px; 
-            background-color: #2980b9;
-            color: white; 
-            border: none; 
-            border-radius: 6px; 
-            font-size: 15px;
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: background-color 0.3s; 
-            margin-bottom: 10px;
-        }
-        button:hover { 
-            background-color: #3498db; 
-        }
-        button:disabled { 
-            background-color: #95a5a6; 
-            cursor: not-allowed; 
-        }
-        .divider {
-            text-align: center; 
-            margin: 20px 0; 
-            color: #7f8c8d;
-            font-weight: bold; 
-            font-size: 14px; 
-            border-bottom: 1px solid #ecf0f1; 
-            line-height: 0.1em;
-        }
-        .divider span { 
-            background: #fff; 
-            padding: 0 10px; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: #34495e; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; padding: 12px; background-color: #2980b9; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; margin-bottom: 10px; }
+        button:hover { background-color: #3498db; }
+        button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .divider { text-align: center; margin: 20px 0; color: #7f8c8d; font-weight: bold; font-size: 14px; border-bottom: 1px solid #ecf0f1; line-height: 0.1em; }
+        .divider span { background: #fff; padding: 0 10px; }
 
         /* GİRİŞ EKRANI VE ANA EKRAN GEÇİŞ AYARLARI */
-        #loginScreen { display: block; } 
+        #loginScreen { display: none; } /* OnAuthStateChanged yüklenene kadar gizli */
         #mainApp { display: none; } 
+        #loadingScreen { display: block; text-align: center; font-weight: bold; color: #2980b9; margin-top: 50px; }
         
-        .logout-btn {
-            background-color: #e74c3c; 
-            margin-top: 20px; 
-            font-size: 13px; 
-            padding: 8px;
-        }
-        .logout-btn:hover { 
-            background-color: #c0392b; 
-        }
+        .logout-btn { background-color: #e74c3c; margin-top: 20px; font-size: 13px; padding: 8px; }
+        .logout-btn:hover { background-color: #c0392b; }
 
         /* VİDEO LİSTELEME TASARIMI */
         #videoListContainer { margin-top: 20px; display: none; }
         #paginationControls { display: none; justify-content: space-between; margin-bottom: 15px; }
         #paginationControls button { width: 48%; margin: 0; }
-        #prevBtn { background-color: #7f8c8d; } 
-        #prevBtn:hover { background-color: #95a5a6; }
-        #nextBtn { background-color: #34495e; } 
-        #nextBtn:hover { background-color: #2c3e50; }
+        #prevBtn { background-color: #7f8c8d; } #prevBtn:hover { background-color: #95a5a6; }
+        #nextBtn { background-color: #34495e; } #nextBtn:hover { background-color: #2c3e50; }
         
-        .video-list { 
-            max-height: 450px; 
-            overflow-y: auto; 
-            border: 1px solid #ecf0f1; 
-            border-radius: 6px; 
-            padding: 10px; 
-            background-color: #fafbfc; 
-        }
-        .video-item { 
-            display: flex; 
-            align-items: center; 
-            padding: 10px; 
-            border-bottom: 1px solid #eee; 
-            background-color: white; 
-            border-radius: 6px; 
-            margin-bottom: 8px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-        }
+        .video-list { max-height: 450px; overflow-y: auto; border: 1px solid #ecf0f1; border-radius: 6px; padding: 10px; background-color: #fafbfc; }
+        .video-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background-color: white; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .video-item:last-child { border-bottom: none; margin-bottom: 0; }
-        .video-thumb { 
-            width: 120px; 
-            border-radius: 4px; 
-            margin-right: 15px; 
-            cursor: pointer; 
-            transition: opacity 0.3s; 
-        }
+        .video-thumb { width: 120px; border-radius: 4px; margin-right: 15px; cursor: pointer; transition: opacity 0.3s; }
         .video-thumb:hover { opacity: 0.8; }
         .video-info { flex-grow: 1; }
-        .video-title { 
-            font-size: 13px; 
-            font-weight: bold; 
-            color: #2c3e50; 
-            margin: 0 0 5px 0; 
-            line-height: 1.4; 
-            cursor: pointer; 
-            text-decoration: none; 
-        }
+        .video-title { font-size: 13px; font-weight: bold; color: #2c3e50; margin: 0 0 5px 0; line-height: 1.4; cursor: pointer; text-decoration: none; }
         .video-title:hover { color: #2980b9; text-decoration: underline; }
-        .video-stats { 
-            font-size: 12px; 
-            color: #e67e22; 
-            font-weight: bold; 
-            margin: 0 0 8px 0; 
-        }
-        .dl-btn { 
-            width: auto; 
-            padding: 8px 12px; 
-            font-size: 12px; 
-            margin: 0; 
-            background-color: #27ae60; 
-        }
+        .video-stats { font-size: 12px; color: #e67e22; font-weight: bold; margin: 0 0 8px 0; }
+        .dl-btn { width: auto; padding: 8px 12px; font-size: 12px; margin: 0; background-color: #27ae60; }
         .dl-btn:hover { background-color: #2ecc71; }
         
         /* EKSTRA ÖZELLİK TASARIMLARI */
-        .settings-box { 
-            background: #e8f4f8; 
-            padding: 15px; 
-            border-radius: 6px; 
-            border: 1px solid #b2dfee; 
-            margin-bottom: 15px; 
-        }
-        .settings-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            margin-bottom: 10px; 
-        }
+        .settings-box { background: #e8f4f8; padding: 15px; border-radius: 6px; border: 1px solid #b2dfee; margin-bottom: 15px; }
+        .settings-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .settings-row:last-child { margin-bottom: 0; }
-        .settings-box label { 
-            margin: 0; 
-            color: #2980b9; 
-            font-size: 14px; 
-            font-weight: bold; 
-            display: flex; 
-            align-items: center; 
-        }
+        .settings-box label { margin: 0; color: #2980b9; font-size: 14px; font-weight: bold; display: flex; align-items: center; }
         
-        #progressContainer { 
-            display: none; 
-            text-align: center; 
-            margin-top: 15px; 
-            padding: 15px; 
-            background: #fff3e0; 
-            border-radius: 8px; 
-            border: 1px solid #ffe0b2; 
-        }
-        #progressText { 
-            font-size: 14px; 
-            font-weight: bold; 
-            color: #d35400; 
-            margin-bottom: 8px; 
-        }
+        #progressContainer { display: none; text-align: center; margin-top: 15px; padding: 15px; background: #fff3e0; border-radius: 8px; border: 1px solid #ffe0b2; }
+        #progressText { font-size: 14px; font-weight: bold; color: #d35400; margin-bottom: 8px; }
         
-        #status { 
-            margin-top: 15px; 
-            text-align: center; 
-            font-size: 14px; 
-            font-weight: bold; 
-            color: #27ae60; 
-        }
-        .developer-credit { 
-            margin-top: 30px; 
-            text-align: center; 
-            font-size: 13px; 
-            color: #7f8c8d; 
-            border-top: 1px solid #ecf0f1; 
-            padding-top: 15px; 
-        }
+        #status { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; color: #27ae60; }
+        .developer-credit { margin-top: 30px; text-align: center; font-size: 13px; color: #7f8c8d; border-top: 1px solid #ecf0f1; padding-top: 15px; }
         .developer-credit span { color: #2980b9; font-weight: bold; transition: color 0.3s ease; }
         .developer-credit span:hover { color: #e67e22; cursor: pointer; }
         .developer-credit a { text-decoration: none; }
@@ -221,22 +66,34 @@
 </head>
 <body>
 
+    <div class="container" id="loadingScreen">
+        <h2>Güvenli Bağlantı Kuruluyor...</h2>
+        <p>Lütfen bekleyin.</p>
+    </div>
+
     <div class="container" id="loginScreen">
-        <h2>YouTube Yorum Yönetim Programı v3.1</h2>
-        <h2>(SİSTEME GİRİŞ)</h2>
+        <h2>YouTube Yorum Yönetim Programı v4.0</h2>
+        <h2>(YETKİLİ GİRİŞİ)</h2>
         <div class="input-group">
-            <label for="apiKeyInput">Lütfen Yetkili API Anahtarınızı Giriniz:</label>
-            <input type="password" id="apiKeyInput" placeholder="API Anahtarını Buraya Giriniz...">
+            <label for="emailInput">E-Posta Adresi:</label>
+            <input type="email" id="emailInput" placeholder="ornek@livaulhamd.com">
         </div>
-        <button id="loginBtn" onclick="sistemeGirisYap()" style="background-color: #27ae60;">GİRİŞ YAP VE DOĞRULA</button>
-        <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Girdiğiniz anahtar güvenli bir YouTube isteği ile anında doğrulanır.</p>
+        <div class="input-group">
+            <label for="passwordInput">Şifre:</label>
+            <input type="password" id="passwordInput" placeholder="Şifrenizi Giriniz...">
+        </div>
+        <button id="loginBtn" onclick="sistemeGirisYap()" style="background-color: #27ae60;">GİRİŞ YAP</button>
+        <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Sisteme sadece yetkilendirilmiş ekip üyeleri giriş yapabilir.</p>
     </div>
 
     <div class="container" id="mainApp">
-        <h2>YouTube Yorum Yönetim Programı v3.1</h2>
+        <h2>YouTube Yorum Yönetim Programı v4.0</h2>
+        
+        <div style="text-align: right; margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #e67e22;">
+            👤 Aktif Kullanıcı: <span id="activeUserEmail">Yükleniyor...</span>
+        </div>
 
         <div class="settings-box">
-            <!-- DÜZELTİLEN KISIM: Alt Yanıtları Dahil Et Seçeneği -->
             <div class="settings-row">
                 <label for="includeReplies">Alt Yanıtları da Dahil Et:</label>
                 <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
@@ -293,16 +150,37 @@
             <div class="video-list" id="videoList"></div>
         </div>
 
-        <button class="logout-btn" onclick="sistemdenCikisYap()">Güvenli Çıkış Yap (API Anahtarını Sil)</button>
+        <button class="logout-btn" onclick="sistemdenCikisYap()">Güvenli Çıkış Yap</button>
 
         <div class="developer-credit">
             Geliştirici: <a href="https://www.instagram.com/livaulhamd.official/" target="_blank"><span>Faruk Cesur</span></a> 🚀
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase Modüllerini İçe Aktarıyoruz
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Sizin Firebase Konfigürasyonunuz
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsvPLTHyAE3hF_hrzre-OxulLsqjpFiJo",
+            authDomain: "commentdownloader-b14d3.firebaseapp.com",
+            projectId: "commentdownloader-b14d3",
+            storageBucket: "commentdownloader-b14d3.firebasestorage.app",
+            messagingSenderId: "842966378025",
+            appId: "1:842966378025:web:717ab9a42a15440cfa1e38"
+        };
+
+        // Firebase Başlatma
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
         // GLOBAL DEĞİŞKENLER
         let API_KEY = "";
+        let currentUserEmail = "";
         let isCancelled = false; 
         
         let currentChannelId = ""; 
@@ -313,71 +191,99 @@
         let allVideosList = []; 
         let currentLocalPage = 0;
 
-        // SAYFA YÜKLENDİĞİNDE
-        document.addEventListener('DOMContentLoaded', function() {
-            const kayitliKey = localStorage.getItem("ytApiKey");
-            if(kayitliKey) {
-                API_KEY = kayitliKey;
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
+        // EKRAN YÖNETİMİ VE OTURUM KONTROLÜ
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Kullanıcı giriş yapmış. API Key'i veritabanından çekelim.
+                currentUserEmail = user.email;
+                document.getElementById('activeUserEmail').innerText = currentUserEmail;
+                
+                try {
+                    const docRef = doc(db, "sistem_ayarlari", "api_kasa");
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        API_KEY = docSnap.data().youtube_api_key;
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('mainApp').style.display = 'block';
+                    } else {
+                        alert("Kritik Hata: API Kasası veritabanında bulunamadı! Yöneticinize başvurun.");
+                        signOut(auth);
+                    }
+                } catch (error) {
+                    alert("Veritabanı bağlantı hatası: Yetkiniz olmayabilir.");
+                    console.error(error);
+                    signOut(auth);
+                }
+            } else {
+                // Kullanıcı giriş yapmamış. Login ekranını göster.
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
             }
         });
 
-        // GİRİŞ YAP VE DOĞRULA 
-        async function sistemeGirisYap() {
-            const inputEl = document.getElementById('apiKeyInput');
-            if (!inputEl) {
-                alert("Hata: Arayüz elementi bulunamadı.");
-                return;
-            }
-
-            const girilenKey = inputEl.value.trim();
-            if(!girilenKey) { 
-                alert("Lütfen geçerli bir API Anahtarı giriniz!"); 
+        // GİRİŞ YAPMA FONKSİYONU
+        window.sistemeGirisYap = async () => {
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            
+            if(!email || !password) { 
+                alert("Lütfen e-posta ve şifrenizi eksiksiz giriniz!"); 
                 return; 
             }
             
             const btn = document.getElementById('loginBtn');
-            btn.innerText = "Doğrulanıyor, Lütfen Bekleyin...";
+            btn.innerText = "Doğrulanıyor...";
             btn.disabled = true;
 
             try {
-                // Rastgele video yerine Google Developers kanalını kontrol ederek kesin doğrulama sağlıyoruz.
-                const testUrl = `https://www.googleapis.com/youtube/v3/channels?part=id&id=UC_x5XG1OV2P6uZZ5FSM9Ttw&key=${girilenKey}`;
-                const response = await fetch(testUrl);
-                
-                if(!response.ok) {
-                    throw new Error("API Anahtarı geçersiz veya kotanız dolmuş.");
-                }
-                
-                localStorage.setItem("ytApiKey", girilenKey);
-                API_KEY = girilenKey;
-                
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                
+                await signInWithEmailAndPassword(auth, email, password);
+                // Başarılı olursa onAuthStateChanged otomatik olarak tetiklenecek.
             } catch (error) {
-                alert("Hata: " + error.message);
-                console.error(error);
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    alert("Hatalı e-posta veya şifre! Lütfen tekrar deneyin.");
+                } else {
+                    alert("Giriş başarısız: " + error.message);
+                }
             } finally {
-                btn.innerText = "GİRİŞ YAP VE DOĞRULA";
+                btn.innerText = "GİRİŞ YAP";
                 btn.disabled = false;
+            }
+        };
+
+        // ÇIKIŞ YAPMA FONKSİYONU
+        window.sistemdenCikisYap = () => {
+            signOut(auth).then(() => {
+                location.reload();
+            });
+        };
+
+        // LOG KAYDI TUTMA (CASUS) FONKSİYONU
+        async function islemLogla(videoId, indirilenSayi, format, detay) {
+            try {
+                const trTarih = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
+                await addDoc(collection(db, "log_kayitlari"), {
+                    kullanici: currentUserEmail,
+                    tarih_saat: trTarih,
+                    video_id: videoId,
+                    indirilen_yorum_sayisi: indirilenSayi,
+                    cikti_formati: format,
+                    detay: detay,
+                    cihaz_tarayici: navigator.userAgent
+                });
+            } catch (error) {
+                console.error("Log yazılamadı:", error);
             }
         }
 
-        // ÇIKIŞ YAP
-        function sistemdenCikisYap() {
-            localStorage.removeItem("ytApiKey");
-            location.reload(); 
-        }
-
-        // İŞLEMİ İPTAL ET
-        function iptalEt() {
+        window.iptalEt = () => {
             isCancelled = true;
             const btn = document.getElementById('cancelBtn');
             btn.innerText = "Durduruluyor, Bekleyin...";
             btn.disabled = true;
-        }
+        };
 
         // LİNK ÇÖZÜCÜLER
         function extractVideoID(url) {
@@ -429,7 +335,7 @@
         }
 
         // YORUM MOTORU
-        async function yorumMotorunuCalistir(videoId, btnElement = null) {
+        window.yorumMotorunuCalistir = async (videoId, btnElement = null) => {
             if (btnElement) btnElement.disabled = true;
             isCancelled = false;
             
@@ -475,7 +381,7 @@
                     const data = await response.json();
                     
                     if(response.status === 400 || response.status === 403) {
-                        throw new Error("API Anahtarı geçersiz veya kotanız dolmuş! Lütfen çıkış yapın.");
+                        throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz Anahtar!");
                     }
                     if (data.error) {
                         if (data.error.errors[0].reason === "commentsDisabled") throw new Error("Bu videonun yorumları kapalı.");
@@ -593,6 +499,10 @@
                     URL.revokeObjectURL(a.href);
                 }
 
+                let islemDetayi = isCancelled ? "İşlem Durduruldu" : "Başarılı";
+                // YENİ: Firebase Firestore Log Kaydı Tetiklemesi
+                await islemLogla(videoId, fetchedCount, exportFormat, islemDetayi);
+
                 if(isCancelled) {
                     setStatus(`İşlem durduruldu! Filtreden geçen ${fetchedCount} yorum başarıyla indirildi.`, "#d35400");
                 } else {
@@ -605,17 +515,16 @@
                 progressContainer.style.display = 'none';
                 if (btnElement) btnElement.disabled = false;
             }
-        }
+        };
 
-        function tekilYorumCek() {
+        window.tekilYorumCek = () => {
             const link = document.getElementById('videoLink').value.trim();
             const videoId = extractVideoID(link);
             if (!videoId) return setStatus("Geçersiz Video Linki!", "red");
             yorumMotorunuCalistir(videoId, document.getElementById('fetchSingleBtn'));
-        }
+        };
 
-        // KANAL VİDEOLARINI SORGULA
-        async function kanalSorgulat() {
+        window.kanalSorgulat = async () => {
             const channelLink = document.getElementById('channelLink').value.trim();
             const handle = extractChannelHandle(channelLink);
             if (!handle) return setStatus("Lütfen içinde @ işareti geçen bir kanal linki girin.", "red");
@@ -632,7 +541,7 @@
 
             try {
                 const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails,id&forHandle=${handle}&key=${API_KEY}`);
-                if(chRes.status === 400 || chRes.status === 403) throw new Error("Geçersiz API Anahtarı! Çıkış yapıp tekrar deneyin.");
+                if(chRes.status === 400 || chRes.status === 403) throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz!");
                 
                 const chData = await chRes.json();
                 if (!chData.items || chData.items.length === 0) throw new Error("Kanal bulunamadı.");
@@ -645,9 +554,9 @@
             } finally {
                 btn.disabled = false;
             }
-        }
+        };
 
-        function sayfaDegistir(yon) {
+        window.sayfaDegistir = (yon) => {
             const sortOrder = document.getElementById('sortOrder').value;
             if (sortOrder === "oldest") {
                 if (yon === 'next') currentLocalPage++; else if (yon === 'prev') currentLocalPage--;
@@ -656,7 +565,7 @@
                 else if (yon === 'prev') { currentPageToken = prevPageTokenStack.pop(); }
             }
             videolariGetirVeCiz();
-        }
+        };
 
         async function videolariGetirVeCiz() {
             const sortOrder = document.getElementById('sortOrder').value;
@@ -744,15 +653,14 @@
             }
         }
 
-        // ARAMA FİLTRESİ
-        function videolariFiltrele() {
+        window.videolariFiltrele = () => {
             const input = document.getElementById('searchInput').value.toLowerCase();
             const items = document.querySelectorAll('.video-item');
             items.forEach(item => {
                 const title = item.getAttribute('data-title');
                 item.style.display = title.includes(input) ? 'flex' : 'none';
             });
-        }
+        };
     </script>
 </body>
 </html>
