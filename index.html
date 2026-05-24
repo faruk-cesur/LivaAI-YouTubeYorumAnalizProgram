@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Yorum Yönetim Programı v4.0</title>
+    <title>YouTube Yorum Yönetim Programı v4.1</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* TEMEL TASARIM AYARLARI */
+        /* TEMEL TASARIM AYARLARINI YAPIYORUZ */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         .container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
         h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
@@ -21,15 +21,15 @@
         .divider { text-align: center; margin: 20px 0; color: #7f8c8d; font-weight: bold; font-size: 14px; border-bottom: 1px solid #ecf0f1; line-height: 0.1em; }
         .divider span { background: #fff; padding: 0 10px; }
 
-        /* GİRİŞ EKRANI VE ANA EKRAN GEÇİŞ AYARLARI */
-        #loginScreen { display: none; } /* OnAuthStateChanged yüklenene kadar gizli */
+        /* GİRİŞ EKRANI VE ANA EKRAN GEÇİŞ AYARLARINI BELİRLİYORUZ */
+        #loginScreen { display: none; } 
         #mainApp { display: none; } 
         #loadingScreen { display: block; text-align: center; font-weight: bold; color: #2980b9; margin-top: 50px; }
         
         .logout-btn { background-color: #e74c3c; margin-top: 20px; font-size: 13px; padding: 8px; }
         .logout-btn:hover { background-color: #c0392b; }
 
-        /* VİDEO LİSTELEME TASARIMI */
+        /* VİDEO LİSTELEME TASARIMINI DÜZENLİYORUZ */
         #videoListContainer { margin-top: 20px; display: none; }
         #paginationControls { display: none; justify-content: space-between; margin-bottom: 15px; }
         #paginationControls button { width: 48%; margin: 0; }
@@ -48,7 +48,7 @@
         .dl-btn { width: auto; padding: 8px 12px; font-size: 12px; margin: 0; background-color: #27ae60; }
         .dl-btn:hover { background-color: #2ecc71; }
         
-        /* EKSTRA ÖZELLİK TASARIMLARI */
+        /* EKSTRA ÖZELLİK TASARIMLARINI UYGULUYORUZ */
         .settings-box { background: #e8f4f8; padding: 15px; border-radius: 6px; border: 1px solid #b2dfee; margin-bottom: 15px; }
         .settings-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .settings-row:last-child { margin-bottom: 0; }
@@ -72,7 +72,7 @@
     </div>
 
     <div class="container" id="loginScreen">
-        <h2>YouTube Yorum Yönetim Programı v4.0</h2>
+        <h2>YouTube Yorum Yönetim Programı v4.1</h2>
         <h2>(YETKİLİ GİRİŞİ)</h2>
         <div class="input-group">
             <label for="emailInput">E-Posta Adresi:</label>
@@ -87,8 +87,8 @@
     </div>
 
     <div class="container" id="mainApp">
-        <h2>YouTube Yorum Yönetim Programı v4.0</h2>
-        
+        <h2>YouTube Yorum Yönetim Programı v4.1</h2>
+
         <div style="text-align: right; margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #e67e22;">
             👤 Aktif Kullanıcı: <span id="activeUserEmail">Yükleniyor...</span>
         </div>
@@ -97,7 +97,14 @@
             <div class="settings-row">
                 <label for="includeReplies">Alt Yanıtları da Dahil Et:</label>
                 <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
-                    <input type="checkbox" id="includeReplies" style="width: auto; transform: scale(1.2); margin: 0;"> 
+                    <input type="checkbox" id="includeReplies" onchange="toggleFlattenOption()" style="width: auto; transform: scale(1.2); margin: 0;"> 
+                </div>
+            </div>
+            
+            <div class="settings-row">
+                <label for="flattenReplies">Alt Yanıtları Farklı Satırlarda Gör:</label>
+                <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
+                    <input type="checkbox" id="flattenReplies" disabled style="width: auto; transform: scale(1.2); margin: 0;"> 
                 </div>
             </div>
             
@@ -163,7 +170,7 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Sizin Firebase Konfigürasyonunuz
+        // Yalnızca Firebase'in genel public tanımlayıcılarını ekliyoruz. Youtube API anahtarı değildir.
         const firebaseConfig = {
             apiKey: "AIzaSyAsvPLTHyAE3hF_hrzre-OxulLsqjpFiJo",
             authDomain: "commentdownloader-b14d3.firebaseapp.com",
@@ -173,12 +180,11 @@
             appId: "1:842966378025:web:717ab9a42a15440cfa1e38"
         };
 
-        // Firebase Başlatma
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // GLOBAL DEĞİŞKENLER
+        // ASIL GİZLİ YOUTUBE API ANAHTARINI İÇİ BOŞ OLARAK BURADA BEKLETİYORUZ
         let API_KEY = "";
         let currentUserEmail = "";
         let isCancelled = false; 
@@ -191,14 +197,26 @@
         let allVideosList = []; 
         let currentLocalPage = 0;
 
-        // EKRAN YÖNETİMİ VE OTURUM KONTROLÜ
+        // Checkbox kontrol fonksiyonunu tanımlıyoruz
+        window.toggleFlattenOption = () => {
+            const includeRepliesCheckbox = document.getElementById('includeReplies');
+            const flattenRepliesCheckbox = document.getElementById('flattenReplies');
+            
+            if (includeRepliesCheckbox.checked) {
+                flattenRepliesCheckbox.disabled = false;
+            } else {
+                flattenRepliesCheckbox.disabled = true;
+                flattenRepliesCheckbox.checked = false; // Devre dışı kaldığında tikini de kaldırıyoruz
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Kullanıcı giriş yapmış. API Key'i veritabanından çekelim.
                 currentUserEmail = user.email;
                 document.getElementById('activeUserEmail').innerText = currentUserEmail;
                 
                 try {
+                    // YOUTUBE API ANAHTARINI ŞİFREYLE GİRİŞ YAPILDIKTAN SONRA VERİTABANINDAN ÇEKİYORUZ
                     const docRef = doc(db, "sistem_ayarlari", "api_kasa");
                     const docSnap = await getDoc(docRef);
                     
@@ -217,14 +235,12 @@
                     signOut(auth);
                 }
             } else {
-                // Kullanıcı giriş yapmamış. Login ekranını göster.
                 document.getElementById('loadingScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'none';
                 document.getElementById('loginScreen').style.display = 'block';
             }
         });
 
-        // GİRİŞ YAPMA FONKSİYONU
         window.sistemeGirisYap = async () => {
             const email = document.getElementById('emailInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
@@ -240,7 +256,6 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Başarılı olursa onAuthStateChanged otomatik olarak tetiklenecek.
             } catch (error) {
                 if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     alert("Hatalı e-posta veya şifre! Lütfen tekrar deneyin.");
@@ -253,14 +268,12 @@
             }
         };
 
-        // ÇIKIŞ YAPMA FONKSİYONU
         window.sistemdenCikisYap = () => {
             signOut(auth).then(() => {
                 location.reload();
             });
         };
 
-        // LOG KAYDI TUTMA (CASUS) FONKSİYONU
         async function islemLogla(videoId, indirilenSayi, format, detay) {
             try {
                 const trTarih = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
@@ -285,7 +298,6 @@
             btn.disabled = true;
         };
 
-        // LİNK ÇÖZÜCÜLER
         function extractVideoID(url) {
             let regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/gi;
             let match = regex.exec(url); 
@@ -304,8 +316,7 @@
             s.innerText = msg;
         };
 
-        // ALT YANITLARI ÇEKME
-        async function fetchAllReplies(parentId, format) {
+        async function fetchAllReplies(parentId, format, isFlatten) {
             let replies = [];
             let pageToken = '';
             do {
@@ -319,11 +330,29 @@
                         const d = new Date(rs.publishedAt);
                         const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                         const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                        const cleanedText = rs.textDisplay.replace(/\n/g, ' ');
+                        const author = rs.authorDisplayName;
+                        const likes = rs.likeCount || 0;
                         
-                        if (format === 'xlsx') {
-                            replies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                        // Flatten işlemini uyguluyoruz
+                        if (isFlatten) {
+                            if (format === 'xlsx') {
+                                replies.push({
+                                    "Yorum Tarihi ve Saati": `${ds} ${ts}`,
+                                    "Kullanıcı Adı": `${author}`,
+                                    "Beğeni Sayısı": likes,
+                                    "Orijinal Yorum": cleanedText,
+                                    "Alt Yanıtlar": ""
+                                });
+                            } else {
+                                replies.push(`(${ds} - ${ts}) - [👍 ${likes} Beğeni] - ${author} : ${cleanedText}`);
+                            }
                         } else {
-                            replies.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                            if (format === 'xlsx') {
+                                replies.push(`${ds} ${ts} - ${author} : ${cleanedText}`);
+                            } else {
+                                replies.push(`    ---> (${ds} - ${ts}) - ${author} : ${cleanedText}`);
+                            }
                         }
                     });
                 }
@@ -331,15 +360,19 @@
                 if(isCancelled) break;
             } while(pageToken);
             
-            return format === 'xlsx' ? replies.join("\n") : replies.join("\n");
+            if (isFlatten) {
+                return replies;
+            } else {
+                return format === 'xlsx' ? replies.join("\n") : replies.join("\n");
+            }
         }
 
-        // YORUM MOTORU
         window.yorumMotorunuCalistir = async (videoId, btnElement = null) => {
             if (btnElement) btnElement.disabled = true;
             isCancelled = false;
             
             const includeReplies = document.getElementById('includeReplies').checked;
+            const flattenReplies = document.getElementById('flattenReplies').checked;
             const exportFormat = document.getElementById('exportFormat').value;
             
             const minLikesInput = document.getElementById('minLikes').value.trim();
@@ -418,28 +451,64 @@
                                     "Alt Yanıtlar": ""
                                 };
 
-                                if (includeReplies && item.snippet.totalReplyCount > 0) {
-                                    if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
-                                        let localReplies = [];
-                                        [...item.replies.comments].reverse().forEach(c => {
-                                            const rs = c.snippet;
-                                            const d = new Date(rs.publishedAt);
-                                            const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                                            const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                            localReplies.push(`(${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
-                                        });
-                                        row["Alt Yanıtlar"] = localReplies.join("\n");
-                                        processedCount += localReplies.length;
-                                        fetchedCount += localReplies.length;
-                                    } else {
-                                        progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
-                                        row["Alt Yanıtlar"] = await fetchAllReplies(item.id, 'xlsx');
-                                        processedCount += item.snippet.totalReplyCount; 
-                                        fetchedCount += item.snippet.totalReplyCount;
+                                if (flattenReplies) {
+                                     // Flatten Modu: Ana yorumu ekliyoruz, alt yanıtları da ayrı satırlar olarak ekliyoruz
+                                     excelData.push(row);
+                                     
+                                     if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                         if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                             [...item.replies.comments].reverse().forEach(c => {
+                                                const rs = c.snippet;
+                                                const d = new Date(rs.publishedAt);
+                                                const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                                const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
+                                                
+                                                excelData.push({
+                                                    "Yorum Tarihi ve Saati": `${ds} ${ts}`,
+                                                    "Kullanıcı Adı": `${rs.authorDisplayName}`,
+                                                    "Beğeni Sayısı": rs.likeCount || 0,
+                                                    "Orijinal Yorum": rCleanedText,
+                                                    "Alt Yanıtlar": ""
+                                                });
+                                            });
+                                            processedCount += item.replies.comments.length;
+                                            fetchedCount += item.replies.comments.length;
+                                         } else {
+                                             progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
+                                             const flatReplies = await fetchAllReplies(item.id, 'xlsx', true);
+                                             excelData.push(...flatReplies);
+                                             processedCount += item.snippet.totalReplyCount; 
+                                             fetchedCount += item.snippet.totalReplyCount;
+                                         }
+                                     }
+                                } else {
+                                    // Hiyerarşik Mod (Klasik): Alt yanıtları ana yorumun hücresine ekliyoruz
+                                    if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                        if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                            let localReplies = [];
+                                            [...item.replies.comments].reverse().forEach(c => {
+                                                const rs = c.snippet;
+                                                const d = new Date(rs.publishedAt);
+                                                const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                                localReplies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                            });
+                                            row["Alt Yanıtlar"] = localReplies.join("\n");
+                                            processedCount += localReplies.length;
+                                            fetchedCount += localReplies.length;
+                                        } else {
+                                            progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
+                                            row["Alt Yanıtlar"] = await fetchAllReplies(item.id, 'xlsx', false);
+                                            processedCount += item.snippet.totalReplyCount; 
+                                            fetchedCount += item.snippet.totalReplyCount;
+                                        }
                                     }
+                                    excelData.push(row);
                                 }
-                                excelData.push(row);
+                                
                             } else {
+                                // TXT FORMATI
                                 txtLines.push(`(${dateStr} - ${timeStr}) - [👍 ${likes} Beğeni] - ${author} : ${cleanedText}`);
 
                                 if (includeReplies && item.snippet.totalReplyCount > 0) {
@@ -449,15 +518,26 @@
                                             const d = new Date(rs.publishedAt);
                                             const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                                             const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                            txtLines.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                            const rLikes = rs.likeCount || 0;
+                                            const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
+                                            
+                                            if (flattenReplies) {
+                                                txtLines.push(`(${ds} - ${ts}) - [👍 ${rLikes} Beğeni] - ${rs.authorDisplayName} : ${rCleanedText}`);
+                                            } else {
+                                                txtLines.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rCleanedText}`);
+                                            }
                                         });
                                         processedCount += item.replies.comments.length;
                                         fetchedCount += item.replies.comments.length;
                                     } else {
                                         progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
-                                        const rawTxtReplies = await fetchAllReplies(item.id, 'txt');
-                                        if(rawTxtReplies.length > 0) {
-                                            txtLines.push(rawTxtReplies);
+                                        const rawTxtReplies = await fetchAllReplies(item.id, 'txt', flattenReplies);
+                                        if (flattenReplies) {
+                                            txtLines.push(...rawTxtReplies);
+                                        } else {
+                                            if(rawTxtReplies.length > 0) {
+                                                txtLines.push(rawTxtReplies);
+                                            }
                                         }
                                         processedCount += item.snippet.totalReplyCount;
                                         fetchedCount += item.snippet.totalReplyCount;
@@ -500,7 +580,6 @@
                 }
 
                 let islemDetayi = isCancelled ? "İşlem Durduruldu" : "Başarılı";
-                // YENİ: Firebase Firestore Log Kaydı Tetiklemesi
                 await islemLogla(videoId, fetchedCount, exportFormat, islemDetayi);
 
                 if(isCancelled) {
@@ -541,7 +620,7 @@
 
             try {
                 const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails,id&forHandle=${handle}&key=${API_KEY}`);
-                if(chRes.status === 400 || chRes.status === 403) throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz!");
+                if(chRes.status === 400 || chRes.status === 403) throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz Anahtar!");
                 
                 const chData = await chRes.json();
                 if (!chData.items || chData.items.length === 0) throw new Error("Kanal bulunamadı.");
