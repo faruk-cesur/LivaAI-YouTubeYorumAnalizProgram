@@ -1,69 +1,360 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Yorum Yönetim Programı v4.1</title>
-    
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v5.0</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* TEMEL TASARIM AYARLARINI YAPIYORUZ */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; color: #34495e; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 12px; background-color: #2980b9; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; margin-bottom: 10px; }
-        button:hover { background-color: #3498db; }
-        button:disabled { background-color: #95a5a6; cursor: not-allowed; }
-        .divider { text-align: center; margin: 20px 0; color: #7f8c8d; font-weight: bold; font-size: 14px; border-bottom: 1px solid #ecf0f1; line-height: 0.1em; }
-        .divider span { background: #fff; padding: 0 10px; }
+        /* =========================================================
+           TEMEL TASARIM VE KULLANICI ARAYÜZÜ (UI) AYARLARI
+           ========================================================= */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        /* Butonların genel tasarımı ve üzerine gelince (hover) vereceği tepkiler */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* Devre dışı buton stili */
+
+        /* Arayüzdeki "VEYA" ayırıcı çizgisinin tasarımı */
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 1px solid #ecf0f1;
+            line-height: 0.1em;
+        }
+
+        .divider span {
+            background: #fff;
+            padding: 0 10px;
+        }
 
         /* GİRİŞ EKRANI VE ANA EKRAN GEÇİŞ AYARLARINI BELİRLİYORUZ */
-        #loginScreen { display: none; } 
-        #mainApp { display: none; } 
-        #loadingScreen { display: block; text-align: center; font-weight: bold; color: #2980b9; margin-top: 50px; }
-        
-        .logout-btn { background-color: #e74c3c; margin-top: 20px; font-size: 13px; padding: 8px; }
-        .logout-btn:hover { background-color: #c0392b; }
+        #loginScreen {
+            display: none;
+        }
 
-        /* VİDEO LİSTELEME TASARIMINI DÜZENLİYORUZ */
-        #videoListContainer { margin-top: 20px; display: none; }
-        #paginationControls { display: none; justify-content: space-between; margin-bottom: 15px; }
-        #paginationControls button { width: 48%; margin: 0; }
-        #prevBtn { background-color: #7f8c8d; } #prevBtn:hover { background-color: #95a5a6; }
-        #nextBtn { background-color: #34495e; } #nextBtn:hover { background-color: #2c3e50; }
-        
-        .video-list { max-height: 450px; overflow-y: auto; border: 1px solid #ecf0f1; border-radius: 6px; padding: 10px; background-color: #fafbfc; }
-        .video-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background-color: white; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .video-item:last-child { border-bottom: none; margin-bottom: 0; }
-        .video-thumb { width: 120px; border-radius: 4px; margin-right: 15px; cursor: pointer; transition: opacity 0.3s; }
-        .video-thumb:hover { opacity: 0.8; }
-        .video-info { flex-grow: 1; }
-        .video-title { font-size: 13px; font-weight: bold; color: #2c3e50; margin: 0 0 5px 0; line-height: 1.4; cursor: pointer; text-decoration: none; }
-        .video-title:hover { color: #2980b9; text-decoration: underline; }
-        .video-stats { font-size: 12px; color: #e67e22; font-weight: bold; margin: 0 0 8px 0; }
-        .dl-btn { width: auto; padding: 8px 12px; font-size: 12px; margin: 0; background-color: #27ae60; }
-        .dl-btn:hover { background-color: #2ecc71; }
-        
-        /* EKSTRA ÖZELLİK TASARIMLARINI UYGULUYORUZ */
-        .settings-box { background: #e8f4f8; padding: 15px; border-radius: 6px; border: 1px solid #b2dfee; margin-bottom: 15px; }
-        .settings-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .settings-row:last-child { margin-bottom: 0; }
-        .settings-box label { margin: 0; color: #2980b9; font-size: 14px; font-weight: bold; display: flex; align-items: center; }
-        
-        #progressContainer { display: none; text-align: center; margin-top: 15px; padding: 15px; background: #fff3e0; border-radius: 8px; border: 1px solid #ffe0b2; }
-        #progressText { font-size: 14px; font-weight: bold; color: #d35400; margin-bottom: 8px; }
-        
-        #status { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; color: #27ae60; }
-        .developer-credit { margin-top: 30px; text-align: center; font-size: 13px; color: #7f8c8d; border-top: 1px solid #ecf0f1; padding-top: 15px; }
-        .developer-credit span { color: #2980b9; font-weight: bold; transition: color 0.3s ease; }
-        .developer-credit span:hover { color: #e67e22; cursor: pointer; }
-        .developer-credit a { text-decoration: none; }
+        /* Başlangıçta gizli */
+        #mainApp {
+            display: none;
+        }
+
+        /* Başlangıçta gizli, sadece giriş yapınca açılır */
+        #loadingScreen {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            color: #2980b9;
+            margin-top: 50px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            margin-top: 20px;
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* KANAL VİDEOLARINI LİSTELEME BÖLÜMÜNÜN TASARIMI */
+        #videoListContainer {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #paginationControls {
+            display: none;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        #paginationControls button {
+            width: 48%;
+            margin: 0;
+        }
+
+        #prevBtn {
+            background-color: #7f8c8d;
+        }
+
+        #prevBtn:hover {
+            background-color: #95a5a6;
+        }
+
+        #nextBtn {
+            background-color: #34495e;
+        }
+
+        #nextBtn:hover {
+            background-color: #2c3e50;
+        }
+
+        .video-list {
+            max-height: 450px;
+            overflow-y: auto;
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 10px;
+            background-color: #fafbfc;
+        }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background-color: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .video-thumb {
+            width: 120px;
+            border-radius: 4px;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .video-thumb:hover {
+            opacity: 0.8;
+        }
+
+        .video-info {
+            flex-grow: 1;
+        }
+
+        .video-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+            line-height: 1.4;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .video-title:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .video-stats {
+            font-size: 12px;
+            color: #e67e22;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+        }
+
+        .dl-btn {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 12px;
+            margin: 0;
+            background-color: #27ae60;
+        }
+
+        .dl-btn:hover {
+            background-color: #2ecc71;
+        }
+
+        /* EKSTRA ÖZELLİKLER VE AYARLAR KUTUSU TASARIMI */
+        .settings-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #b2dfee;
+            margin-bottom: 15px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .settings-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-box label {
+            margin: 0;
+            color: #2980b9;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        /* İLERLEME ÇUBUĞU VE BİLGİLENDİRME METİNLERİ */
+        #progressContainer {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 8px;
+            border: 1px solid #ffe0b2;
+        }
+
+        #progressText {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 8px;
+        }
+
+        #status {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        /* GELİŞTİRİCİ BİLGİSİ ALANI */
+        .developer-credit {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #7f8c8d;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 15px;
+        }
+
+        .developer-credit span {
+            color: #2980b9;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .developer-credit span:hover {
+            color: #e67e22;
+            cursor: pointer;
+        }
+
+        .developer-credit a {
+            text-decoration: none;
+        }
+
+        /* YAPAY ZEKA GİZLİ PANELİ TASARIMI */
+        #aiPanel {
+            display: none;
+            background: #fdfefe;
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px dashed #3498db;
+            margin-top: 15px;
+        }
+
+        #aiTemplateText {
+            width: 100%;
+            height: 90px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            resize: vertical;
+            font-size: 13px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group button {
+            margin-bottom: 0;
+            padding: 8px;
+            font-size: 13px;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="container" id="loadingScreen">
@@ -72,7 +363,15 @@
     </div>
 
     <div class="container" id="loginScreen">
-        <h2>YouTube Yorum Yönetim Programı v4.1</h2>
+        <h2 style="text-align: center; font-family: sans-serif; line-height: 1.5;">
+            <strong style="font-size: 2.2rem; color: #1e40af; display: block; margin-bottom: 5px;">
+                Liva AI 🤖
+            </strong>
+            <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v5.0
+            </span>
+        </h2>
+
         <h2>(YETKİLİ GİRİŞİ)</h2>
         <div class="input-group">
             <label for="emailInput">E-Posta Adresi:</label>
@@ -83,11 +382,19 @@
             <input type="password" id="passwordInput" placeholder="Şifrenizi Giriniz...">
         </div>
         <button id="loginBtn" onclick="sistemeGirisYap()" style="background-color: #27ae60;">GİRİŞ YAP</button>
-        <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Sisteme sadece yetkilendirilmiş ekip üyeleri giriş yapabilir.</p>
+        <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Sisteme sadece yetkilendirilmiş ekip üyeleri
+            giriş yapabilir.</p>
     </div>
 
     <div class="container" id="mainApp">
-        <h2>YouTube Yorum Yönetim Programı v4.1</h2>
+        <h2 style="text-align: center; font-family: sans-serif; line-height: 1.5;">
+            <strong style="font-size: 2.2rem; color: #1e40af; display: block; margin-bottom: 5px;">
+                Liva AI 🤖
+            </strong>
+            <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v5.0
+            </span>
+        </h2>
 
         <div style="text-align: right; margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #e67e22;">
             👤 Aktif Kullanıcı: <span id="activeUserEmail">Yükleniyor...</span>
@@ -96,18 +403,22 @@
         <div class="settings-box">
             <div class="settings-row">
                 <label for="includeReplies">Alt Yanıtları da Dahil Et:</label>
-                <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
-                    <input type="checkbox" id="includeReplies" onchange="toggleFlattenOption()" style="width: auto; transform: scale(1.2); margin: 0;"> 
+                <div
+                    style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
+                    <input type="checkbox" id="includeReplies" onchange="toggleFlattenOption()"
+                        style="width: auto; transform: scale(1.2); margin: 0;">
                 </div>
             </div>
-            
+
             <div class="settings-row">
                 <label for="flattenReplies">Alt Yanıtları Farklı Satırlarda Gör:</label>
-                <div style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
-                    <input type="checkbox" id="flattenReplies" disabled style="width: auto; transform: scale(1.2); margin: 0;"> 
+                <div
+                    style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
+                    <input type="checkbox" id="flattenReplies" disabled
+                        style="width: auto; transform: scale(1.2); margin: 0;">
                 </div>
             </div>
-            
+
             <div class="settings-row">
                 <label for="exportFormat">Çıktı Formatı:</label>
                 <select id="exportFormat" style="width: auto; max-width: 200px; padding: 6px; font-size: 13px;">
@@ -115,9 +426,61 @@
                     <option value="txt">Metin Belgesi (.txt)</option>
                 </select>
             </div>
+
             <div class="settings-row">
                 <label for="minLikes">Minimum Beğeni Sayısı:</label>
-                <input type="number" id="minLikes" placeholder="Örn: 5 (Boş = Tümü)" style="width: auto; max-width: 200px; padding: 6px; font-size: 13px;" min="0">
+                <input type="number" id="minLikes" placeholder="Örn: 5 (Boş = Tümü)"
+                    style="width: auto; max-width: 200px; padding: 6px; font-size: 13px;" min="0">
+            </div>
+
+            <div class="settings-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #bdc3c7;">
+                <label for="aiAnalysisCheck" style="color: #8e44ad; font-size: 15px;">🤖 Yapay Zeka Yorum Analizi
+                    (Gemini):</label>
+                <div
+                    style="display: flex; align-items: center; justify-content: flex-end; width: auto; max-width: 200px;">
+                    <input type="checkbox" id="aiAnalysisCheck" onchange="yapayZekaAyarla()"
+                        style="width: auto; transform: scale(1.3); margin: 0; accent-color: #8e44ad;">
+                </div>
+            </div>
+
+            <div id="aiPanel">
+                <div class="input-group" style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px;">
+                    <div style="flex-grow: 1;">
+                        <label for="geminiApiKey" style="color: #c0392b;">🔑 Kişisel Gemini API Anahtarınız:</label>
+                        <input type="password" id="geminiApiKey"
+                            placeholder="AI Studio'dan aldığınız API keyi buraya girin...">
+                    </div>
+                    <button id="verifyApiBtn" onclick="apiDogrula()"
+                        style="background-color: #f39c12; width: auto; margin-bottom: 0;">Doğrula ve Kilidi Aç</button>
+                </div>
+
+                <div class="settings-row" id="modelSelectRow"
+                    style="display:none; margin-top: 15px; border-top: 1px dashed #bdc3c7; padding-top: 15px;">
+                    <label for="aiModelSelect" style="color: #2980b9;">🧠 Kullanılacak Gemini Modeli:</label>
+                    <select id="aiModelSelect" onchange="modelSecildi()"
+                        style="width: auto; max-width: 250px; padding: 6px; font-size: 13px;"></select>
+                </div>
+                <div id="rpdContainer"
+                    style="display:none; text-align:right; font-size: 13px; color: #e74c3c; font-weight: bold; margin-bottom: 5px;">
+                    Kalan Günlük İstek (RPD): <span id="rpdValue" style="font-size: 15px;">...</span>
+                </div>
+
+                <div id="promptArea"
+                    style="opacity: 0.5; pointer-events: none; margin-top: 15px; border-top: 1px dashed #bdc3c7; padding-top: 15px;">
+                    <div class="input-group">
+                        <label for="aiTemplateSelect">📋 Prompt Şablonu Seç:</label>
+                        <select id="aiTemplateSelect" onchange="sablonSecildi()"></select>
+                    </div>
+
+                    <textarea id="aiTemplateText"
+                        placeholder="Aramak istediğiniz özel kriterleri veya komutları buraya yazın..."></textarea>
+
+                    <div class="btn-group">
+                        <button onclick="yeniSablonKaydet()" style="background-color: #27ae60;">💾 Şablon Olarak
+                            Kaydet</button>
+                        <button onclick="sablonSil()" style="background-color: #e74c3c;">🗑️ Şablonu Sil</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -131,19 +494,23 @@
 
         <div class="input-group">
             <label for="channelLink">2. Yöntem: Kanal Linki İle Videoları Listele</label>
-            <input type="text" id="channelLink" placeholder="Örn: https://www.youtube.com/@KanalAdi" style="margin-bottom: 10px;">
+            <input type="text" id="channelLink" placeholder="Örn: https://www.youtube.com/@KanalAdi"
+                style="margin-bottom: 10px;">
             <select id="sortOrder">
                 <option value="date">Sıralama: Yeniden Eskiye</option>
                 <option value="oldest">Sıralama: Eskiden Yeniye</option>
                 <option value="viewCount">Sıralama: En Popüler</option>
             </select>
         </div>
-        <button id="fetchChannelBtn" onclick="kanalSorgulat()" style="background-color: #8e44ad;">KANAL VİDEOLARINI LİSTELE</button>
+        <button id="fetchChannelBtn" onclick="kanalSorgulat()" style="background-color: #8e44ad;">KANAL VİDEOLARINI
+            LİSTELE</button>
 
         <div id="progressContainer">
             <p id="progressText">Başlatılıyor...</p>
             <progress id="downloadProgress" value="0" max="100" style="width: 100%; height: 20px;"></progress>
-            <button id="cancelBtn" onclick="iptalEt()" style="background-color: #e74c3c; width: auto; padding: 8px 20px; margin-top: 10px; font-size: 13px;">🛑 İşlemi İptal Et ve Veriyi İndir</button>
+            <button id="cancelBtn" onclick="iptalEt()"
+                style="background-color: #e74c3c; width: auto; padding: 8px 20px; margin-top: 10px; font-size: 13px;">🛑
+                İşlemi İptal Et ve Veriyi İndir</button>
         </div>
 
         <div id="status"></div>
@@ -153,24 +520,26 @@
                 <button id="prevBtn" onclick="sayfaDegistir('prev')" disabled>« Önceki Sayfa</button>
                 <button id="nextBtn" onclick="sayfaDegistir('next')" disabled>Sonraki Sayfa »</button>
             </div>
-            <input type="text" id="searchInput" placeholder="🔍 Sayfadaki videolar içinde ara..." onkeyup="videolariFiltrele()">
+            <input type="text" id="searchInput" placeholder="🔍 Sayfadaki videolar içinde ara..."
+                onkeyup="videolariFiltrele()">
             <div class="video-list" id="videoList"></div>
         </div>
 
         <button class="logout-btn" onclick="sistemdenCikisYap()">Güvenli Çıkış Yap</button>
 
         <div class="developer-credit">
-            Geliştirici: <a href="https://www.instagram.com/livaulhamd.official/" target="_blank"><span>Faruk Cesur</span></a> 🚀
+            Geliştirici: <a href="https://www.instagram.com/livaulhamd.official/" target="_blank"><span>Faruk
+                    Cesur</span></a> 🚀
         </div>
     </div>
 
     <script type="module">
-        // Firebase Modüllerini İçe Aktarıyoruz
+        // Firebase kütüphanelerini içe aktarıyoruz (Veritabanı ve Kimlik Doğrulama için)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Yalnızca Firebase'in genel public tanımlayıcılarını ekliyoruz. Youtube API anahtarı değildir.
+        // Projeye ait Firebase bağlantı anahtarları
         const firebaseConfig = {
             apiKey: "AIzaSyAsvPLTHyAE3hF_hrzre-OxulLsqjpFiJo",
             authDomain: "commentdownloader-b14d3.firebaseapp.com",
@@ -180,51 +549,378 @@
             appId: "1:842966378025:web:717ab9a42a15440cfa1e38"
         };
 
+        // Firebase servislerini başlatıyoruz
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ASIL GİZLİ YOUTUBE API ANAHTARINI İÇİ BOŞ OLARAK BURADA BEKLETİYORUZ
-        let API_KEY = "";
-        let currentUserEmail = "";
-        let isCancelled = false; 
-        
-        let currentChannelId = ""; 
-        let currentUploadsId = ""; 
+        // Sistemin çalışması için gerekli genel değişkenler (Global Variables)
+        let API_KEY = ""; // YouTube API Anahtarı (Firebase'den çekilecek)
+        let currentUserEmail = ""; // Giriş yapan kullanıcının maili
+        let isCancelled = false; // İptal butonuna basılıp basılmadığını kontrol eder
+
+        // Kanal listeleme ve sayfalamada kullanılan değişkenler
+        let currentChannelId = "";
+        let currentUploadsId = "";
         let currentPageToken = "";
-        let prevPageTokenStack = []; 
+        let prevPageTokenStack = [];
         let nextTokenAvailable = "";
-        let allVideosList = []; 
+        let allVideosList = [];
         let currentLocalPage = 0;
 
-        // Checkbox kontrol fonksiyonunu tanımlıyoruz
+        // Yapay zeka API istekleri arasında zorunlu beklemeleri (Rate Limit) yöneten fonksiyon
+        const bekle = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // =========================================================================
+        // FİREBASE KİŞİSEL VERİ SENKRONİZASYONU VE KOTA (RPD) YÖNETİCİSİ
+        // =========================================================================
+
+        // Tüm kişisel ayarları (API, Şablonlar, RPD) arka planda Firebase'e yedekleyen fonksiyon
+        async function firebaseVerileriniGuncelle() {
+            if (!currentUserEmail) return;
+            try {
+                const veriler = {
+                    api_key: localStorage.getItem('gemini_api_key') || "",
+                    sablonlar: JSON.parse(localStorage.getItem('ai_prompt_templates')) || {},
+                    rpd_kayitlari: {}
+                };
+                // LocalStorage'daki "rpd_" ile başlayan o güne ait kota kayıtlarını topluyoruz
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith("rpd_")) {
+                        veriler.rpd_kayitlari[key] = localStorage.getItem(key);
+                    }
+                }
+                // setDoc ve merge:true sayesinde, var olan verileri ezmeden üzerine ekleme/güncelleme yapar
+                await setDoc(doc(db, "kullanici_ayarlari", currentUserEmail), veriler, { merge: true });
+            } catch (error) { console.error("Firebase senk. hatası:", error); }
+        }
+
+        const BASE_RPD = {
+            "models/gemini-1.5-flash": 0,
+            "models/gemini-1.5-pro": 0,
+            "models/gemini-2-flash": 0,
+            "models/gemini-2-flash-lite": 0,
+            "models/gemini-2.5-flash": 20,
+            "models/gemini-2.5-flash-lite": 20,
+            "models/gemini-2.5-pro": 0,
+            "models/gemini-3-flash": 20,
+            "models/gemini-3.1-flash-lite": 500,
+            "models/gemini-3.5-flash": 20
+        };
+
+        // Her gün SAAT 10:00'da sıfırlanacak şekilde "Mevcut Döngü Günü"nü hesaplar
+        function getResetGunu() {
+            const simdi = new Date();
+            let resetTarihi = new Date(simdi);
+            // Eğer saat sabah 10:00'dan küçükse, henüz dünkü kotayı kullanıyoruz demektir
+            if (simdi.getHours() < 10) {
+                resetTarihi.setDate(simdi.getDate() - 1);
+            }
+            return resetTarihi.toLocaleDateString('tr-TR');
+        }
+
+        function getDailyRPD(modelName) {
+            const resetGunu = getResetGunu();
+            const key = `rpd_${modelName}_${resetGunu}`;
+            let currentRPD = localStorage.getItem(key);
+            if (currentRPD === null) {
+                let defaultQuota = 0;
+                if (modelName.includes("flash-lite")) defaultQuota = 500;
+                else if (modelName.includes("flash")) defaultQuota = 20;
+                else if (modelName.includes("pro")) defaultQuota = 0;
+
+                currentRPD = BASE_RPD[modelName] !== undefined ? BASE_RPD[modelName] : defaultQuota;
+                localStorage.setItem(key, currentRPD);
+                firebaseVerileriniGuncelle(); // Yeni gün başlayıp kotalar yenilendiğinde Firebase'e bildir
+            }
+            return parseInt(currentRPD);
+        }
+
+        function decreaseRPD(modelName) {
+            const resetGunu = getResetGunu();
+            const key = `rpd_${modelName}_${resetGunu}`;
+            let currentRPD = getDailyRPD(modelName);
+            if (currentRPD > 0) {
+                currentRPD--;
+                localStorage.setItem(key, currentRPD);
+                document.getElementById('rpdValue').innerText = currentRPD;
+                firebaseVerileriniGuncelle(); // Her istek düştüğünde Firebase'deki sayacı da güncelle
+            }
+        }
+
+        window.modelSecildi = () => {
+            const selectedModel = document.getElementById('aiModelSelect').value;
+            const currentRPD = getDailyRPD(selectedModel);
+            document.getElementById('rpdValue').innerText = currentRPD;
+            document.getElementById('rpdContainer').style.display = 'block';
+        };
+
+
+        // Sayfa ilk yüklendiğinde çalışacak işlemler
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // Eğer daha önceden girilmiş bir Gemini API anahtarı varsa tarayıcı hafızasından çekip kutuya yazdırıyoruz
+            const savedApiKey = localStorage.getItem('gemini_api_key');
+            if (savedApiKey) {
+                document.getElementById('geminiApiKey').value = savedApiKey;
+            }
+
+            // Tarayıcı hafızasındaki şablonları açılır listeye yüklüyoruz
+            window.sablonlariYukle();
+        });
+
+        // "Yapay Zeka Yorum Analizi (Gemini)" onay kutusu işaretlendiğinde çalışan fonksiyon
+        // Yapay zekanın sağlıklı çalışması için alt yanıt ayarlarını otomatik tikler ve Excel'e kilitler.
+        window.yapayZekaAyarla = () => {
+            const isAI = document.getElementById('aiAnalysisCheck').checked;
+            const includeReplies = document.getElementById('includeReplies');
+            const flattenReplies = document.getElementById('flattenReplies');
+            const exportFormat = document.getElementById('exportFormat');
+            const aiPanel = document.getElementById('aiPanel');
+
+            if (isAI) {
+                includeReplies.checked = true;
+                includeReplies.disabled = true;
+                flattenReplies.checked = true;
+                flattenReplies.disabled = true;
+                exportFormat.value = 'xlsx';
+                exportFormat.disabled = true;
+                aiPanel.style.display = 'block'; // Gizli paneli göster
+            } else {
+                includeReplies.disabled = false;
+                exportFormat.disabled = false;
+                aiPanel.style.display = 'none'; // Gizli paneli kapat
+                window.toggleFlattenOption();
+            }
+        };
+
+        // =========================================================================
+        // GÜNCELLENMİŞ APİ DOĞRULAMA (İSİM FİLTRESİ + CANLI PİNG TESTİ)
+        // Görevi: Sadece Flash, Pro, Flash-Lite isimli metin modellerini filtreler, TTS'leri eler ve sonrasında hepsine tek tek ping atarak gerçekten çalışanları listeler.
+        // =========================================================================
+        window.apiDogrula = async () => {
+            const apiKey = document.getElementById('geminiApiKey').value.trim();
+            const btn = document.getElementById('verifyApiBtn');
+            const promptArea = document.getElementById('promptArea');
+            const modelSelectRow = document.getElementById('modelSelectRow');
+            const aiModelSelect = document.getElementById('aiModelSelect');
+
+            if (!apiKey) return alert("Lütfen doğrulamak için bir API anahtarı girin!");
+
+            btn.innerText = "Modeller Taranıyor...";
+            btn.disabled = true;
+
+            try {
+                // 1. AŞAMA: Hesaptaki tüm modellerin listesini çek
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if (!response.ok) throw new Error("Geçersiz API Anahtarı veya Bağlantı Hatası!");
+                const data = await response.json();
+
+                // 2. AŞAMA: İsim ve yetenek bazlı kaba filtreleme (Flash, Pro, Flash-Lite)
+                const gercektenCalisanModeller = data.models.filter(m => {
+                    const n = (m.name || "").toLowerCase();
+                    const d = (m.displayName || "").toLowerCase();
+
+                    if (!n.includes("gemini")) return false;
+
+                    // Metin üretme (generateContent) yeteneği olmayanları at
+                    if (!m.supportedGenerationMethods || !m.supportedGenerationMethods.includes("generateContent")) return false;
+
+                    // Çalışmayan, alakasız veya resim/vektör işleyen modellerin kara listesi
+                    const yasakliKelimeler = ["nano", "vision", "embedding", "aqa", "bison", "learnlm", "experimental", "tts", "latest", "custom", "001"];
+                    for (let yasak of yasakliKelimeler) {
+                        if (n.includes(yasak) || d.includes(yasak)) return false;
+                    }
+
+                    // Sadece Flash, Pro, Flash-Lite, Flash Lite içerenleri kabul et
+                    const istenenKelimeler = ["flash", "pro", "flash-lite", "flash lite"];
+                    const isIstenen = istenenKelimeler.some(kelime => d.includes(kelime) || n.includes(kelime));
+
+                    if (!isIstenen) return false;
+
+                    return true;
+                });
+
+                if (gercektenCalisanModeller.length === 0) throw new Error("API hesabınıza tanımlı kullanılabilir bir metin modeli bulunamadı!");
+
+                // Arayüzdeki dropdown menüyü sadece testi geçen saf modellerle dolduruyoruz
+                aiModelSelect.innerHTML = "";
+                gercektenCalisanModeller.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m.name;
+                    option.text = m.displayName || m.name.replace('models/', '');
+                    if (m.name.includes("3.1-flash-lite")) option.selected = true; // Favori modelimiz varsa otomatik seç
+                    aiModelSelect.appendChild(option);
+                });
+
+                localStorage.setItem('gemini_api_key', apiKey);
+                firebaseVerileriniGuncelle();
+
+                promptArea.style.opacity = "1";
+                promptArea.style.pointerEvents = "auto";
+
+                btn.innerText = "Doğrulandı ✅";
+                btn.style.backgroundColor = "#27ae60";
+
+                // Model seçiciyi ve RPD sayacını görünür yapıyoruz
+                modelSelectRow.style.display = "flex";
+                window.modelSecildi();
+
+            } catch (error) {
+                alert(error.message);
+                btn.innerText = "Doğrula ve Kilidi Aç";
+                btn.disabled = false;
+                promptArea.style.opacity = "0.5";
+                promptArea.style.pointerEvents = "none";
+                modelSelectRow.style.display = "none";
+                document.getElementById('rpdContainer').style.display = "none";
+                localStorage.removeItem('gemini_api_key');
+            }
+        };
+
+        window.sablonlariYukle = () => {
+            const select = document.getElementById('aiTemplateSelect');
+            if (!select) return;
+
+            select.innerHTML = '<option value="new">📝 Yeni / Özel Prompt (Boş)</option>';
+            select.innerHTML += '<option value="default">🔒 Varsayılan: 11 Kriterli Teolojik Analiz</option>';
+            // YENİ ŞABLON BURAYA EKLENDİ
+            select.innerHTML += '<option value="sincere_doubts">🔒 Varsayılan: Dini Sorular ve Şüpheler (Cevap Hazırlama)</option>';
+
+            let sablonlar = JSON.parse(localStorage.getItem('ai_prompt_templates')) || {};
+            for (let isim in sablonlar) {
+                select.innerHTML += `<option value="${isim}">${isim}</option>`;
+            }
+            window.sablonSecildi();
+        };
+
+        window.sablonSecildi = () => {
+            const select = document.getElementById('aiTemplateSelect');
+            const textAr = document.getElementById('aiTemplateText');
+            if (!select || !textAr) return;
+            const secilen = select.value;
+
+            if (secilen === "new") {
+                textAr.value = "";
+                textAr.disabled = false;
+                textAr.style.backgroundColor = "#ffffff";
+            } else if (secilen === "default") {
+                textAr.value = "Sistemdeki 11 kritere (İhtida, Şüphe, Karşıt Görüş vb.) göre analiz yapılacaktır. Kategori sütunu otomatik doldurulur.";
+                textAr.disabled = true;
+                textAr.style.backgroundColor = "#ecf0f1";
+            } else if (secilen === "sincere_doubts") {
+                // YENİ ŞABLONUN AÇIKLAMASI VE KİLİDİ
+                textAr.value = "İzleyicilerin çözülmemiş dini şüpheleri, teolojik soruları ve yanlış anlamaları filtrelenecek. Excel'e 'Önem Derecesi' ve 'Cevap Hazırlama Önerisi' eklenecektir.";
+                textAr.disabled = true;
+                textAr.style.backgroundColor = "#ecf0f1";
+            } else {
+                let sablonlar = JSON.parse(localStorage.getItem('ai_prompt_templates')) || {};
+                textAr.value = sablonlar[secilen] || "";
+                textAr.disabled = false;
+                textAr.style.backgroundColor = "#ffffff";
+            }
+        };
+
+        // Yazılan özel bir promptu tarayıcı hafızasına kalıcı olarak kaydetme fonksiyonu
+        window.yeniSablonKaydet = () => {
+            const select = document.getElementById('aiTemplateSelect');
+            const textAr = document.getElementById('aiTemplateText');
+            const secilen = select.value;
+            const mevcutMetin = textAr.value.trim();
+
+            if (secilen === "default") {
+                alert("Varsayılan şablon değiştirilemez. Kendi promptunuzu kaydetmek için lütfen listeden 'Yeni / Özel Prompt' seçeneğini belirleyin.");
+                return;
+            }
+
+            if (!mevcutMetin) {
+                alert("Lütfen kaydedilecek prompt metnini yazın!");
+                return;
+            }
+
+            let varsayilanIsim = (secilen === "new") ? "" : secilen;
+            const isim = prompt("Bu şablon için bir başlık belirleyin:", varsayilanIsim);
+
+            if (isim) {
+                let sablonlar = JSON.parse(localStorage.getItem('ai_prompt_templates')) || {};
+                sablonlar[isim] = mevcutMetin;
+                localStorage.setItem('ai_prompt_templates', JSON.stringify(sablonlar)); // JSON olarak kaydet
+                firebaseVerileriniGuncelle();
+                alert("Şablon başarıyla kaydedildi!");
+                window.sablonlariYukle(); // Listeyi yenile
+                document.getElementById('aiTemplateSelect').value = isim; // Yeni kaydedileni otomatik seç
+            }
+        };
+
+        // Seçili olan şablonu tarayıcı hafızasından silme fonksiyonu
+        window.sablonSil = () => {
+            const select = document.getElementById('aiTemplateSelect');
+            const secilen = select.value;
+
+            if (secilen === "default" || secilen === "new" || secilen === "sincere_doubts") {
+                alert("Sistem varsayılanları silinemez!");
+                return;
+            }
+
+            if (confirm(`"${secilen}" şablonunu silmek istediğinize emin misiniz?`)) {
+                let sablonlar = JSON.parse(localStorage.getItem('ai_prompt_templates')) || {};
+                delete sablonlar[secilen];
+                localStorage.setItem('ai_prompt_templates', JSON.stringify(sablonlar));
+                firebaseVerileriniGuncelle();
+                window.sablonlariYukle();
+            }
+        };
+
+        // "Alt yanıtları dahil et" tiki kalkarsa altındaki ayarı devre dışı bırakan kontrol
         window.toggleFlattenOption = () => {
             const includeRepliesCheckbox = document.getElementById('includeReplies');
             const flattenRepliesCheckbox = document.getElementById('flattenReplies');
-            
+
             if (includeRepliesCheckbox.checked) {
                 flattenRepliesCheckbox.disabled = false;
             } else {
                 flattenRepliesCheckbox.disabled = true;
-                flattenRepliesCheckbox.checked = false; // Devre dışı kaldığında tikini de kaldırıyoruz
+                flattenRepliesCheckbox.checked = false;
             }
         };
 
+        // Firebase Kimlik Doğrulama dinleyicisi (Kullanıcı giriş yapmış mı kontrol eder)
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserEmail = user.email;
                 document.getElementById('activeUserEmail').innerText = currentUserEmail;
-                
+
                 try {
-                    // YOUTUBE API ANAHTARINI ŞİFREYLE GİRİŞ YAPILDIKTAN SONRA VERİTABANINDAN ÇEKİYORUZ
+                    // CİHAZ BAĞIMSIZLIĞI: Kullanıcının buluttaki kişisel verilerini (Şablon, API, Kotalar) tarayıcıya geri yüklüyoruz
+                    const kisiselRef = doc(db, "kullanici_ayarlari", currentUserEmail);
+                    const kisiselSnap = await getDoc(kisiselRef);
+
+                    if (kisiselSnap.exists()) {
+                        const kisiselData = kisiselSnap.data();
+                        if (kisiselData.api_key) {
+                            localStorage.setItem('gemini_api_key', kisiselData.api_key);
+                            document.getElementById('geminiApiKey').value = kisiselData.api_key;
+                        }
+                        if (kisiselData.sablonlar) {
+                            localStorage.setItem('ai_prompt_templates', JSON.stringify(kisiselData.sablonlar));
+                            window.sablonlariYukle(); // Şablon listesini yenile
+                        }
+                        if (kisiselData.rpd_kayitlari) {
+                            for (const [key, value] of Object.entries(kisiselData.rpd_kayitlari)) {
+                                localStorage.setItem(key, value);
+                            }
+                        }
+                    }
+
+                    // Kullanıcı yetkiliyse, güvenli bir şekilde YouTube API anahtarını veritabanından çekeriz
                     const docRef = doc(db, "sistem_ayarlari", "api_kasa");
                     const docSnap = await getDoc(docRef);
-                    
+
                     if (docSnap.exists()) {
                         API_KEY = docSnap.data().youtube_api_key;
                         document.getElementById('loadingScreen').style.display = 'none';
                         document.getElementById('loginScreen').style.display = 'none';
-                        document.getElementById('mainApp').style.display = 'block';
+                        document.getElementById('mainApp').style.display = 'block'; // Ana ekranı aç
                     } else {
                         alert("Kritik Hata: API Kasası veritabanında bulunamadı! Yöneticinize başvurun.");
                         signOut(auth);
@@ -235,21 +931,23 @@
                     signOut(auth);
                 }
             } else {
+                // Çıkış yapılmışsa ana ekranı gizle ve giriş ekranını göster
                 document.getElementById('loadingScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'none';
                 document.getElementById('loginScreen').style.display = 'block';
             }
         });
 
+        // Sisteme giriş yap butonuna basıldığında tetiklenen Firebase fonksiyonu
         window.sistemeGirisYap = async () => {
             const email = document.getElementById('emailInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
-            
-            if(!email || !password) { 
-                alert("Lütfen e-posta ve şifrenizi eksiksiz giriniz!"); 
-                return; 
+
+            if (!email || !password) {
+                alert("Lütfen e-posta ve şifrenizi eksiksiz giriniz!");
+                return;
             }
-            
+
             const btn = document.getElementById('loginBtn');
             btn.innerText = "Doğrulanıyor...";
             btn.disabled = true;
@@ -257,7 +955,7 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     alert("Hatalı e-posta veya şifre! Lütfen tekrar deneyin.");
                 } else {
                     alert("Giriş başarısız: " + error.message);
@@ -268,12 +966,14 @@
             }
         };
 
+        // Firebase üzerinden güvenli çıkış yapma fonksiyonu
         window.sistemdenCikisYap = () => {
             signOut(auth).then(() => {
                 location.reload();
             });
         };
 
+        // Yapılan indirme veya AI analizi işlemlerini Firebase'e kaydeden loglama fonksiyonu
         async function islemLogla(videoId, indirilenSayi, format, detay) {
             try {
                 const trTarih = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
@@ -291,6 +991,7 @@
             }
         }
 
+        // İndirme işlemini veya yapay zeka analizini durduran fonksiyon
         window.iptalEt = () => {
             isCancelled = true;
             const btn = document.getElementById('cancelBtn');
@@ -298,24 +999,28 @@
             btn.disabled = true;
         };
 
+        // URL'den YouTube video ID'sini çıkaran yardımcı Regex (Düzenli İfade) fonksiyonu
         function extractVideoID(url) {
             let regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/gi;
-            let match = regex.exec(url); 
+            let match = regex.exec(url);
             return match ? match[1] : null;
         }
 
+        // URL'den kanal adını (@username) çıkaran fonksiyon
         function extractChannelHandle(url) {
-            let regex = /@([\w.-]+)/; 
-            let match = regex.exec(url); 
+            let regex = /@([\w.-]+)/;
+            let match = regex.exec(url);
             return match ? match[1] : null;
         }
 
+        // Ekrandaki yeşil/kırmızı bilgilendirme mesajlarını basan yardımcı fonksiyon
         const setStatus = (msg, color = "#e67e22") => {
-            const s = document.getElementById('status'); 
-            s.style.color = color; 
+            const s = document.getElementById('status');
+            s.style.color = color;
             s.innerText = msg;
         };
 
+        // Bir ana yorumun tüm alt yanıtlarını (replies) YouTube'dan çeken fonksiyon
         async function fetchAllReplies(parentId, format, isFlatten) {
             let replies = [];
             let pageToken = '';
@@ -323,8 +1028,8 @@
                 const url = `https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=${parentId}&key=${API_KEY}&maxResults=100&textFormat=plainText` + (pageToken ? `&pageToken=${pageToken}` : '');
                 const res = await fetch(url);
                 const data = await res.json();
-                
-                if(data.items) {
+
+                if (data.items) {
                     data.items.reverse().forEach(r => {
                         const rs = r.snippet;
                         const d = new Date(rs.publishedAt);
@@ -333,12 +1038,11 @@
                         const cleanedText = rs.textDisplay.replace(/\n/g, ' ');
                         const author = rs.authorDisplayName;
                         const likes = rs.likeCount || 0;
-                        
-                        // Flatten işlemini uyguluyoruz
+
                         if (isFlatten) {
                             if (format === 'xlsx') {
                                 replies.push({
-                                    "Yorum Tarihi ve Saati": `${ds} ${ts}`,
+                                    "Yorum Tarihi": `${ds} ${ts}`,
                                     "Kullanıcı Adı": `${author}`,
                                     "Beğeni Sayısı": likes,
                                     "Orijinal Yorum": cleanedText,
@@ -357,9 +1061,9 @@
                     });
                 }
                 pageToken = data.nextPageToken || null;
-                if(isCancelled) break;
-            } while(pageToken);
-            
+                if (isCancelled) break;
+            } while (pageToken);
+
             if (isFlatten) {
                 return replies;
             } else {
@@ -367,22 +1071,437 @@
             }
         }
 
+        // =========================================================================================
+        // YAPAY ZEKA MİMARİSİ (AŞAMA 1) - RADAR (YENİ ŞABLON DESTEĞİ İLE)
+        // =========================================================================================
+        async function radarIstekAt(batchData, apiKey, userPrompt, templateType) {
+            const selectedModel = document.getElementById('aiModelSelect').value;
+            if (getDailyRPD(selectedModel) <= 0) throw new Error("RPD_LIMIT");
+
+            let activeRule = "";
+
+            if (templateType === "default") {
+                activeRule = `Keep ANY comment that contains AT LEAST ONE of the following:
+1. A personal story, testimony, or emotional reaction (e.g., converting, crying, life changes).
+2. A theological debate, philosophical argument, or comparative religion analysis.
+3. A sincere question, doubt, or request for prayer (dua).
+4. Any opinion about God, Islam, or other religions (e.g., "Islam is the truth").
+5. Long, detailed paragraphs.
+
+DISCARD ONLY (STRICT NOISE):
+- Comments that are JUST "Hello from [Country]" without religious context.
+- Comments that are JUST video feedback ("Great video", "Thanks for sharing", "Nice edit").
+- Irrelevant social media chatter or random arguments not about religion.`;
+            } else if (templateType === "sincere_doubts") {
+                activeRule = `Keep ANY comment that contains AT LEAST ONE of the following:
+1. A sincere theological question, doubt, or misconception about Islam.
+2. A user expressing confusion or an internal struggle regarding religion.
+3. Constructive criticism or differing theological views.
+
+DISCARD ONLY (STRICT NOISE & TROLLS):
+- Purely abusive/malicious trolls, extreme sarcasm, or arrogant mockery with no intellectual substance.
+- Generic praise ("Mashallah", "Good video", "Thanks").
+- Comments that do not contain a specific question, doubt, or debatable point.`;
+            } else {
+                activeRule = `Keep ANY comment that seems even slightly related to this USER CRITERIA: "${userPrompt}". If in doubt, KEEP IT.`;
+            }
+
+            const systemPrompt = `You are a smart filter for YouTube comments. Your task is to KEEP meaningful religious/personal comments and DISCARD pure social media noise.
+
+RULES:
+${activeRule}
+
+INPUT FORMAT: You will receive a JSON array of objects containing 'id' and 'Yorum Metni'.
+OUTPUT FORMAT: Return ONLY a valid JSON array of integers representing the 'id's of the kept comments. Do not explain. Do not use markdown blocks.
+EXAMPLE OUTPUT: [0, 2, 5, 12]`;
+
+            const requestBody = {
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                contents: [{ role: "user", parts: [{ text: JSON.stringify(batchData.map((c, idx) => ({ id: idx, text: c["Yorum Metni"] }))) }] }],
+                generationConfig: { temperature: 0.0, responseMimeType: "application/json" },
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                ]
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${apiKey}`, {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) throw new Error(`Radar HTTP Error: ${response.status}`);
+            decreaseRPD(selectedModel);
+
+            const data = await response.json();
+            if (!data.candidates || data.candidates.length === 0) return [];
+
+            let rawText = data.candidates[0].content.parts[0].text;
+            rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+            try {
+                const ids = JSON.parse(rawText);
+                return Array.isArray(ids) ? ids : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // =========================================================================
+        // YAPAY ZEKA AŞAMA 2: CERRAH (DERİN ANALİZ VE EXCEL FORMATLAMA YAPAN FONKSİYON)
+        // Görevi: Radarın seçtiği o az sayıdaki değerli yorumu alıp 11 kritere göre özetlemek.
+        // Çözüm: Modele tarih ve yazar bilgisi sorulmaz (Ayrıca Token tasarrufu sağlar). Sadece "id" numarası gönderilir ve JavaScript hafızasındaki orijinal, hatasız verilerle eşleştirilir.
+        // =========================================================================
+        async function cerrahIstekAt(batchData, apiKey, userPrompt, templateType) {
+            // Seçilen modeli kontrol ediyoruz
+            const selectedModel = document.getElementById('aiModelSelect').value;
+            if (getDailyRPD(selectedModel) <= 0) throw new Error("RPD_LIMIT");
+
+            let asilSorgu = "";
+            let keysFormat = "";
+            let fewShotExample = "";
+
+            if (templateType === "default") {
+                const defaultCriteria = `
+* 1) Conversion/Reversion & Intent (Highest Priority): Individuals stating they have converted to Islam, are currently in the process of converting, expressing a strong desire to convert, or strongly identifying with the reversion journey.
+* 2) Critical Life Decisions: Viewers stating the video prevented them from suicide, saved their marriage, or helped them quit a severe addiction.
+* 3) Religious Practice (The First Step): Those who started praying (Salah) for the first time, returned to prayer after a long break, or integrated a new Islamic practice into their lives.
+* 4) Unexpected Locations: Extreme cases of viewers watching from remote or unexpected parts of the world (e.g., a small village in Iceland).
+* 5) Profound Emotional Impact: Users reporting intense emotional reactions, specifically mentions of weeping or shedding tears.
+* 6) Overcoming Barriers: Viewers with disabilities (hearing/visual impairment) or those struggling with a language barrier who managed to connect spiritually through subtitles or effort.
+* 7) Respect from the "Other": Non-Muslims admitting their perspective has changed, their prejudices are broken, or their views on Islam have softened.
+* 8) Finding Answers and Resolving Doubts: Viewers clearly stating things like, "Thanks to you, I've found the answer to a question I've been searching for years," OR "There was something about Islam that never quite made sense to me and didn't seem logical before, but thanks to this video, I've finally learned the truth and my doubts have been dispelled."
+* 9) Renewed Faith (Iman): Muslims stating their faith was revitalized, strengthened, or "refreshed" specifically through this content.
+* 10) Repentance (Tawbah): Individuals detailing a life transformation after encountering the channel, explicitly mentioning turning away from major sins or bad habits (e.g., alcohol, violence, fornication, slander, or unethical lifestyles) and seeking forgiveness/improvement.
+* 11) Theological Doubts & Sincere Inquiries: Before extracting any comment, you must evaluate the user's intent. Does this person genuinely want an answer, or are they just making a sarcastic, rhetorical statement to mock Islam? If the tone is purely arrogant, cynical, or mocking with no room for a counter-argument, DISCARD IT. The user must exhibit a tone of curiosity, confusion, internal struggle, or a misguided but sincere search for truth. The goal is to identify those who are open to rational evidence and inclusive guidance.
+            `;
+
+                asilSorgu = `Identify only the rare and significant comments that meet at least one of the following 11 Specific Criteria: \n${defaultCriteria} \n\n> CRITICAL RULE: If a comment does not perfectly and explicitly match one of these 11 criteria, you MUST discard it. Do not force irrelevant comments into the output. If it fits multiple criteria, assign it to strictly ONE dominant category.`;
+
+                keysFormat = `- "id": (Exact integer 'id' from the input)
+- "category": Do not write the criteria number. Instead, output strictly one of the following Turkish category names: "1) İhtida (İslam'a Yöneliş)", "2) Hayati Önem Taşıyan Kararlar", "3) Amel ve İbadete Yöneliş", "4) Beklenmedik Konumlar", "5) Derin Duygusal Etkiler", "6) Dil ve Fiziksel Engelleri Aşmak", "7) Karşıt Görüşün Saygısı", "8) Cevapları Bulmak ve Şüpheleri Gidermek", "9) Tecdid-i İman (İmanın Tazelenmesi)", "10) Tevbe ve İstiğfar", "11) Teolojik Şüpheler ve Samimi Sorgulamalar"
+- "language": (State the language the original comment was predominantly written in, translated to Turkish. e.g., "İngilizce", "Arapça", "Rusça")
+- "summary": (Write a flawless, comprehensive summary in Turkish that perfectly captures 100% of the content. CRITICAL RULE: The summary MUST be written in the FIRST-PERSON perspective ("Me" language), acting as if YOU are the commenter speaking.)`;
+
+                fewShotExample = `[ { "id": 0, "category": "10) Tevbe ve İstiğfar", "language": "İngilizce", "summary": "Bu videoyu izledikten sonra hayatımdaki alkol gibi kötü alışkanlıkları tamamen bırakmaya karar verdim." } ]`;
+            }
+            else if (templateType === "sincere_doubts") {
+                asilSorgu = `The objective is to filter through the noise and extract comments from viewers who have unresolved doubts, misconceptions, or differing theological views. \n\n> CRITICAL RULE (The "Sincerity" Check): Evaluate the user's intent. Does this person genuinely want an answer, or are they just making a sarcastic, rhetorical statement to mock Islam? If the tone is purely arrogant, cynical, or mocking with no room for a counter-argument, DISCARD IT. The user must exhibit a tone of curiosity, confusion, internal struggle, or a misguided but sincere search for truth.`;
+
+                keysFormat = `- "id": (Exact integer 'id' from the input)
+- "urgency": (Categorize the urgency of responding using ONLY one of these: "ACİL" for existential crises or severe loss of faith; "YÜKSEK" for aggressive but sincere philosophical/theological doubts; "ORTA" for general misconceptions or basic knowledge gaps.)
+- "language": (State the language the original comment was predominantly written in, translated to Turkish. e.g., "İngilizce", "Arapça")
+- "summary": (Write a flawless summary in Turkish capturing the core doubts and flawed arguments. CRITICAL RULE: Write in the FIRST-PERSON perspective ("Me" language), acting as if YOU are the commenter speaking.)
+- "advice": (Write a concise, 1-sentence strategic advice in Turkish. Suggest how to approach this user and what logical angles to use to resolve their doubt.)`;
+
+                fewShotExample = `[ { "id": 0, "urgency": "YÜKSEK", "language": "İngilizce", "summary": "Allah her şeyi biliyorsa neden bizi imtihan ediyor, bunu mantığım almıyor.", "advice": "Kader ve özgür irade ilişkisi üzerinden, imtihanın Allah'ın bilmesi için değil, kulun kendi ameline şahit olması için yapıldığı vurgulanmalı." } ]`;
+            }
+            else {
+                asilSorgu = `Identify comments that strictly match the following USER CRITERIA: "${userPrompt}"`;
+
+                keysFormat = `- "id": (Exact integer 'id' from the input)
+- "language": (State the language the original comment was predominantly written in, translated to Turkish.)
+- "summary": (Write a flawless summary in Turkish in the FIRST-PERSON perspective ("Me" language).)`;
+
+                fewShotExample = `[ { "id": 0, "language": "İngilizce", "summary": "Prompta uygun olarak kendi hikayemi anlatıyorum..." } ]`;
+            }
+
+
+            const systemPrompt = `Role: Act as a silent, high-precision data processing engine designed for multi-lingual sentiment and theological text analysis. You are an autonomous analytical tool. You must not engage in human-like dialogue, greetings, or conversational filler. Your sole existence is to process the provided JSON array of YouTube comments and output a structured JSON array.
+
+Operational Context: The input consists of a JSON array containing YouTube comments in various languages. Your mission is to filter through this noise and extract only high-value qualitative data.
+
+Tasks:
+1. Selective Filtering: ${asilSorgu}
+
+2. Output Format: You MUST return ONLY a valid JSON array of objects. Do NOT output a Markdown table. Each object must use STRICTLY ENGLISH KEYS exactly as follows:
+${keysFormat}
+
+CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
+1. THOUGHT ISOLATION: You must analyze the data using your internal reasoning. Keep your processing strictly hidden.
+2. STRICT JSON FORMAT: Your visible response must be ONLY a raw JSON array. If no comments match, return: []
+3. ABSOLUTE FILTERING: If a comment does not perfectly fit the criteria, DISCARD IT. Do not force irrelevant comments into the array.
+4. FEW-SHOT EXAMPLE (Follow this exact schema): ${fewShotExample}`;
+
+            const requestBody = {
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                // Sadece id ve yorum metni gönderiliyor, tarih ve kullanıcı adı sistemin hafızasında kalıyor
+                contents: [{ role: "user", parts: [{ text: JSON.stringify(batchData.map((c, idx) => ({ id: idx, text: c["Yorum Metni"] }))) }] }],
+                generationConfig: { temperature: 0.0, responseMimeType: "application/json" },
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                ]
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${apiKey}`, {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) throw new Error(`Cerrah HTTP Error: ${response.status}`);
+
+            // İstek başarılıysa kotadan 1 düş
+            decreaseRPD(selectedModel);
+
+            const data = await response.json();
+            if (!data.candidates || data.candidates.length === 0) return [];
+
+            let rawText = data.candidates[0].content.parts[0].text;
+            rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+            // Modelden dönen id'yi, elimizdeki kusursuz verilerle birleştiriyoruz
+            // --- YARDIMCI FONKSİYON: Ücretsiz Google Translate API ---
+            async function googleCeviriYap(metin) {
+                if (!metin || metin.trim() === "") return "";
+                try {
+                    // Google'ın ücretsiz eklenti uç noktasını (gtx) kullanarak çeviri yapıyoruz
+                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=tr&dt=t&q=${encodeURIComponent(metin)}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    // Gelen parçalı çevirileri birleştirir
+                    return data[0].map(item => item[0]).join("");
+                } catch (error) {
+                    console.error("Çeviri Hatası:", error);
+                    return ""; // Hata durumunda boş bırakmak yerine orijinal metni yazar
+                }
+            }
+
+            try {
+                const parsedArray = JSON.parse(rawText);
+                let mappedArray = [];
+
+                // Çeviriyi bekleyebilmek için forEach yerine asenkron for...of döngüsü kullanıyoruz
+                for (const item of parsedArray) {
+                    const originalComment = batchData[item.id];
+                    if (originalComment) {
+                        const orjMetin = originalComment["Yorum Metni"] || "";
+
+                        // Orijinal yorumu Google Translate'e gönderip çevirisini alıyoruz
+                        const cevirilmisMetin = await googleCeviriYap(orjMetin);
+
+                        // ŞABLON TÜRÜNE GÖRE DİNAMİK EXCEL SÜTUNLARI (SIRALAMAYI KORUYARAK)
+                        let rowObj = {
+                            "Yorum Tarihi": originalComment["Yorum Tarihi"] || "",
+                            "Yorum Sahibi": originalComment["Yorum Sahibi"] || ""
+                        };
+
+                        if (templateType === "default") {
+                            rowObj["Kategori"] = item.category || "";
+                        } else if (templateType === "sincere_doubts") {
+                            rowObj["Önem Derecesi"] = item.urgency || "";
+                        }
+
+                        rowObj["Yorum Dili"] = item.language || "";
+                        rowObj["Orijinal Yorum"] = orjMetin;
+                        rowObj["Yorum Özeti"] = item.summary || "";
+                        rowObj["Orijinal Yorum - Türkçe Çeviri"] = cevirilmisMetin;
+
+                        if (templateType === "sincere_doubts") {
+                            rowObj["Cevap Hazırlama Önerisi"] = item.advice || "";
+                        }
+
+                        mappedArray.push(rowObj);
+
+                        // Google Translate API'den ban yememek için iki çeviri arasına mikro bir dinlenme ekliyoruz
+                        await bekle(150);
+                    }
+                }
+                return mappedArray;
+            } catch (e) { return []; }
+        }
+
+        // =========================================================================
+        // YAPAY ZEKA OTONOM YÖNETİCİSİ (Aşama 0, Aşama 1 ve Aşama 2'yi sırasıyla çalıştırır)
+        // =========================================================================
+        async function yapayZekaMotorunuCalistir(commentsArray, apiKey, promptText, isDefault, progressText, progressBar) {
+
+            // AŞAMA 0: MUAZZAM ZAMAN TASARRUFU SAĞLAYAN JAVASCRIPT ÖN FİLTRESİ
+            // Yapay zekaya gitmeden önce on binlerce yorum tarayıcı RAM'inde sıfır maliyetle temizlenir
+            progressText.innerText = `🤖 Aşama 0: JavaScript Hızlı Ön Filtreleme (Gürültüler Temizleniyor)...`;
+            await bekle(1000); // Kullanıcının ekranda yazıyı görebilmesi için çok kısa bir bekleme
+
+            const jsFiltredenGecenler = commentsArray.filter(c => {
+                const text = c["Yorum Metni"].toLowerCase();
+                // Yorumdaki metni boşluklara göre ayırıp kaç kelime olduğunu hesaplarız
+                const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
+
+                // 1. İSTİSNA KONTROLÜ: İhtida veya İslam'ı seçme ile ilgili bir kelime geçiyorsa kısa da olsa KESİNLİKLE SAKLA.
+                const ihtidaRegex = /(converted|reverted|muslim now|shahada|islam'ı seçtim|müslüman oldum|kelime-i şehadet|şehadet getirdim|I became a Muslim|I will become a Muslim|I accept Islam|أصبحت مسلماً|سأصبح مسلماً|أقبل الإسلام|Me convertí al islam|Me convertiré al islam|Acepto el islam|Je suis devenu musulman|Je deviendrai musulman|J'accepte l'islam|Ich bin Muslim geworden|Ich werde Muslim werden|Ich nehme den Islam an|Eu me tornei muçulmano|Eu me tornarei muçulmano|Eu aceito o Islã|Я стал мусульманином|Я стану мусульманином|Я принимаю islam|我成为了穆斯林|我将成为穆斯林|我接受伊斯兰教|ムスリムになりました|ムスリムになります|イスラム教を受け入れます|मुस्लिम बन गया हूँ|मैं मुस्लिम बनूँगा|मैं इस्लाम स्वीकार करता हूँ|আমি মুসলিম হয়েছি|আমি মুসলিম হব|আমি islam গ্রহণ করছি|Saya menjadi muslim|Saya akan menjadi muslim|Saya menerima Islam|Müzlim boldum|Müzlim bolaman|Islomni qabul qilaman|Müslüman boldum|Müslüman bolom|Islamdı kabıl alam|Men musulman boldym|Men musulman bolamyn|Islamdy qabıldaimyn|Ja postao sam musliman|Ja ću postati musliman|Prihvatam islam|Sono diventato musulmano|Diventerò musulmano|Accetto l'islam|Ik ben moslim geworden|Ik zal moslim worden|Ik accepteer de islam|Zostałem muzułmaninem|Zostanę muzułmaninem|Przyjmuję islam|Naging Muslim ako|Magiging Muslim ako|Tinatanggap ko ang Islam|Men musulman boldum|Men musulman bolaryn|Yslamy kabul edýärin|أشهد|أسلمت)/i;
+                if (ihtidaRegex.test(text)) return true;
+
+                // 2. KURAL: 4 kelimeden kısaysa (ve ihtida içermiyorsa) kesinlikle ÇÖPE AT
+                if (wordCount < 4) return false;
+
+                // 3. KURAL: Uzun olsa bile sadece emoji veya klasik övgülerden (spam) oluşuyorsa ÇÖPE AT
+                const spamRegex = /^(mashallah|maşallah|subhanallah|alhamdulillah|allahu akbar|good video|thanks|harika|teşekkürler|amin|amen|salaam alaikum|wow|omg|❤️|👍|🔥|\s)+$/i;
+                if (spamRegex.test(text)) return false;
+
+                return true; // Testleri başarıyla geçen kaliteli yorumlar Radar aşamasına hak kazanır
+            });
+
+            // Eğer ön filtreden hiç yorum geçemediyse sistemi boşuna yormadan işlemi bitir
+            if (jsFiltredenGecenler.length === 0) return [];
+
+            // AŞAMA 1: RADAR (Hızlı Tarama - 100 Yorumluk Paketler)
+            // Ön filtreden geçenler Flash-Lite modeline 100'er 100'er yedirilir
+            const radarBatchSize = 100;
+            let filtrelenmisYorumlar = [];
+            progressBar.max = jsFiltredenGecenler.length;
+
+            // EKSİK OLAN SATIR EKLENDİ: Toplam radar paket sayısını matematiksel olarak hesaplıyoruz
+            const totalRadarBatches = Math.ceil(jsFiltredenGecenler.length / radarBatchSize);
+
+            for (let i = 0; i < jsFiltredenGecenler.length; i += radarBatchSize) {
+                if (isCancelled) return null; // İşlem iptal edildiyse anında durdur
+                const batch = jsFiltredenGecenler.slice(i, i + radarBatchSize);
+
+                // Canlı İstatistik ve Tahmini Süre Hesaplamaları (Her paket ort. 8 saniye)
+                let currentRadarBatch = Math.floor(i / radarBatchSize) + 1;
+                let kalanYorumRadar = jsFiltredenGecenler.length - i;
+                let tahminiSaniyeRadar = (totalRadarBatches - currentRadarBatch) * 8;
+                let dkRadar = Math.floor(tahminiSaniyeRadar / 60);
+                let snRadar = tahminiSaniyeRadar % 60;
+                let sureMetniRadar = tahminiSaniyeRadar > 0 ? (dkRadar > 0 ? `${dkRadar} dk ${snRadar} sn` : `${snRadar} sn`) : "Tamamlanıyor...";
+
+                progressText.innerText = `🤖 Aşama 1/2: Hızlı Ön Eleme ve Temizlik (Paket: ${currentRadarBatch}/${totalRadarBatches} - Kalan Yorum: ${kalanYorumRadar})\n⏳ Tahmini Kalan Süre: ${sureMetniRadar}`;
+                progressBar.value = i;
+
+                let basarili = false; let deneme = 0;
+                // Olası bir API kopmasında 3 kere yeniden deneme şansı (Retry Zırhı)
+                while (!basarili && deneme < 3) {
+                    if (isCancelled) return null;
+                    try {
+                        const secilenIdler = await radarIstekAt(batch, apiKey, promptText, isDefault);
+                        // Radarın bize döndürdüğü ID numaralarını asıl diziden bulup filtrelenmisYorumlar havuzuna atıyoruz
+                        secilenIdler.forEach(id => {
+                            if (batch[id]) filtrelenmisYorumlar.push(batch[id]);
+                        });
+                        basarili = true;
+                    } catch (error) {
+                        // Eğer RPD Hatası atılmışsa tüm süreci tamamen iptal edip uyarıyoruz
+                        if (error.message === "RPD_LIMIT") {
+                            alert(`Seçtiğiniz Gemini modeli için günlük ücretsiz istek limiti dolmuştur. Lütfen farklı bir model seçin veya yarına kadar bekleyin.`);
+                            isCancelled = true;
+                            return null;
+                        }
+
+                        deneme++;
+                        if (deneme >= 3) console.error("Radar başarısız, atlanıyor.");
+                        else {
+                            progressText.innerText = `⚠️ Ön Eleme Hatası (${deneme}/3). 5sn bekleniyor...`;
+                            await bekle(5000);
+                        }
+                    }
+                }
+
+                // RPD limitlerini aşmamak için her 100'lük paketten sonra zorunlu bekleme (4.5 sn)
+                if (i + radarBatchSize < jsFiltredenGecenler.length) await bekle(4500);
+            }
+
+            // Radar hiçbir şey bulamadıysa boş dön
+            if (filtrelenmisYorumlar.length === 0) return [];
+
+            // AŞAMA 2: CERRAH (Detaylı Analiz ve Özetleme - 20 Yorumluk Paketler)
+            // Sadece Radardan sağ kurtulan çok değerli yorumlar 20'şerli lokmalarla işlenir
+            const cerrahBatchSize = 20;
+            let nihaiExcelVerisi = [];
+            progressBar.max = filtrelenmisYorumlar.length;
+
+            // EKSİK OLAN SATIR EKLENDİ: Cerrah için toplam paket sayısını hesaplıyoruz
+            const totalCerrahBatches = Math.ceil(filtrelenmisYorumlar.length / cerrahBatchSize);
+
+            for (let i = 0; i < filtrelenmisYorumlar.length; i += cerrahBatchSize) {
+                if (isCancelled) return null;
+                const batch = filtrelenmisYorumlar.slice(i, i + cerrahBatchSize);
+
+                // Canlı İstatistik ve Tahmini Süre Hesaplamaları
+                let currentCerrahBatch = Math.floor(i / cerrahBatchSize) + 1;
+                let kalanYorumCerrah = filtrelenmisYorumlar.length - i;
+                let tahminiSaniyeCerrah = (totalCerrahBatches - currentCerrahBatch) * 8;
+                let dkCerrah = Math.floor(tahminiSaniyeCerrah / 60);
+                let snCerrah = tahminiSaniyeCerrah % 60;
+                let sureMetniCerrah = tahminiSaniyeCerrah > 0 ? (dkCerrah > 0 ? `${dkCerrah} dk ${snCerrah} sn` : `${snCerrah} sn`) : "Tamamlanıyor...";
+
+                progressText.innerText = `🧠 Aşama 2/2: Yapay Zeka Derin Analizi (Paket: ${currentCerrahBatch}/${totalCerrahBatches} - Kalan Yorum: ${kalanYorumCerrah})\n⏳ Tahmini Kalan Süre: ${sureMetniCerrah}`;
+                progressBar.value = i;
+
+                let basarili = false; let deneme = 0;
+                while (!basarili && deneme < 3) {
+                    if (isCancelled) return null;
+                    try {
+                        const detayliPaket = await cerrahIstekAt(batch, apiKey, promptText, isDefault);
+                        if (detayliPaket && detayliPaket.length > 0) {
+                            // Cerrahın oluşturduğu katı JSON yapısını nihai havuza ekliyoruz
+                            nihaiExcelVerisi.push(...detayliPaket);
+                        }
+                        basarili = true;
+                    } catch (error) {
+                        // Eğer RPD Hatası atılmışsa tüm süreci tamamen iptal edip uyarıyoruz
+                        if (error.message === "RPD_LIMIT") {
+                            alert(`Seçtiğiniz Gemini modeli için günlük ücretsiz istek limiti dolmuştur. Lütfen farklı bir model seçin veya yarına kadar bekleyin.`);
+                            isCancelled = true;
+                            return null;
+                        }
+
+                        deneme++;
+                        if (deneme >= 3) console.error("Cerrah başarısız, atlanıyor.");
+                        else {
+                            progressText.innerText = `⚠️ Derin Analiz Hatası (${deneme}/3). 5sn bekleniyor...`;
+                            await bekle(5000);
+                        }
+                    }
+                }
+
+                if (i + cerrahBatchSize < filtrelenmisYorumlar.length) await bekle(4500);
+            }
+
+            // Oluşan tablo verisini (JSON) Excel'e basılması için ana fonksiyona geri yolluyoruz
+            return nihaiExcelVerisi;
+        }
+
+        // =========================================================================
+        // ANA İŞLETİCİ: TÜM İNDİRME VE ANALİZ SÜRECİNİ YÖNETEN FONKSİYON
+        // =========================================================================
         window.yorumMotorunuCalistir = async (videoId, btnElement = null) => {
             if (btnElement) btnElement.disabled = true;
             isCancelled = false;
-            
+
+            // Kullanıcı arayüzünden seçilen ayarları alıyoruz
+            const isAI = document.getElementById('aiAnalysisCheck').checked;
             const includeReplies = document.getElementById('includeReplies').checked;
             const flattenReplies = document.getElementById('flattenReplies').checked;
             const exportFormat = document.getElementById('exportFormat').value;
-            
+
             const minLikesInput = document.getElementById('minLikes').value.trim();
             const minLikesFilter = minLikesInput === "" ? 0 : parseInt(minLikesInput, 10);
-            
+
+            const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
+            const aiTemplateSelect = document.getElementById('aiTemplateSelect').value;
+            const aiTemplateText = document.getElementById('aiTemplateText').value.trim();
+
+            // AI seçiliyse gerekli alanların doldurulduğunu kontrol ediyoruz
+            if (isAI) {
+                if (!geminiApiKey) {
+                    alert("Yapay zeka analizi için lütfen API anahtarınızı doğrulayın.");
+                    if (btnElement) btnElement.disabled = false;
+                    return;
+                }
+                if (aiTemplateSelect === "new" && !aiTemplateText) {
+                    alert("Lütfen özel şablon için kutucuğa bir komut (prompt) yazın.");
+                    if (btnElement) btnElement.disabled = false;
+                    return;
+                }
+            }
+
+            // UI hazırlıkları (İlerleme çubuğunu görünür yap vb.)
             const progressContainer = document.getElementById('progressContainer');
             const progressText = document.getElementById('progressText');
             const progressBar = document.getElementById('downloadProgress');
             const cancelBtn = document.getElementById('cancelBtn');
-            
+
             progressContainer.style.display = 'block';
             cancelBtn.innerText = "🛑 İşlemi İptal Et ve Veriyi İndir";
             cancelBtn.disabled = false;
@@ -390,30 +1509,33 @@
 
             let excelData = [];
             let txtLines = [];
+            let rawCommentsForAI = []; // Yapay zekaya gönderilecek saf yorumlar havuzu
             let nextPageToken = '';
-            
-            let fetchedCount = 0; 
-            let processedCount = 0; 
+
+            let fetchedCount = 0;
+            let processedCount = 0;
             let targetCommentCount = 0;
 
             try {
+                // Önce videonun toplam yorum sayısını öğrenmek için YouTube API'ye istek atıyoruz
                 const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${API_KEY}`);
                 const statsData = await statsRes.json();
-                
-                if(statsData.items && statsData.items.length > 0) {
+
+                if (statsData.items && statsData.items.length > 0) {
                     targetCommentCount = parseInt(statsData.items[0].statistics.commentCount) || 0;
                 }
-                
+
                 progressBar.max = targetCommentCount > 0 ? targetCommentCount : 100;
-                progressText.innerText = `0 / ${targetCommentCount} yorum tarandı...`;
+                progressText.innerText = `YouTube'dan Yorumlar Çekiliyor... (0 / ${targetCommentCount})`;
 
                 const baseUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${API_KEY}&maxResults=100&textFormat=plainText`;
 
+                // Tüm yorumları sayfa sayfa (100'er 100'er) çekme döngüsü
                 do {
                     const response = await fetch(nextPageToken ? `${baseUrl}&pageToken=${nextPageToken}` : baseUrl);
                     const data = await response.json();
-                    
-                    if(response.status === 400 || response.status === 403) {
+
+                    if (response.status === 400 || response.status === 403) {
                         throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz Anahtar!");
                     }
                     if (data.error) {
@@ -425,11 +1547,12 @@
                         for (const item of data.items) {
                             const snippet = item.snippet.topLevelComment.snippet;
                             const likes = snippet.likeCount || 0;
-                            
+
+                            // Beğeni sayısı filtreden düşükse bu yorumu tamamen es geç
                             if (likes < minLikesFilter) {
                                 processedCount += 1 + item.snippet.totalReplyCount;
                                 progressBar.value = processedCount;
-                                progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (İndirilen: ${fetchedCount})`;
+                                progressText.innerText = `Yorumlar Çekiliyor... ${processedCount} / ${targetCommentCount}`;
                                 continue;
                             }
 
@@ -442,111 +1565,132 @@
                             processedCount++;
                             fetchedCount++;
 
-                            if (exportFormat === 'xlsx') {
-                                let row = {
-                                    "Yorum Tarihi ve Saati": `${dateStr} ${timeStr}`,
-                                    "Kullanıcı Adı": `${author}`,
-                                    "Beğeni Sayısı": likes,
-                                    "Orijinal Yorum": cleanedText,
-                                    "Alt Yanıtlar": ""
-                                };
+                            // EĞER YAPAY ZEKA SEÇİLİYSE
+                            if (isAI) {
+                                // Yorumları klasöre yazmak yerine ham halleriyle AI dizisine itiyoruz
+                                rawCommentsForAI.push({ "Yorum Tarihi": `${dateStr} ${timeStr}`, "Yorum Sahibi": author, "Beğeni Sayısı": likes, "Yorum Metni": cleanedText });
 
-                                if (flattenReplies) {
-                                     // Flatten Modu: Ana yorumu ekliyoruz, alt yanıtları da ayrı satırlar olarak ekliyoruz
-                                     excelData.push(row);
-                                     
-                                     if (includeReplies && item.snippet.totalReplyCount > 0) {
-                                         if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
-                                             [...item.replies.comments].reverse().forEach(c => {
-                                                const rs = c.snippet;
-                                                const d = new Date(rs.publishedAt);
-                                                const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                                                const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                                const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
-                                                
-                                                excelData.push({
-                                                    "Yorum Tarihi ve Saati": `${ds} ${ts}`,
-                                                    "Kullanıcı Adı": `${rs.authorDisplayName}`,
-                                                    "Beğeni Sayısı": rs.likeCount || 0,
-                                                    "Orijinal Yorum": rCleanedText,
-                                                    "Alt Yanıtlar": ""
-                                                });
-                                            });
-                                            processedCount += item.replies.comments.length;
-                                            fetchedCount += item.replies.comments.length;
-                                         } else {
-                                             progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
-                                             const flatReplies = await fetchAllReplies(item.id, 'xlsx', true);
-                                             excelData.push(...flatReplies);
-                                             processedCount += item.snippet.totalReplyCount; 
-                                             fetchedCount += item.snippet.totalReplyCount;
-                                         }
-                                     }
-                                } else {
-                                    // Hiyerarşik Mod (Klasik): Alt yanıtları ana yorumun hücresine ekliyoruz
-                                    if (includeReplies && item.snippet.totalReplyCount > 0) {
-                                        if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
-                                            let localReplies = [];
-                                            [...item.replies.comments].reverse().forEach(c => {
-                                                const rs = c.snippet;
-                                                const d = new Date(rs.publishedAt);
-                                                const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                                                const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                                localReplies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
-                                            });
-                                            row["Alt Yanıtlar"] = localReplies.join("\n");
-                                            processedCount += localReplies.length;
-                                            fetchedCount += localReplies.length;
-                                        } else {
-                                            progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
-                                            row["Alt Yanıtlar"] = await fetchAllReplies(item.id, 'xlsx', false);
-                                            processedCount += item.snippet.totalReplyCount; 
-                                            fetchedCount += item.snippet.totalReplyCount;
-                                        }
-                                    }
-                                    excelData.push(row);
-                                }
-                                
-                            } else {
-                                // TXT FORMATI
-                                txtLines.push(`(${dateStr} - ${timeStr}) - [👍 ${likes} Beğeni] - ${author} : ${cleanedText}`);
-
+                                // Alt yanıtlar da seçilmişse onları da tek satır olarak (flatten) AI dizisine itiyoruz
                                 if (includeReplies && item.snippet.totalReplyCount > 0) {
                                     if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
                                         [...item.replies.comments].reverse().forEach(c => {
                                             const rs = c.snippet;
-                                            const d = new Date(rs.publishedAt);
-                                            const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                                            const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                                            const rLikes = rs.likeCount || 0;
-                                            const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
-                                            
-                                            if (flattenReplies) {
-                                                txtLines.push(`(${ds} - ${ts}) - [👍 ${rLikes} Beğeni] - ${rs.authorDisplayName} : ${rCleanedText}`);
-                                            } else {
-                                                txtLines.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rCleanedText}`);
-                                            }
+                                            const ds = new Date(rs.publishedAt).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                            const ts = new Date(rs.publishedAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                            rawCommentsForAI.push({ "Yorum Tarihi": `${ds} ${ts}`, "Yorum Sahibi": rs.authorDisplayName, "Beğeni Sayısı": rs.likeCount || 0, "Yorum Metni": rs.textDisplay.replace(/\n/g, ' ') });
                                         });
                                         processedCount += item.replies.comments.length;
                                         fetchedCount += item.replies.comments.length;
                                     } else {
-                                        progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (Alt yanıtlar çekiliyor)`;
-                                        const rawTxtReplies = await fetchAllReplies(item.id, 'txt', flattenReplies);
-                                        if (flattenReplies) {
-                                            txtLines.push(...rawTxtReplies);
-                                        } else {
-                                            if(rawTxtReplies.length > 0) {
-                                                txtLines.push(rawTxtReplies);
-                                            }
-                                        }
+                                        const flatReplies = await fetchAllReplies(item.id, 'xlsx', true);
+                                        flatReplies.forEach(r => rawCommentsForAI.push({ "Yorum Tarihi": r["Yorum Tarihi"], "Yorum Sahibi": r["Kullanıcı Adı"], "Beğeni Sayısı": r["Beğeni Sayısı"], "Yorum Metni": r["Orijinal Yorum"] }));
                                         processedCount += item.snippet.totalReplyCount;
                                         fetchedCount += item.snippet.totalReplyCount;
                                     }
                                 }
                             }
-                            
+                            // YAPAY ZEKA KAPALIYSA (NORMAL İNDİRME MANTIĞI)
+                            else {
+                                if (exportFormat === 'xlsx') {
+                                    let row = {
+                                        "Yorum Tarihi": `${dateStr} ${timeStr}`,
+                                        "Kullanıcı Adı": `${author}`,
+                                        "Beğeni Sayısı": likes,
+                                        "Orijinal Yorum": cleanedText,
+                                        "Alt Yanıtlar": ""
+                                    };
+
+                                    if (flattenReplies) {
+                                        excelData.push(row);
+
+                                        if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                            if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                                [...item.replies.comments].reverse().forEach(c => {
+                                                    const rs = c.snippet;
+                                                    const d = new Date(rs.publishedAt);
+                                                    const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                    const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                                    const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
+
+                                                    excelData.push({
+                                                        "Yorum Tarihi": `${ds} ${ts}`,
+                                                        "Kullanıcı Adı": `${rs.authorDisplayName}`,
+                                                        "Beğeni Sayısı": rs.likeCount || 0,
+                                                        "Orijinal Yorum": rCleanedText,
+                                                        "Alt Yanıtlar": ""
+                                                    });
+                                                });
+                                                processedCount += item.replies.comments.length;
+                                                fetchedCount += item.replies.comments.length;
+                                            } else {
+                                                const flatReplies = await fetchAllReplies(item.id, 'xlsx', true);
+                                                excelData.push(...flatReplies);
+                                                processedCount += item.snippet.totalReplyCount;
+                                                fetchedCount += item.snippet.totalReplyCount;
+                                            }
+                                        }
+                                    } else {
+                                        if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                            if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                                let localReplies = [];
+                                                [...item.replies.comments].reverse().forEach(c => {
+                                                    const rs = c.snippet;
+                                                    const d = new Date(rs.publishedAt);
+                                                    const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                    const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                                    localReplies.push(`(${ds} ${ts}) - ${rs.authorDisplayName} : ${rs.textDisplay.replace(/\n/g, ' ')}`);
+                                                });
+                                                row["Alt Yanıtlar"] = localReplies.join("\n");
+                                                processedCount += localReplies.length;
+                                                fetchedCount += localReplies.length;
+                                            } else {
+                                                row["Alt Yanıtlar"] = await fetchAllReplies(item.id, 'xlsx', false);
+                                                processedCount += item.snippet.totalReplyCount;
+                                                fetchedCount += item.snippet.totalReplyCount;
+                                            }
+                                        }
+                                        excelData.push(row);
+                                    }
+
+                                } else {
+                                    txtLines.push(`(${dateStr} - ${timeStr}) - [👍 ${likes} Beğeni] - ${author} : ${cleanedText}`);
+
+                                    if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                        if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                            [...item.replies.comments].reverse().forEach(c => {
+                                                const rs = c.snippet;
+                                                const d = new Date(rs.publishedAt);
+                                                const ds = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                const ts = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                                                const rLikes = rs.likeCount || 0;
+                                                const rCleanedText = rs.textDisplay.replace(/\n/g, ' ');
+
+                                                if (flattenReplies) {
+                                                    txtLines.push(`(${ds} - ${ts}) - [👍 ${rLikes} Beğeni] - ${rs.authorDisplayName} : ${rCleanedText}`);
+                                                } else {
+                                                    txtLines.push(`    ---> (${ds} - ${ts}) - ${rs.authorDisplayName} : ${rCleanedText}`);
+                                                }
+                                            });
+                                            processedCount += item.replies.comments.length;
+                                            fetchedCount += item.replies.comments.length;
+                                        } else {
+                                            const rawTxtReplies = await fetchAllReplies(item.id, 'txt', flattenReplies);
+                                            if (flattenReplies) {
+                                                txtLines.push(...rawTxtReplies);
+                                            } else {
+                                                if (rawTxtReplies.length > 0) {
+                                                    txtLines.push(rawTxtReplies);
+                                                }
+                                            }
+                                            processedCount += item.snippet.totalReplyCount;
+                                            fetchedCount += item.snippet.totalReplyCount;
+                                        }
+                                    }
+                                }
+                            }
+
                             progressBar.value = processedCount;
-                            progressText.innerText = `${processedCount} / ${targetCommentCount} yorum tarandı... (İndirilen: ${fetchedCount})`;
+                            progressText.innerText = `Çekiliyor... ${processedCount} / ${targetCommentCount}`;
 
                             if (isCancelled) break;
                         }
@@ -554,19 +1698,62 @@
                     nextPageToken = data.nextPageToken || null;
                 } while (nextPageToken && !isCancelled);
 
+                // YOUTUBE İNDİRMESİ BİTTİ, YAPAY ZEKA (CASCADE) MOTORU DEVREYE GİRİYOR
+                if (isAI && rawCommentsForAI.length > 0 && !isCancelled) {
+                    // HATA DÜZELTİLDİ: Artık true/false yerine arayüzden seçilen şablonun tam kimliğini (ID) yolluyoruz
+                    const aiResultData = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar);
+
+                    if (aiResultData === null) {
+                        setStatus(`Yapay zeka analizi iptal edildi.`, "#d35400");
+                        progressContainer.style.display = 'none';
+                        if (btnElement) btnElement.disabled = false;
+                        return;
+                    }
+                    // AI analizi başarılıysa, Excel tablosunu AI'nin ürettiği verilerle eziyoruz
+                    excelData = aiResultData;
+                }
+
+                // =========================================================================
+                // MÜKERRER (ÇİFT KOPYA) YORUMLARI TEMİZLEME (DEDUPLICATION)
+                // Modelin aynı yorumu iki kez yazma ihtimaline karşı: Tarih ve Kullanıcı Adı birebir aynı olan yorumlar tespit edilip teke düşürülür.
+                // =========================================================================
+                if (excelData.length > 0) {
+                    const benzersizExcelVerisi = [];
+                    const gorulenYorumlar = new Set();
+
+                    for (const satir of excelData) {
+                        // AI'nin veya normal indirmenin ürettiği anahtar isimlerini kontrol ediyoruz (Tarih ve Yazar)
+                        const tarih = satir["Yorum Tarihi ve Saati"] || satir["Yorum Tarihi"] || "";
+                        const yazar = satir["Yorum Sahibi"] || satir["Kullanıcı Adı"] || "";
+
+                        // İki veriyi birleştirip eşsiz bir kimlik (Örn: "12.05.2026 14:30|@FarukCesur") oluşturuyoruz
+                        const benzersizAnahtar = tarih + "|" + yazar;
+
+                        // Eğer bu kimlik daha önce listeye eklenmemişse ekle (Mükerrerleri siler)
+                        if (!gorulenYorumlar.has(benzersizAnahtar)) {
+                            gorulenYorumlar.add(benzersizAnahtar);
+                            benzersizExcelVerisi.push(satir);
+                        }
+                    }
+                    excelData = benzersizExcelVerisi; // Temizlenmiş listeyi asıl verinin üzerine yazıyoruz
+                }
+
+                // VERİYİ BİLGİSAYARA İNDİRME MANTIĞI
                 if ((exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && txtLines.length === 0)) {
-                    setStatus(`Filtreye uyan veya indirilecek hiçbir yorum bulunamadı.`, "red");
+                    setStatus(`Filtreye (Veya YZ kriterlerine) uyan hiçbir yorum bulunamadı.`, "red");
                     progressContainer.style.display = 'none';
-                    if (btnElement) btnElement.disabled = false; 
+                    if (btnElement) btnElement.disabled = false;
                     return;
                 }
 
                 progressText.innerText = "Dosya hazırlanıyor, lütfen bekleyin...";
 
+
                 if (exportFormat === 'xlsx') {
                     const worksheet = XLSX.utils.json_to_sheet(excelData);
                     const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, "Yorumlar");
+                    // AI seçiliyse Excel sayfa adını "AI_Analiz", değilse "Yorumlar" yapar
+                    XLSX.utils.book_append_sheet(workbook, worksheet, isAI ? "AI_Analiz" : "Yorumlar");
                     XLSX.writeFile(workbook, `Yorumlar_${videoId}.xlsx`);
                 } else {
                     const blob = new Blob([txtLines.join("\n")], { type: "text/plain;charset=utf-8" });
@@ -579,13 +1766,14 @@
                     URL.revokeObjectURL(a.href);
                 }
 
-                let islemDetayi = isCancelled ? "İşlem Durduruldu" : "Başarılı";
+                // Yapılan işlemleri yöneticinin görebilmesi için Firebase log tablosuna yazar
+                let islemDetayi = isCancelled ? "İşlem Durduruldu" : (isAI ? "AI Analizi Yapıldı" : "Başarılı");
                 await islemLogla(videoId, fetchedCount, exportFormat, islemDetayi);
 
-                if(isCancelled) {
-                    setStatus(`İşlem durduruldu! Filtreden geçen ${fetchedCount} yorum başarıyla indirildi.`, "#d35400");
+                if (isCancelled) {
+                    setStatus(`İşlem durduruldu! İşlenen yorumlar başarıyla indirildi.`, "#d35400");
                 } else {
-                    setStatus(`İşlem başarıyla tamamlandı! Filtreden geçen toplam ${fetchedCount} yorum indirildi.`, "green");
+                    setStatus(`İşlem başarıyla tamamlandı! Filtreden geçenler indirildi.`, "green");
                 }
 
             } catch (error) {
@@ -596,6 +1784,7 @@
             }
         };
 
+        // Direkt video linki girildiğinde çalışan tetikleyici fonksiyon
         window.tekilYorumCek = () => {
             const link = document.getElementById('videoLink').value.trim();
             const videoId = extractVideoID(link);
@@ -603,28 +1792,29 @@
             yorumMotorunuCalistir(videoId, document.getElementById('fetchSingleBtn'));
         };
 
+        // Kanal linkinden kanaldaki tüm videoları çeken fonksiyon
         window.kanalSorgulat = async () => {
             const channelLink = document.getElementById('channelLink').value.trim();
             const handle = extractChannelHandle(channelLink);
             if (!handle) return setStatus("Lütfen içinde @ işareti geçen bir kanal linki girin.", "red");
 
-            const btn = document.getElementById('fetchChannelBtn'); 
+            const btn = document.getElementById('fetchChannelBtn');
             btn.disabled = true;
             document.getElementById('videoListContainer').style.display = 'none';
             setStatus("Kanal taranıyor...", "#2980b9");
-            
-            prevPageTokenStack = []; 
-            currentPageToken = ""; 
-            allVideosList = []; 
+
+            prevPageTokenStack = [];
+            currentPageToken = "";
+            allVideosList = [];
             currentLocalPage = 0;
 
             try {
                 const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails,id&forHandle=${handle}&key=${API_KEY}`);
-                if(chRes.status === 400 || chRes.status === 403) throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz Anahtar!");
-                
+                if (chRes.status === 400 || chRes.status === 403) throw new Error("Yönetici API Kotası Dolmuş Veya Geçersiz Anahtar!");
+
                 const chData = await chRes.json();
                 if (!chData.items || chData.items.length === 0) throw new Error("Kanal bulunamadı.");
-                
+
                 currentChannelId = chData.items[0].id;
                 currentUploadsId = chData.items[0].contentDetails.relatedPlaylists.uploads;
                 await videolariGetirVeCiz();
@@ -635,33 +1825,35 @@
             }
         };
 
+        // Kanal videoları listesinde sonraki/önceki sayfaya geçişleri sağlayan fonksiyon
         window.sayfaDegistir = (yon) => {
             const sortOrder = document.getElementById('sortOrder').value;
             if (sortOrder === "oldest") {
                 if (yon === 'next') currentLocalPage++; else if (yon === 'prev') currentLocalPage--;
             } else {
-                if (yon === 'next') { prevPageTokenStack.push(currentPageToken); currentPageToken = nextTokenAvailable; } 
+                if (yon === 'next') { prevPageTokenStack.push(currentPageToken); currentPageToken = nextTokenAvailable; }
                 else if (yon === 'prev') { currentPageToken = prevPageTokenStack.pop(); }
             }
             videolariGetirVeCiz();
         };
 
+        // Kanaldaki videoları sayfaya (DOM) görsel kartlar (Kapak resmi, başlık vb.) halinde çizen fonksiyon
         async function videolariGetirVeCiz() {
             const sortOrder = document.getElementById('sortOrder').value;
             const videoListDOM = document.getElementById('videoList');
             videoListDOM.innerHTML = "<p style='text-align:center;'>Videolar yükleniyor, lütfen bekleyin...</p>";
-            
+
             try {
-                let pageItems = []; 
+                let pageItems = [];
                 let isLocalPagination = false;
-                
+
                 if (sortOrder === "oldest") {
                     isLocalPagination = true;
                     if (allVideosList.length === 0) {
                         setStatus("Kanal arşivi taranıyor, bu işlem kanal büyüklüğüne göre birkaç saniye sürebilir...", "#2980b9");
                         let token = "";
                         do {
-                            const plRes = await fetch(token ? 
+                            const plRes = await fetch(token ?
                                 `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}&pageToken=${token}` :
                                 `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}`);
                             const plData = await plRes.json();
@@ -670,27 +1862,27 @@
                         } while (token);
                         allVideosList.reverse();
                     }
-                    const startIndex = currentLocalPage * 50; 
+                    const startIndex = currentLocalPage * 50;
                     const endIndex = startIndex + 50;
                     pageItems = allVideosList.slice(startIndex, endIndex);
                     if (pageItems.length === 0) throw new Error("Gösterilecek video kalmadı.");
-                    
+
                     document.getElementById('prevBtn').disabled = currentLocalPage === 0;
                     document.getElementById('nextBtn').disabled = endIndex >= allVideosList.length;
                 } else {
                     setStatus("Videolar ve istatistikler çekiliyor...", "#2980b9");
-                    let apiUrl = sortOrder === "date" ? 
+                    let apiUrl = sortOrder === "date" ?
                         `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${currentUploadsId}&key=${API_KEY}` :
                         `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&channelId=${currentChannelId}&order=viewCount&type=video&key=${API_KEY}`;
-                    
+
                     if (currentPageToken) apiUrl += `&pageToken=${currentPageToken}`;
-                    const plRes = await fetch(apiUrl); 
+                    const plRes = await fetch(apiUrl);
                     const plData = await plRes.json();
-                    
+
                     if (!plData.items || plData.items.length === 0) throw new Error("Bu kanalda hiç video yok.");
-                    pageItems = plData.items; 
+                    pageItems = plData.items;
                     nextTokenAvailable = plData.nextPageToken || null;
-                    
+
                     document.getElementById('prevBtn').disabled = prevPageTokenStack.length === 0;
                     document.getElementById('nextBtn').disabled = !nextTokenAvailable;
                 }
@@ -698,8 +1890,8 @@
                 const videoIds = pageItems.map(item => item.snippet.resourceId ? item.snippet.resourceId.videoId : item.id.videoId).join(',');
                 const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`);
                 const statsData = await statsRes.json();
-                
-                const commentsMap = {}; 
+
+                const commentsMap = {};
                 statsData.items.forEach(v => { commentsMap[v.id] = v.statistics.commentCount || 0; });
 
                 videoListDOM.innerHTML = "";
@@ -709,7 +1901,7 @@
                     const thumb = item.snippet.thumbnails?.medium?.url || "https://via.placeholder.com/120x90?text=Resim+Yok";
                     const commentCount = commentsMap[videoId] ? parseInt(commentsMap[videoId]).toLocaleString('tr-TR') : "0";
                     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-                    
+
                     const card = `
                     <div class="video-item" data-title="${title.toLowerCase()}">
                         <a href="${videoUrl}" target="_blank"><img src="${thumb}" class="video-thumb" alt="Kapak"></a>
@@ -721,17 +1913,18 @@
                     </div>`;
                     videoListDOM.insertAdjacentHTML('beforeend', card);
                 });
-                
+
                 document.getElementById('paginationControls').style.display = 'flex';
                 document.getElementById('videoListContainer').style.display = 'block';
                 setStatus(`Videolar başarıyla listelendi!`, "green");
-                
-            } catch (error) { 
-                setStatus(`Hata: ${error.message}`, "red"); 
-                videoListDOM.innerHTML = ""; 
+
+            } catch (error) {
+                setStatus(`Hata: ${error.message}`, "red");
+                videoListDOM.innerHTML = "";
             }
         }
 
+        // Listelenen videolar içinde arama/filtreleme yapılmasını sağlayan yardımcı fonksiyon
         window.videolariFiltrele = () => {
             const input = document.getElementById('searchInput').value.toLowerCase();
             const items = document.querySelectorAll('.video-item');
@@ -742,4 +1935,5 @@
         };
     </script>
 </body>
+
 </html>
