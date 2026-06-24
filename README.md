@@ -2,14 +2,16 @@
   <font size="7" style="color: #2563eb;">Liva AI 🤖</font>
 </h1>
 
-<h3 align="center">
+<h2 align="center">
   <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v5.0</strong>
-</h3>
+</h2>
+
+<h3>Liva AI - Detaylı Kullanım Rehberi</h3>
+
+[Rehber Videosunu İzlemek için Tıkla!](https://youtu.be/EQgztO0zY48)
 
 <hr>
-
-
-Bu proje, YouTube içerik üreticilerinin ve tebliğ ekiplerinin videolara gelen on binlerce yorumu tek tıkla çekip, **otonom yapay zeka mimarisiyle** analiz ettirebilmesi için geliştirilmiş sunucusuz (serverless) bir web uygulamasıdır. 
+Bu proje, YouTube içerik üreticilerinin ve tebliğ ekiplerinin videolara gelen on binlerce yorumu tek tıkla çekip, otonom yapay zeka mimarisiyle analiz ettirebilmesi için geliştirilmiş sunucusuz (serverless) bir web uygulamasıdır. 
 
 Eski sürümlerde veriler yapay zekaya manuel olarak beslenirken; v5.0 ile birlikte sistem kendi içindeki **Gemini AI** motorunu kullanarak yorumları okur, sınıflandırır, özetler ve doğrudan hazır bir Excel tablosu olarak sunar.
 
