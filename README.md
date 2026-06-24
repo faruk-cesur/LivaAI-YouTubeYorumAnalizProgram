@@ -47,11 +47,10 @@ Bu aracı kullanmak için ekstra bir kurulum yapmanıza (Node.js, Python vb.) ge
 * **1.** Google AI Studio üzerinde Gemini API anahtarı (API Key) oluşturuyoruz:
   * Siteye Git: Google AI Studio platformuna [Google AI Studio](https://aistudio.google.com/) bağlantısına tıklayarak doğrudan ulaşabilirsiniz.
   * Giriş Yap: Google hesabınızla oturum açın.
-  * Anahtar Bölümüne Geç: Sol üst menüdeki "Get API key" (API anahtarı al) butonuna tıklayın.
+  * Anahtar Bölümüne Geç: Sol alt menüdeki "Get API key" (API anahtarı al) butonuna tıklayın.
   * Oluşturma Ekranını Aç: Açılan sayfada "Create API key" (API anahtarı oluştur) butonuna basın.
-  * Proje Seç: İsterseniz yeni bir Google Cloud projesi seçin veya var olanı kullanın.
+  * Proje Seç: "Create project" tıklayarak yeni bir proje oluşturun.
   * Anahtarı Kopyala: Ekranda görünen benzersiz API anahtarınızı kopyalayın.
-  * Güvenle Sakla: Bu anahtarı kimseyle paylaşmayın ve güvenli bir yere kaydedin.
 * **2.** Bu bağlantı adresinden web uygulamasını açıyoruz: [YouTube Comment Downloader](https://faruk-cesur.github.io/YouTubeCommentDownloader/)
 * **3.** Firebase güvenliği sayesinde yalnızca yetkilendirilmiş ekip üyesi e-posta ve şifresiyle **Giriş Yapıyoruz**.
 * **4.** Yapay zeka modülünü kullanmak için **Kişisel Gemini API** anahtarımızı giriyoruz. (Sistem ping atmadan akıllı filtreleme ile hesabınızdaki çalışan aktif modelleri anında tarayıp listeler).
