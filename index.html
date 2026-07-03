@@ -955,6 +955,8 @@
         let shortsSetLoaded = false;
         let globalAnalyzedVideosCache = new Set();
         let logsFetched = false;
+        let currentSSVideoId = ""; // GÜNCELLEME: Strict modda hata vermemesi için global değişken tanımlandı.
+
 
         // Yapay zeka API istekleri arasında zorunlu beklemeleri (Rate Limit) yöneten fonksiyon
         const bekle = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -3505,6 +3507,15 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 const title = item.getAttribute('data-title');
                 item.style.display = title.includes(input) ? 'flex' : 'none';
             });
+        };
+
+        // YENİ: 1. Yöntem (Direkt Video Linki) için modalı açan eksik köprü fonksiyonu eklendi.
+        // Bu sayede üstteki "Yorum Görsellerini İndir" butonu tıklandığında hata vermeden modalı açar.
+        window.tekilSSAc = () => {
+            const link = document.getElementById('videoLink').value.trim();
+            const videoId = extractVideoID(link);
+            if (!videoId) return alert("Lütfen görsellerini indirmek için geçerli bir video linki girin!");
+            window.ekranGoruntuleriniAc(videoId);
         };
 
         // Modal penceresini açar
