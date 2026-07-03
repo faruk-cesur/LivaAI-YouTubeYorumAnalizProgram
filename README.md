@@ -3,12 +3,25 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v5.0</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v6.0</strong>
 </h2>
 
 <h3>Liva AI - Detaylı Kullanım Rehberi</h3>
 
 [Rehber Videosunu İzlemek için Tıkla!](https://youtu.be/EQgztO0zY48)
+
+<hr>
+
+## 🌟 Öne Çıkan Yeni Özellikler (v6.0)
+
+* **Kusursuz Video Türü Ayrımı (%100 Doğruluk):** Sistem artık YouTube Data API'nin resmi sistem playlist yapılarını (`UUSH` ve `UULF`) kullanarak Shorts ve Uzun videoları sıfır hata ve maksimum hızla ayrıştırır
+* **🗂️ Toplu Yorum Analizi Modu (Bulk Processing):** Kanal tarama ekranında tek seferde birden fazla video seçerek ardışık analiz başlatabilirsiniz. Sistem tüm videoları sırayla işler, raporları ayrı ayrı üretir ve tek bir `.zip` arşivi olarak bilgisayarınıza indirir.
+* **🔒 Gelişmiş Yönetici Paneli (Admin Dashboard):** Veritabanı (Firestore) üzerinden şifre doğrulamalı, tüm ekibin indirme hareketlerini izleyebileceğiniz ve "Daha Önce Analiz Edildi" rozetlerini tek tıkla sıfırlayabileceğiniz merkezi yönetim alanı eklenmiştir.
+* **📊 Akıllı Kullanıcı Bazlı RPD Tüketim Özeti:** Ekip üyelerinin Gemini API kotalarını nasıl harcadığını canlı takip eden; Bugün, Son 7 Gün ve Toplam harcanan RPD miktarını anlık hesaplayan analitik özet tablosu panele entegre edilmiştir.
+* **👥 Güvenli Ekip Yönetimi, Telefon No ve Düzenleme:** Admin paneli üzerinden ekip üyelerine Ad Soyad, Telefon ve Rol atayabilir, kalem (✏️) butonuyla bilgileri düzenleyebilir veya tek tıkla yetkilerini kalıcı olarak iptal edebilirsiniz.
+* **🛡️ Otonom Güvenlik Duvarı:** Ekip listesinden silinen veya yetkisi düşürülen bir kullanıcı, tarayıcı sekmelerini açık bıraksa bile herhangi bir işlem butonuna bastığı an güvenlik kontrolüne takılır, sistem yetkilerinin sonlandırıldığını anlar ve kullanıcıyı otomatik olarak dışarı atar.
+* **🏷️ Akıllı Durum Rozetleri ve Emojiler:** Karışık listeleme modunda videoların yanına otomatik olarak `📱 Shorts` veya `🖥️ Uzun Video` rozetleri basılır. Ayrıca daha önce işlenen videoların yanında beliren `✅ Daha Önce Analiz Edildi` rozeti ekip içi mükerrer çalışmayı tamamen engeller.
+* **✨ Livâü'l-Hamd Favicon:** Uygulamaya harici dosya bağımlılığı olmadan doğrudan koda gömülü, altın renkli şık bir "L" monogram favicon yerleştirilmiştir.
 
 <hr>
 Bu proje, YouTube içerik üreticilerinin ve tebliğ ekiplerinin videolara gelen on binlerce yorumu tek tıkla çekip, otonom yapay zeka mimarisiyle analiz ettirebilmesi için geliştirilmiş sunucusuz (serverless) bir web uygulamasıdır. 
@@ -17,7 +30,7 @@ Eski sürümlerde veriler yapay zekaya manuel olarak beslenirken; v5.0 ile birli
 
 <img width="647" height="484" alt="image" src="https://github.com/user-attachments/assets/eae45d25-67fe-4036-8c06-7c095422df28" />
 
-## 🌟 Öne Çıkan Yeni Özellikler (v5.0)
+## 🌟 Eski Sürümdeki Mevcut Özellikler (v5.0)
 
 * **🧠 Otonom Yapay Zeka (Cascade) Mimarisi:** API kotalarını korumak için sistem 3 aşamalı çalışır:
   * **Aşama 0 (JS Ön Filtre):** 4 kelimeden kısa basit övgüler (spam) tarayıcı RAM'inde sıfır maliyetle anında silinir. *(İhtida/şehadet bildiren kelimeler istisna olarak korunur).*
