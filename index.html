@@ -1898,7 +1898,7 @@
             if (!confirm(`"${videoId}" videosunun TÜM analiz kayıtları (tüm kullanıcılar dahil) silinecek. Emin misiniz?`)) return;
 
             try {
-                const q = query(collection(db, "log_kayitlari"), where("video_id", "==", videoId), where("detay", "==", "AI Analizi Yapıldı"));
+                const q = query(collection(db, "log_kayitlari"), where("video_id", "==", videoId));
                 const snap = await getDocs(q);
                 const silmeIslemleri = [];
                 snap.forEach(docSnap => silmeIslemleri.push(deleteDoc(doc(db, "log_kayitlari", docSnap.id))));
@@ -1921,8 +1921,7 @@
             if (!confirm("Son kez soruyoruz: Gerçekten TÜM analiz kayıtlarını silmek istiyor musunuz?")) return;
 
             try {
-                const q = query(collection(db, "log_kayitlari"), where("detay", "==", "AI Analizi Yapıldı"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(collection(db, "log_kayitlari"));
                 const silmeIslemleri = [];
                 snap.forEach(docSnap => silmeIslemleri.push(deleteDoc(doc(db, "log_kayitlari", docSnap.id))));
                 await Promise.all(silmeIslemleri);
