@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v6.0</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.0</strong>
 </h2>
 
 <h3>Liva AI - Detaylı Kullanım Rehberi</h3>
@@ -12,7 +12,19 @@
 
 <hr>
 
-## 🌟 Öne Çıkan Yeni Özellikler (v6.0)
+## 🔥 Öne Çıkan Yeni Özellikler (v7.0)
+
+*   **🤖 %100 Otonom İş Akışı ve Bulut Veritabanı Entegrasyonu (Google Drive & Google Sheets):** Yapay zeka yorum analizi sistemi **TAMAMEN OTOMASYONA** dönüştürülmüştür. Analiz edilen tüm veriler ve onaylanan yorumların ekran görüntüleri Google Drive üzerinde hiyerarşik bir veritabanı gibi otomatik olarak klasörlenir. Aynı zamanda temizlenen ve filtreden geçen yorum verileri Google Sheets (E-Tablo) üzerindeki ana veritabanına otomatik olarak gönderilir. Tüm bu Drive klasörleme ve E-Tablo aktarım süreçleri, Yönetici Paneli'ndeki log kayıtları üzerinden tek tıkla dinamik olarak yönetilebilir ve silinebilir.
+*   **🛡️ Gelişmiş Rol Bazlı Erişim Kontrolü (RBAC):** Sisteme "Üst Yönetim Şifresi" ve "Kullanıcı Panel İzni" mantığı getirildi. Artık "Ortak Yönetici Şifresi" kaldırıldı. Yöneticiler her şeyi kontrol ederken, izin verilen "Kullanıcılar" paneli sadece rehber (read-only) mantığında görebilir. İşlemler sütunu ve butonlar yetkisiz kişilerden otomatik olarak gizlenir.
+*   **👥 Yönetici Panelinden Dinamik Yetkilendirme:** Ekip tablosu üzerinden kullanıcılara tek tıkla "Erişim İzni Ver / Kaldır" butonu eklendi.
+*   **🧩 Modüler ve Esnek Ekip Ekleme Formu:** Ekip üyesi eklerken Ad Soyad, Telefon, E-posta, Şifre, Rol (Zorunlu) ve Doğum Tarihi, Ekip Adı, Sorumlu Olunan Diller, Panel İzni (İsteğe Bağlı) alanları ile detaylı profil oluşturma imkanı sağlandı. Tablo üzerinden bu bilgilerin tamamı (kalem ikonu ✏️ ile) güncellenebilir hale getirildi.
+*   **🔒 İkincil Onay Kalkanı (Re-Authentication):** Ekip üyesi silme veya rol değiştirme gibi kritik işlemlerde, kullanıcının kendi hesap şifresini canlı olarak Firebase sunucularında doğrulaması sağlandı. Veritabanına (Firestore) dışarıdan müdahale edilmesini engelleyen katı güvenlik kuralları (Security Rules) yazıldı.
+*   **⏳ Otonom Tarih Çakışması Kontrol Motoru (Senaryo A & B):** Kullanıcının analiz etmek istediği tarih aralığı, veritabanındaki geçmiş analiz kayıtlarıyla karşılaştırılarak veri kaybı veya mükerrer token harcaması önlenir. Çakışma durumunda sistem kullanıcıya otomatik tarih düzeltme teklifi sunar (Senaryo A: Mükerrer Analiz, Senaryo B: Veri Kaybı).
+*   **📅 Dinamik Tarih Seçim Arayüzü:** Akıllı Otomatik ve Manuel tarih modu geçişleri modernize edildi. Gelecek (henüz yaşanmamış) zaman seçimi, tarayıcı takvim arayüzü (min/max özellikleri) ve anlık JavaScript denetimleriyle engellendi.
+
+<hr>
+
+## 🌟 Eski Sürümdeki Mevcut Özellikler (v6.0)
 
 * **Kusursuz Video Türü Ayrımı (%100 Doğruluk):** Sistem artık YouTube Data API'nin resmi sistem playlist yapılarını (`UUSH` ve `UULF`) kullanarak Shorts ve Uzun videoları sıfır hata ve maksimum hızla ayrıştırır
 * **🗂️ Toplu Yorum Analizi Modu (Bulk Processing):** Kanal tarama ekranında tek seferde birden fazla video seçerek ardışık analiz başlatabilirsiniz. Sistem tüm videoları sırayla işler, raporları ayrı ayrı üretir ve tek bir `.zip` arşivi olarak bilgisayarınıza indirir.
