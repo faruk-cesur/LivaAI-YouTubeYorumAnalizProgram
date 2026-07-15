@@ -1486,7 +1486,8 @@
     <!-- ========================================================================= -->
     <div id="kayitModal" class="ss-modal">
         <div class="ss-modal-content" style="max-height: 90vh; overflow-y: auto;">
-            <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;font-size: 24px;font-weight: bolder;">📝 Liva AI - Sisteme Kayıt Ol</h3>
+            <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;font-size: 24px;font-weight: bolder;">📝 Liva
+                AI - Sisteme Kayıt Ol</h3>
             <p style="margin-bottom: 20px;font-size: 16px;">Lütfen aşağıdaki bilgileri eksiksiz doldurunuz.</p>
 
             <div class="input-group">
@@ -1495,7 +1496,7 @@
             </div>
             <div class="input-group">
                 <label>Telefon Numaranız *</label>
-                <input type="tel" id="regTelefon" placeholder="Örn: +90 530... veya +49 176...">
+                <input type="tel" id="regTelefon" placeholder="Örn: +90 530 770 34 34">
             </div>
             <div class="input-group">
                 <label>E-posta Adresiniz *</label>
@@ -6226,7 +6227,31 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 return alert("Sisteme Giriş Şifreniz en az 6 karakter uzunluğunda olmalı!");
             }
 
+            // Arayüzü kilitle ve kullanıcıyı beklet
+            const gonderBtn = document.querySelector('#kayitModal .btn-group button:first-child');
+            gonderBtn.innerText = "Kontrol Ediliyor...";
+            gonderBtn.disabled = true;
+
             try {
+                // =====================================================================
+                // KONTROL 1: Bu e-posta adresi aktif ekip üyelerinde (roller) var mı?
+                // =====================================================================
+                const rolSnap = await getDoc(doc(db, "roller", email));
+                if (rolSnap.exists()) {
+                    gonderBtn.innerText = "Gönder"; gonderBtn.disabled = false;
+                    return alert("Bu e-posta adresi sistemde zaten kayıtlı!");
+                }
+
+                // =====================================================================
+                // KONTROL 2: Bu e-posta adresi bekleyen taleplerde (kayit_talepleri) var mı?
+                // =====================================================================
+                const talepSnap = await getDoc(doc(db, "kayit_talepleri", email));
+                if (talepSnap.exists()) {
+                    gonderBtn.innerText = "Gönder"; gonderBtn.disabled = false;
+                    return alert("Bu e-posta adresi ile daha önceden sisteme kayıt talebi yapılmış, yönetici ile görüşebilirsiniz.");
+                }
+
+                // Her iki testten de başarıyla geçtiyse talebi veritabanına yaz
                 // YENİ: Talebi rastgele bir ID ile değil, doğrudan E-Posta adresi kimliğiyle kaydediyoruz.
                 // Bu sayede hem mükerrer talepler engellenir hem de giriş yaparken kolayca bulunabilir.
                 await setDoc(doc(db, "kayit_talepleri", email), {
@@ -6257,6 +6282,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
             } catch (error) {
                 alert("Talebiniz iletilirken bir ağ hatası oluştu: " + error.message);
+            } finally {
+                // İşlem bitince (hata alsa da almasa da) butonu tekrar aktif et
+                gonderBtn.innerText = "Gönder";
+                gonderBtn.disabled = false;
             }
         };
 
@@ -6306,7 +6335,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         <tr style="border-bottom: 1px solid #e2e8f0; background: #fff;">
                             <td style="padding:6px; text-align:center;">
                                 <button onclick="adminTalepOnayla('${t.id}')" style="width:auto; padding:5px 8px; font-size:14px; background:#27ae60; margin-right:4px;" title="Talebi Onayla ve Kullanıcıyı Kaydet">✅</button>
-                                <button onclick="adminTalepSil('${t.id}')" style="width:auto; padding:5px 8px; font-size:14px; background:#e74c3c;" title="Talebi Sil (Reddet)">❌</button>
+                                <button onclick="adminTalepSil('${t.id}')" style="width:auto; padding:5px 8px; font-size:14px; background:#e74c3c;" title="Talebi Sil (Reddet)">✕</button>
                             </td>
                             <td style="padding:6px; color:#7f8c8d;">${basvuruTarihi}</td>
                             <td style="padding:6px; font-weight:bold;">${escapeHTML(t.adSoyad)}</td>
