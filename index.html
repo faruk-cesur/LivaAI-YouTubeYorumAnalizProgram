@@ -816,8 +816,13 @@
             <input type="password" id="passwordInput" placeholder="Şifrenizi Giriniz...">
         </div>
 
-        <!-- onclick eventi kaldırıldı, işlem arka plana taşındı -->
+        <!-- Ana Giriş Butonu -->
         <button id="loginBtn" class="btn-success">GİRİŞ YAP</button>
+        <!-- YENİ: Görsel hiyerarşi için içi boşaltılmış (Outline) Kayıt Butonu -->
+        <button onclick="kayitPenceresiniAc()"
+            style="background-color: transparent; color: #f39c12; border: 2px solid #f39c12; margin-top: 5px; transition: all 0.3s ease;"
+            onmouseover="this.style.backgroundColor='#fdf2e9'"
+            onmouseout="this.style.backgroundColor='transparent'">KAYIT TALEBİ OLUŞTUR</button>
 
         <p style="font-size: 12px; color: #7f8c8d; text-align: center;">Sisteme sadece yetkilendirilmiş ekip üyeleri
             giriş yapabilir.</p>
@@ -1214,18 +1219,34 @@
                 <div
                     style="position: sticky; top: -20px; background: #fff; z-index: 100; margin: -20px -20px 20px -20px; padding: 20px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 10px 10px 0 0;">
 
-                    <!-- YENİ: Üst Yönetim Butonu (Sola Sabitlendi, Başlangıçta Gizli, Yazı Rengi Siyah) -->
-                    <button id="btnUstYonetim" onclick="ustYonetimYetkisiTanimla()"
-                        style="display: none; position: absolute; left: 20px; width:auto; background:#f39c12; color:#1e293b; border:none; border-radius:6px; padding:8px 16px; font-size: 13px; cursor:pointer; font-weight:bold; margin:0; box-shadow: 0 2px 4px rgba(243, 156, 18, 0.2); transition: all 0.3s ease;">💎
-                        Üst Yönetim Yetkisi Tanımla</button>
+                    <!-- ÇÖZÜM: Sol taraftaki butonları üst üste binmemesi için Flexbox (gap) ile grupladık -->
+                    <div style="position: absolute; left: 20px; display: flex; gap: 10px; align-items: center;">
+                        <button id="btnUstYonetim" onclick="ustYonetimYetkisiTanimla()"
+                            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width:auto; background:#f39c12; color:#1e293b; border:none; border-radius:6px; padding:8px 16px; font-size: 13px; cursor:pointer; font-weight:bold; margin:0; box-shadow: 0 2px 4px rgba(243, 156, 18, 0.2); transition: all 0.3s ease;">
+                            <span style="font-size: 20px; display: inline-block; line-height: 1;">💎</span>
+                            <span>Üst Yönetim Yetkisi</span>
+                        </button>
+
+                        <button id="btnKayitTalepleri" onclick="adminKayitTalepleriniAc()"
+                            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width:auto; background:#2980b9; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-size: 13px; cursor:pointer; font-weight:bold; margin:0; box-shadow: 0 2px 4px rgba(41, 128, 185, 0.2); transition: all 0.3s ease;">
+                            <span style="font-size: 20px; display: inline-block; line-height: 1;">📝</span>
+                            <span>Kayıt Talepleri</span>
+                        </button>
+                    </div>
 
                     <!-- Başlık esnek yapıyla (flex-grow) değil, statik olarak tam merkeze alındı -->
                     <h2 style="color:#2c3e50; margin:0; text-align:center;">🔒 Yönetici Paneli</h2>
 
                     <!-- Kapat butonu (absolute positioning) ile akıştan koparılıp sağ köşeye sabitlendi -->
                     <button onclick="yoneticiPaneliniKapat()"
-                        style="position: absolute; right: 20px; width:auto; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:bold; margin:0; box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);">✕
-                        Kapat</button>
+                        style="position: absolute; right: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width:auto; background:#e74c3c; color:#fff; border:none; border-radius: 6px; padding: 8px 14px; font-size: 13px; font-weight: bold; cursor:pointer; margin:0; box-shadow: 0 4px 6px rgba(231, 76, 60, 0.25); transition: all 0.2s ease;"
+                        onmouseover="this.style.background='#c0392b'; this.style.transform='scale(0.96)'; this.style.boxShadow='0 2px 4px rgba(231, 76, 60, 0.15)';"
+                        onmouseout="this.style.background='#e74c3c'; this.style.transform='scale(1)'; this.style.boxShadow='0 4px 6px rgba(231, 76, 60, 0.25)';">
+                        <span
+                            style="font-size: 16px; display: inline-block; line-height: 1; font-weight: normal;">✕</span>
+                        <span>Kapat</span>
+                    </button>
+
                 </div>
 
                 <!-- Asıl panel içeriği (şifre doğrulanınca görünür) -->
@@ -1460,6 +1481,87 @@
     </div>
     </div>
 
+    <!-- ========================================================================= -->
+    <!-- DIŞ KULLANICI İÇİN SİSTEME KAYIT TALEBİ OLUŞTURMA MODALI -->
+    <!-- ========================================================================= -->
+    <div id="kayitModal" class="ss-modal">
+        <div class="ss-modal-content" style="max-height: 90vh; overflow-y: auto;">
+            <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;font-size: 24px;font-weight: bolder;">📝 Liva AI - Sisteme Kayıt Ol</h3>
+            <p style="margin-bottom: 20px;font-size: 16px;">Lütfen aşağıdaki bilgileri eksiksiz doldurunuz.</p>
+
+            <div class="input-group">
+                <label>Adınız ve Soyadınız *</label>
+                <input type="text" id="regAdSoyad" placeholder="Örn: Faruk Cesur">
+            </div>
+            <div class="input-group">
+                <label>Telefon Numaranız *</label>
+                <input type="tel" id="regTelefon" placeholder="Örn: +90 530... veya +49 176...">
+            </div>
+            <div class="input-group">
+                <label>E-posta Adresiniz *</label>
+                <input type="email" id="regEmail" placeholder="ornek@gmail.com">
+            </div>
+            <div class="input-group">
+                <label>Sisteme Giriş Şifreniz *</label>
+                <input type="password" id="regSifre" placeholder="En az 6 karakter">
+            </div>
+            <div class="input-group">
+                <label>Doğum Tarihiniz *</label>
+                <input type="date" id="regDogumTarihi">
+            </div>
+            <div class="input-group">
+                <label>Bildiğiniz Diller *</label>
+                <!-- Select iptal edildi, yerine Checkbox'ların dolacağı boş bir kutu (div) açıldı -->
+                <div id="regDillerKutusu"
+                    style="height: 120px; overflow-y: auto; border: 1px solid #bdc3c7; border-radius: 6px; padding: 10px; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Bize İletmek İstediğiniz Bir Not Var mı? (İsteğe Bağlı)</label>
+                <textarea id="regNot" placeholder="Notunuzu buraya yazın..."
+                    style="height: 100px; resize:vertical;"></textarea>
+            </div>
+
+            <div class="btn-group" style="margin-top: 15px;">
+                <button onclick="kayitTalebiGonder()" style="background-color: #27ae60;">Gönder</button>
+                <button onclick="kayitPenceresiniKapat()" style="background-color: #e74c3c;">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- YÖNETİCİ İÇİN KAYIT TALEPLERİ LİSTESİ MODALI -->
+    <!-- ========================================================================= -->
+    <div id="adminKayitTalepleriModal" class="ss-modal" style="z-index: 10000;">
+        <div class="ss-modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">📝 Sistem Kayıt Talepleri</h3>
+            <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">Dışarıdan gelen üyelik başvurularını
+                buradan onaylayabilir veya silebilirsiniz.</p>
+
+            <div style="overflow-x:auto; margin-bottom:20px;">
+                <table style="width:100%; border-collapse:collapse; font-size:12px; white-space: nowrap;">
+                    <thead>
+                        <tr style="background:#f1f5f9; color:#475569; border-bottom: 2px solid #cbd5e1;">
+                            <th style="padding:8px; text-align:center;">İşlem</th>
+                            <th style="padding:8px; text-align:left;">Tarih</th>
+                            <th style="padding:8px; text-align:left;">Ad Soyad</th>
+                            <th style="padding:8px; text-align:left;">E-posta</th>
+                            <th style="padding:8px; text-align:left;">Telefon</th>
+                            <th style="padding:8px; text-align:left;">Yaş</th>
+                            <th style="padding:8px; text-align:left;">Diller</th>
+                            <th style="padding:8px; text-align:left;">Not</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kayitTalepleriTablosu"></tbody>
+                </table>
+            </div>
+            <div style="text-align: right;">
+                <button onclick="adminKayitTalepleriniKapat()"
+                    style="width:auto; padding:8px 20px; background-color: #7f8c8d;">Kapat</button>
+            </div>
+        </div>
+    </div>
+
     <!-- EKRAN GÖRÜNTÜSÜ MODALI -->
     <div id="ssModal" class="ss-modal">
         <div class="ss-modal-content">
@@ -1516,7 +1618,7 @@
         let currentUserAdSoyad = ""; // YENİ: Geçmiş data modalında gösterilecek isim
         let isCancelled = false; // İptal butonuna basılıp basılmadığını kontrol eder
         let rpdHarcananSayaci = 0; // YENİ: Şu anki işlemde kaç adet Gemini isteği (RPD) harcandığını sayar — log kaydına yazılacak
-        let ustYonetimYetkisiAktif = false; // YENİ: Üst yönetim yetkisi (kritik şifre atlama) durumu
+        let ustYonetimYetkisiAktif = localStorage.getItem('ustYonetimYetkisi') === 'true'; // YENİ: Durumu tarayıcı hafızasından çek
 
         // Kanal listeleme ve sayfalamada kullanılan değişkenler
         let currentChannelId = "";
@@ -1534,6 +1636,17 @@
         let currentSSVideoId = ""; // GÜNCELLEME: Strict modda hata vermemesi için global değişken tanımlandı.
 
         const systemEvents = new EventTarget();
+
+        // =========================================================================
+        // SİSTEM DİLLERİ SABİTİ (Hem kayıt formunda hem de admin panelinde kullanılır)
+        // =========================================================================
+        const globalSistemDilleri = [
+            "Almanca", "Arapça", "Azerbaycan Türkçesi", "Bengalce", "Çince", "Endonezce",
+            "Farsça", "Felemenkçe", "Fransızca", "Hintçe", "İngilizce", "İspanyolca", "İtalyanca",
+            "Japonca", "Kazakça", "Korece", "Lehçe", "Marathice", "Özbekçe", "Pencapça",
+            "Portekizce", "Rusça", "Svahili", "Tagalogca", "Tamilce", "Teluguca", "Türkçe",
+            "Ukraynaca", "Urduca", "Vietnamca"
+        ];
 
         // // Üretim ortamındaysak tüm konsol fonksiyonlarını işlevsiz hale getir
         // if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
@@ -2077,7 +2190,18 @@
                 // Kimlik doğrulandığında onAuthStateChanged otomatik olarak tetiklenecek.
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                // Sadece gerekli durumlarda kullanıcıya bilgi veriyoruz
+                // YENİ: Kullanıcı hatalı giriş yaptığında, belki de henüz onaylanmamış bir kayıt talebi vardır diye kontrol ediyoruz
+                try {
+                    const talepSnap = await getDoc(doc(db, "kayit_talepleri", email));
+                    if (talepSnap.exists()) {
+                        alert("Kayıt talebiniz hala incelenmektedir, yönetici tarafından onaylandıktan sonra sisteme giriş yapabileceksiniz. Sabrınız için teşekkür ederiz.");
+                        return; // İşlemi kes ve fonksiyondan çık
+                    }
+                } catch (e) {
+                    console.warn("Talep durumu kontrol edilemedi:", e);
+                }
+
+                // Kayıt talebi de yoksa standart hata mesajlarını göster
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     alert("Hatalı e-posta veya şifre! Lütfen tekrar deneyin.");
                 } else {
@@ -2112,6 +2236,7 @@
 
         // Firebase üzerinden güvenli çıkış yapma fonksiyonu
         window.sistemdenCikisYap = () => {
+            localStorage.removeItem('ustYonetimYetkisi'); // YENİ: Çıkış yaparken üst yönetim yetkisini tamamen sil
             signOut(auth).then(() => {
                 location.reload();
             });
@@ -2213,11 +2338,34 @@
                             document.head.appendChild(kisitliStil);
                         }
 
+                        const btnTalepler = document.getElementById('btnKayitTalepleri');
+
                         if (rol === "yonetici") {
                             // YÖNETİCİ GÖRÜNÜMÜ: Tüm alanlar ve başlıklar açık
                             if (logBolumu) logBolumu.style.display = 'block';
                             if (yeniUyeFormu) yeniUyeFormu.style.display = 'block';
-                            if (btnUst) btnUst.style.display = 'block';
+                            if (btnUst) {
+                                // Butonun Flexbox düzenini ve ortalamasını kesinleştirelim
+                                btnUst.style.display = "inline-flex";
+                                btnUst.style.alignItems = "center";
+                                btnUst.style.justifyContent = "center";
+                                btnUst.style.gap = "5px";
+
+                                // İkonu milimetrik olarak 2px aşağı kaydıran CSS şablonu
+                                const elmasHtml = `<span style="font-size: 23px; display: inline-block; line-height: 1; transform: translateY(-2px);">💎</span>`;
+
+                                if (ustYonetimYetkisiAktif) {
+                                    btnUst.innerHTML = `${elmasHtml}<span>Üst Yönetim Yetkisi: AKTİF</span>`;
+                                    btnUst.style.backgroundColor = "#7dce9f";
+                                    btnUst.style.boxShadow = "0 2px 4px rgba(39, 174, 96, 0.2)";
+                                } else {
+                                    // Aktif değilse varsayılan haline getir
+                                    btnUst.innerHTML = `${elmasHtml}<span>Üst Yönetim Yetkisi: KAPALI</span>`;
+                                    btnUst.style.backgroundColor = "#f39c12";
+                                    btnUst.style.boxShadow = "0 2px 4px rgba(243, 156, 18, 0.2)";
+                                }
+
+                            }
 
                             kisitliStil.innerHTML = "";
                             if (islemlerBasligi) islemlerBasligi.style.display = ''; // Başlığı göster
@@ -2225,6 +2373,7 @@
                             adminLoglariYukle();
                         } else {
                             // İZİNLİ KULLANICI GÖRÜNÜMÜ: Formlar kapalı, sadece rehber okuma izni
+                            if (btnTalepler) btnTalepler.style.display = 'none'; // Kullanıcıysa gizle
                             if (logBolumu) logBolumu.style.display = 'none';
                             if (yeniUyeFormu) yeniUyeFormu.style.display = 'none';
                             if (btnUst) btnUst.style.display = 'none';
@@ -2478,11 +2627,11 @@
         // =========================================================================
         window.ustYonetimYetkisiTanimla = async () => {
             if (ustYonetimYetkisiAktif) {
-                alert("Üst yönetim yetkisi zaten aktif!\nTarayıcı yenilenene veya çıkış yapılana kadar şifre sorulmayacak.");
+                alert("Üst yönetim yetkisi zaten aktif!\n\nGüvenli çıkış yapılana kadar şifre sorulmayacak.");
                 return;
             }
 
-            const girilenSifre = prompt("💎 ÜST YÖNETİM YETKİSİ:\nBu yetkiyi aldığınızda, tarayıcı yenilenene kadar hiçbir kritik işlemde size şifre sorulmayacaktır.\nLütfen 'Kritik İşlem Şifresi'ni giriniz:");
+            const girilenSifre = prompt("💎 ÜST YÖNETİM YETKİSİ:\n\nBu yetkiyi aldığınızda, hiçbir kritik işlemde size şifre sorulmayacaktır.\n\nLütfen 'Üst Yönetim Şifresi'ni giriniz:");
 
             if (!girilenSifre) return; // İptal edildiyse sessizce çık
 
@@ -2491,20 +2640,30 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists() || !docSnap.data().ustYonetimSifresi) {
-                    alert("Kritik Hata: Veritabanında 'kritikSifre' alanı tanımlanmamış!");
+                    alert("Kritik Hata: Veritabanında 'ustYonetimSifresi' alanı tanımlanmamış!");
                     return;
                 }
 
                 if (girilenSifre === docSnap.data().ustYonetimSifresi) {
                     ustYonetimYetkisiAktif = true; // Yetkiyi global olarak ver
+                    localStorage.setItem('ustYonetimYetkisi', 'true');
 
                     // Arayüzdeki butonun görünümünü başarı (aktif) durumuna çevir
                     const btn = document.getElementById('btnUstYonetim');
-                    btn.innerText = "💎 Üst Yönetim Yetkisi: AKTİF";
-                    btn.style.backgroundColor = "#7dce9f"; // Liva başarı yeşili
+
+                    // Butonun Flexbox düzenini ve ortalamasını kesinleştirelim
+                    btn.style.display = "inline-flex";
+                    btn.style.alignItems = "center";
+                    btn.style.justifyContent = "center";
+                    btn.style.gap = "8px";
+
+                    // Büyük elmas ikonu ve yazıyı kusursuz dikey hizayla ekleyelim
+                    btn.innerHTML = `<span style="font-size: 23px; display: inline-block; line-height: 1; transform: translateY(-2px);">💎</span><span>Üst Yönetim Yetkisi: AKTİF</span>`;
+                    btn.style.backgroundColor = "#7dce9f";
                     btn.style.boxShadow = "0 2px 4px rgba(39, 174, 96, 0.2)";
 
-                    alert("✅ Üst Yönetim Yetkisi başarıyla tanımlandı!\nArtık log veya kullanıcı silerken şifre sorulmayacak.");
+
+                    alert("✅ Üst Yönetim Yetkisi başarıyla tanımlandı!");
                 } else {
                     alert("❌ Hatalı Şifre! Yetki reddedildi.");
                 }
@@ -5813,46 +5972,12 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         // Diller listesini kod kirliliği yaratmadan tek bir diziden ekrana basar
         // =========================================================================
         function dilleriEkranaCiz() {
-            const sistemDilleri = [
-                "TÜM DİLLER",
-                "Almanca",
-                "Arapça",
-                "Azerbaycan Türkçesi",
-                "Bengalce",
-                "Çince",
-                "Endonezce",
-                "Farsça",
-                "Felemenkçe",
-                "Fransızca",
-                "Hintçe",
-                "İngilizce",
-                "İspanyolca",
-                "İtalyanca",
-                "Japonca",
-                "Kazakça",
-                "Korece",
-                "Lehçe",
-                "Marathice",
-                "Özbekçe",
-                "Pencapça",
-                "Portekizce",
-                "Rusça",
-                "Svahili",
-                "Tagalogca",
-                "Tamilce",
-                "Teluguca",
-                "Türkçe",
-                "Ukraynaca",
-                "Urduca",
-                "Vietnamca"
-            ];
-
             const kutu = document.getElementById('dillerKutusu');
             if (!kutu) return; // Kutu bulunamazsa hata vermemesi için güvenlik kontrolü
 
             kutu.innerHTML = ""; // İçini temizle
 
-            sistemDilleri.forEach(dil => {
+            globalSistemDilleri.forEach(dil => {
                 const label = document.createElement('label');
                 label.style.cssText = "display:flex; align-items:center; gap:6px; font-weight:normal; font-size:13px; margin-bottom:4px; cursor:pointer;";
 
@@ -6012,7 +6137,254 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             });
         }
 
+        // =========================================================================
+        // SİSTEME KAYIT OLMA MODÜLÜ (DIŞ KULLANICI TARAFI)
+        // =========================================================================
+        window.kayitPenceresiniAc = () => {
+            document.getElementById('kayitModal').style.display = 'flex';
 
+            // YENİ: Doğum tarihi kısıtlamaları (Min 1950 - Max Bugün)
+            const dtInput = document.getElementById('regDogumTarihi');
+            if (dtInput) {
+                const bugun = new Date();
+                // Zaman dilimi sapmalarını önleyerek kusursuz YYYY-MM-DD formatını elde ediyoruz
+                const maxTarih = new Date(bugun.getTime() - (bugun.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                dtInput.max = maxTarih;     // Gelecek zaman seçilemez
+                dtInput.min = "1950-01-01"; // 1950'den öncesi seçilemez
+            }
+
+            // Diller seçeneğini açılır liste (select) yerine Checkbox olarak dinamik dolduruyoruz
+            const kutu = document.getElementById('regDillerKutusu');
+
+            // Kutu boşsa dilleri bir kereye mahsus oluştur (globalSistemDilleri artık erişilebilir)
+            if (kutu && kutu.innerHTML.trim() === "") {
+                globalSistemDilleri.forEach(dil => {
+                    const label = document.createElement('label');
+                    label.style.cssText = "display:flex; align-items:center; gap:8px; font-weight:normal; font-size:14px; margin-bottom:6px; cursor:pointer;";
+
+                    const cb = document.createElement('input');
+                    cb.type = "checkbox";
+                    cb.value = dil;
+                    cb.className = "reg-dil-cb";
+                    cb.style.cssText = "margin:0; width:16px; height:16px; cursor:pointer;";
+
+                    label.appendChild(cb);
+                    label.appendChild(document.createTextNode(" " + dil));
+                    kutu.appendChild(label);
+                });
+            }
+        };
+
+        window.kayitPenceresiniKapat = () => {
+            document.getElementById('kayitModal').style.display = 'none';
+        };
+
+        window.kayitTalebiGonder = async () => {
+            const adSoyad = document.getElementById('regAdSoyad').value.trim();
+            const telefon = document.getElementById('regTelefon').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const sifre = document.getElementById('regSifre').value;
+            const dogumTarihi = document.getElementById('regDogumTarihi').value;
+            const not = document.getElementById('regNot').value.trim(); // Boş olsa bile hata vermez
+
+            // YENİ: Multiple select yerine işaretli Checkbox'ların değerlerini bir araya (array) topluyoruz
+            const seciliDiller = Array.from(document.querySelectorAll('.reg-dil-cb:checked')).map(cb => cb.value);
+
+            // 1. ZORUNLU ALAN KONTROLÜ (DÜZELTME: "!not" şartı silindi, artık zorunlu değil)
+            if (!adSoyad || !telefon || !email || !sifre || !dogumTarihi || seciliDiller.length === 0) {
+                return alert("Lütfen not alanı haricindeki tüm zorunlu alanları doldurunuz!");
+            }
+
+            // 2. DOĞUM TARİHİ GÜVENLİK KONTROLÜ (1950 - Bugün)
+            const girilenTarih = new Date(dogumTarihi);
+            const minTarih = new Date('1950-01-01');
+
+            const bugun = new Date();
+            bugun.setHours(23, 59, 59, 999); // Gece yarısına kadar bugünü geçerli say
+
+            if (girilenTarih < minTarih || girilenTarih > bugun) {
+                document.getElementById('regDogumTarihi').value = ''; // Kutuyu temizle
+                return alert("Geçersiz Tarih! Lütfen gerçekçi bir doğum tarihi giriniz.");
+            }
+
+            // 3. TELEFON FORMAT KONTROLÜ (Uluslararası Esnek Format)
+            // Başında kesinlikle + işareti olmalı, devamında sadece rakam ve boşluklardan oluşmalı (8 ile 20 karakter arası)
+            const telRegex = /^\+[\d\s]{8,20}$/;
+            if (!telRegex.test(telefon)) {
+                return alert("Lütfen telefon numaranızı ülke koduyla birlikte başına '+' koyarak giriniz (Örn: +90 530... veya +49 176...).");
+            }
+
+            // 4. E-POSTA FORMAT KONTROLÜ
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return alert("Lütfen geçerli bir e-posta adresi giriniz!");
+            }
+
+            // 5. ŞİFRE GÜVENLİK KONTROLÜ (En az 6 karakter)
+            const sifreRegex = /^(?=.*[\d!@#$%^&*.,?]).{6,}$/;
+            if (!sifreRegex.test(sifre)) {
+                return alert("Sisteme Giriş Şifreniz en az 6 karakter uzunluğunda olmalı!");
+            }
+
+            try {
+                // YENİ: Talebi rastgele bir ID ile değil, doğrudan E-Posta adresi kimliğiyle kaydediyoruz.
+                // Bu sayede hem mükerrer talepler engellenir hem de giriş yaparken kolayca bulunabilir.
+                await setDoc(doc(db, "kayit_talepleri", email), {
+                    adSoyad: adSoyad,
+                    telefon: telefon,
+                    email: email,
+                    sifre: sifre,
+                    dogum_tarihi: dogumTarihi,
+                    diller: seciliDiller,
+                    not: not,
+                    zaman_damgasi: new Date().toISOString()
+                });
+
+                alert("Sisteme kayıt talebiniz başarıyla iletilmiştir. Yönetici onayladıktan sonra hesabınız aktifleştirilecektir.");
+
+                // Formu temizle ve kapat
+                document.getElementById('regAdSoyad').value = '';
+                document.getElementById('regTelefon').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regSifre').value = '';
+                document.getElementById('regDogumTarihi').value = '';
+                document.getElementById('regNot').value = '';
+
+                // Form kapanırken checkboxlardaki tikleri de sıfırlıyoruz
+                document.querySelectorAll('.reg-dil-cb').forEach(cb => cb.checked = false);
+
+                kayitPenceresiniKapat();
+
+            } catch (error) {
+                alert("Talebiniz iletilirken bir ağ hatası oluştu: " + error.message);
+            }
+        };
+
+        // =========================================================================
+        // KAYIT TALEPLERİ YÖNETİMİ (YÖNETİCİ TARAFI)
+        // =========================================================================
+        let aktifKayıtTalepleri = {}; // Butonlara tıklanınca verilere kolay ulaşmak için global hafıza
+
+        window.adminKayitTalepleriniAc = async () => {
+            document.getElementById('adminKayitTalepleriModal').style.display = 'flex';
+            const tablo = document.getElementById('kayitTalepleriTablosu');
+            tablo.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:15px;">Yükleniyor...</td></tr>`;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "kayit_talepleri"));
+                tablo.innerHTML = "";
+                aktifKayıtTalepleri = {}; // Hafızayı sıfırla
+
+                if (querySnapshot.empty) {
+                    tablo.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:15px; color:#7f8c8d;">Bekleyen yeni bir kayıt talebi bulunmuyor.</td></tr>`;
+                    return;
+                }
+
+                let talepler = [];
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    data.id = docSnap.id;
+                    aktifKayıtTalepleri[data.id] = data; // Objeyi ID'si ile eşleyerek global hafızaya yazıyoruz
+                    talepler.push(data);
+                });
+
+                // Eskiden yeniye doğru sırala (Önce başvuran en üstte)
+                talepler.sort((a, b) => a.zaman_damgasi.localeCompare(b.zaman_damgasi));
+
+                talepler.forEach(t => {
+                    // Yaş hesaplama
+                    let yasMetni = "—";
+                    if (t.dogum_tarihi) {
+                        const dt = new Date(t.dogum_tarihi);
+                        let yas = new Date().getFullYear() - dt.getFullYear();
+                        yasMetni = `${yas}`;
+                    }
+
+                    const basvuruTarihi = new Date(t.zaman_damgasi).toLocaleDateString('tr-TR');
+
+                    const tr = `
+                        <tr style="border-bottom: 1px solid #e2e8f0; background: #fff;">
+                            <td style="padding:6px; text-align:center;">
+                                <button onclick="adminTalepOnayla('${t.id}')" style="width:auto; padding:5px 8px; font-size:14px; background:#27ae60; margin-right:4px;" title="Talebi Onayla ve Kullanıcıyı Kaydet">✅</button>
+                                <button onclick="adminTalepSil('${t.id}')" style="width:auto; padding:5px 8px; font-size:14px; background:#e74c3c;" title="Talebi Sil (Reddet)">❌</button>
+                            </td>
+                            <td style="padding:6px; color:#7f8c8d;">${basvuruTarihi}</td>
+                            <td style="padding:6px; font-weight:bold;">${escapeHTML(t.adSoyad)}</td>
+                            <td style="padding:6px;">${escapeHTML(t.email)}</td>
+                            <td style="padding:6px;">${escapeHTML(t.telefon)}</td>
+                            <td style="padding:6px; text-align:center;">${yasMetni}</td>
+                            <td style="padding:6px; max-width: 200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(t.diller.join(', '))}">${escapeHTML(t.diller.join(', '))}</td>
+                            <td style="padding:6px; max-width: 250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#d35400;" title="${escapeHTML(t.not)}">${escapeHTML(t.not)}</td>
+                        </tr>
+                    `;
+                    tablo.insertAdjacentHTML('beforeend', tr);
+                });
+            } catch (error) {
+                tablo.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Hata oluştu: ${error.message}</td></tr>`;
+            }
+        };
+
+        window.adminKayitTalepleriniKapat = () => {
+            document.getElementById('adminKayitTalepleriModal').style.display = 'none';
+        };
+
+        window.adminTalepSil = async (talepId) => {
+            if (!confirm("Bu kayıt talebi tamamen SİLİNECEK (Reddedilecek)! Emin misiniz?")) return;
+            if (!(await window.adminKritikSifreDogrula())) return;
+
+            try {
+                await deleteDoc(doc(db, "kayit_talepleri", talepId));
+                adminKayitTalepleriniAc(); // Tabloyu anında yenile
+            } catch (e) {
+                alert("Talep silinemedi: " + e.message);
+            }
+        };
+
+        window.adminTalepOnayla = async (talepId) => {
+            const talep = aktifKayıtTalepleri[talepId];
+            if (!talep) return alert("Hata: Talep verisine ulaşılamadı!");
+
+            if (!confirm(`"${talep.adSoyad}" isimli başvuru ONAYLANACAK ve sisteme 'Kullanıcı' olarak kaydedilecektir. İşlemi onaylıyor musunuz?`)) return;
+            if (!(await window.adminKritikSifreDogrula())) return;
+
+            try {
+                // 1. Yeni üyenin Authentication hesabı oluşturulur (adminYeniUyeEkle fonksiyonundaki izole mantıkla aynı)
+                try {
+                    await createUserWithEmailAndPassword(ikinciAuth, talep.email, talep.sifre);
+                    await signOut(ikinciAuth);
+                } catch (e) {
+                    if (e.code === 'auth/email-already-in-use') {
+                        return alert(`HATA: "${talep.email}" adresi zaten sistemde kayıtlı. Lütfen talebi silin.`);
+                    }
+                    throw e; // Diğer hataları aşağıya ilet
+                }
+
+                // 2. Üye verileri roller koleksiyonuna yazılır (Varsayılan olarak KULLANICI ve İZİNSİZ doğar)
+                await setDoc(doc(db, "roller", talep.email), {
+                    rol: "kullanici",
+                    panel_izni: false,
+                    adSoyad: talep.adSoyad,
+                    telefon: talep.telefon,
+                    ekip: "", // Dışarıdan gelen kişinin ekibi sonradan atanır
+                    dogum_tarihi: talep.dogum_tarihi,
+                    diller: talep.diller
+                }, { merge: true });
+
+                // 3. Şifre veritabanına eklenir
+                await setDoc(doc(db, "kullanici_sifreleri", talep.email), { sifre: talep.sifre, email: talep.email }, { merge: true });
+
+                // 4. İşlem başarıyla bittiği için geçici talep kaydı veritabanından SİLİNİR
+                await deleteDoc(doc(db, "kayit_talepleri", talepId));
+
+                alert(`✅ "${talep.adSoyad}" başarıyla onaylandı ve sisteme eklendi.`);
+
+                adminKayitTalepleriniAc(); // Bekleyen talepler tablosunu yenile
+                adminEkibiYukle(); // Arka plandaki asıl Ekip Tablosunu yenile
+
+            } catch (e) {
+                alert("Onaylama işlemi sırasında bir hata oluştu: " + e.message);
+            }
+        };
     </script>
 
     <!-- MADDE 1: GEÇMİŞ AI ANALİZİ UYARI MODALI -->
