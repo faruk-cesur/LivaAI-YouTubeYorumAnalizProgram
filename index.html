@@ -6265,6 +6265,23 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     zaman_damgasi: new Date().toISOString()
                 });
 
+                // YENİ EKLENEN BLOK: Yöneticiye Arka Planda Mail Atma Sinyali Gönder
+                try {
+                    const sheetConfigSnap = await getDoc(doc(db, "sistem_ayarlari", "google_sheets"));
+                    if (sheetConfigSnap.exists() && sheetConfigSnap.data().web_app_url) {
+                        fetch(sheetConfigSnap.data().web_app_url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: "notify_admin_new_request",
+                                adSoyad: adSoyad,
+                                telefon: telefon,
+                                email: email
+                            })
+                        }).catch(e => console.warn("Yönetici bildirim maili gönderilemedi:", e));
+                    }
+                } catch (e) { console.warn("Sistem ayarları çekilemedi."); }
+
                 alert("Sisteme kayıt talebiniz başarıyla iletilmiştir. Yönetici onayladıktan sonra hesabınız aktifleştirilecektir.");
 
                 // Formu temizle ve kapat
@@ -6406,6 +6423,22 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 await deleteDoc(doc(db, "kayit_talepleri", talepId));
 
                 alert(`✅ "${talep.adSoyad}" başarıyla onaylandı ve sisteme eklendi.`);
+
+                try {
+                    const sheetConfigSnap = await getDoc(doc(db, "sistem_ayarlari", "google_sheets"));
+                    if (sheetConfigSnap.exists() && sheetConfigSnap.data().web_app_url) {
+                        // Arka planda sessizce e-posta gönderimi
+                        fetch(sheetConfigSnap.data().web_app_url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: "notify_user_approved",
+                                adSoyad: talep.adSoyad,
+                                email: talep.email
+                            })
+                        }).catch(e => console.warn("Kullanıcı onay maili gönderilemedi:", e));
+                    }
+                } catch (e) { console.warn("Sistem ayarları çekilemedi."); }
 
                 adminKayitTalepleriniAc(); // Bekleyen talepler tablosunu yenile
                 adminEkibiYukle(); // Arka plandaki asıl Ekip Tablosunu yenile
