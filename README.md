@@ -3,12 +3,22 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.0</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.1</strong>
 </h2>
 
 <h3>Liva AI - Detaylı Kullanım Rehberi</h3>
 
 [Rehber Videosunu İzlemek için Tıkla!](https://youtu.be/EQgztO0zY48)
+
+<hr>
+
+## 🚀 Yeni Kayıt Otomasyonu (v7.1)
+
+*   **📝 Entegre Kayıt Talebi Sistemi:** Giriş ekranına doğrudan entegre, şık bir kayıt paneli eklenmiştir. Başvurular doğrudan Firestore üzerinde izole bir havuzda toplanır.
+*   **🌍 Esnek Uluslararası İletişim:** Telefon numarası formatı, yurt dışındaki (Almanya, Azerbaycan, İran vb.) tebliğ ekiplerinin de sisteme başvurabilmesi adına esnetilmiştir. Başında `+` işareti olan tüm uluslararası numaralar kabul edilir ve `wa.me` WhatsApp köprü yapısıyla %100 uyumlu çalışır.
+*   **🎯 Kurşun Geçirmez Girdi ve Yaş Doğrulama Motoru:** Form gönderimi esnasında e-posta, telefon ve şifre güvenlik denetimleri eksiksiz yapılır. Doğum tarihi alanı hem takvim seçiminde hem de klavyeden elle girişlerde sahte veri girişleri otonom olarak engellenir. Not alanı isteğe bağlı hale getirilmiştir.
+*   **🔐 Otomatik Üye Üretimi ve Akıllı Giriş Denetimi:** Yönetici panelinden bir başvuru onaylandığı an, kullanıcının verileriyle Firebase Authentication hesabı, Firestore rol tanımlamaları ve şifre kayıtları otomatik olarak oluşturulur. Başvurusu hala inceleme aşamasında olan kullanıcılar sisteme girmeye çalıştığında *"Kayıt talebiniz hala incelenmektedir..."* uyarısıyla karşılanır. Reddedilen talepler (❌) ise veritabanından güvenle temizlenir.
+*   **💎 Kalıcı Üst Yönetim Yetkisi:** Üst yönetim yetkisi, sayfa yenilense bile tarayıcı yerel hafızasında (`localStorage`) kilitli kalır. Bu sayede yöneticinin sürekli şifre girme zorunluluğu ortadan kalkar. Yetki, yalnızca "Güvenli Çıkış" yapıldığında tamamen imha edilir.
 
 <hr>
 
