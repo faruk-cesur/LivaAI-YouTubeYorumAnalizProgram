@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.1</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2</title>
 
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
@@ -305,7 +305,7 @@
         }
 
         /* =========================================================
-           MODERN AYARLAR KUTUSU (LIVA AI V7.1)
+           MODERN AYARLAR KUTUSU (LIVA AI V7.2)
            ========================================================= */
 
         /* =========================================================
@@ -797,7 +797,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.1
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2
             </span>
             <span
                 style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
@@ -840,7 +840,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.1
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2
                 </span>
             </h2>
 
@@ -3510,6 +3510,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     let rowObj = {
                         "Yorum Tarihi": originalComment["Yorum Tarihi"] || "",
                         "Yorum Sahibi": originalComment["Yorum Sahibi"] || "",
+                        "Beğeni Sayısı": originalComment["Beğeni Sayısı"] || 0,
+                        "Avatar URL": originalComment["Avatar"] || "https://via.placeholder.com/40"
                     };
 
                     if (templateType === "criteria-based-theological-analysis") {
@@ -4024,7 +4026,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                 author: snippet.authorDisplayName,
                                 text: snippet.textDisplay,
                                 time: new Date(snippet.publishedAt).getTime(),
-                                likes: snippet.likeCount || 0
+                                likes: snippet.likeCount || 0,
+                                avatar: snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                             });
 
                             if (includeReplies && item.snippet.totalReplyCount > 0) {
@@ -4035,7 +4038,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                             author: c.snippet.authorDisplayName,
                                             text: c.snippet.textDisplay,
                                             time: new Date(c.snippet.publishedAt).getTime(),
-                                            likes: c.snippet.likeCount || 0
+                                            likes: c.snippet.likeCount || 0,
+                                            avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                                         });
                                     });
                                 } else {
@@ -4050,7 +4054,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                                     author: c.snippet.authorDisplayName,
                                                     text: c.snippet.textDisplay,
                                                     time: new Date(c.snippet.publishedAt).getTime(),
-                                                    likes: c.snippet.likeCount || 0
+                                                    likes: c.snippet.likeCount || 0,
+                                                    avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                                                 });
                                             });
                                         }
@@ -4076,7 +4081,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                             "Yorum Tarihi": livaTarihFormatla(new Date(comment.time)),
                                             "Yorum Sahibi": comment.author,
                                             "Beğeni Sayısı": comment.likes,
-                                            "Yorum Metni": comment.text.replace(/\n/g, ' ')
+                                            "Yorum Metni": comment.text.replace(/\n/g, ' '),
+                                            "Avatar": comment.avatar
                                         });
                                         fetchedCount++;
                                     });
@@ -4762,7 +4768,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                             author: snippet.authorDisplayName,
                             text: snippet.textDisplay,
                             time: new Date(snippet.publishedAt).getTime(),
-                            likes: snippet.likeCount || 0
+                            likes: snippet.likeCount || 0,
+                            avatar: snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                         });
 
                         // 2. Alt Yanıtları HAM olarak havuza ekle
@@ -4775,7 +4782,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                         author: c.snippet.authorDisplayName,
                                         text: c.snippet.textDisplay,
                                         time: new Date(c.snippet.publishedAt).getTime(),
-                                        likes: c.snippet.likeCount || 0
+                                        likes: c.snippet.likeCount || 0,
+                                        avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                                     });
                                 });
                             } else {
@@ -4791,7 +4799,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                                 author: c.snippet.authorDisplayName,
                                                 text: c.snippet.textDisplay,
                                                 time: new Date(c.snippet.publishedAt).getTime(),
-                                                likes: c.snippet.likeCount || 0
+                                                likes: c.snippet.likeCount || 0,
+                                                avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
                                             });
                                         });
                                     }
@@ -4822,7 +4831,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                         "Yorum Tarihi": `${ds} ${ts}`,
                                         "Yorum Sahibi": comment.author,
                                         "Beğeni Sayısı": comment.likes,
-                                        "Yorum Metni": comment.text.replace(/\n/g, ' ')
+                                        "Yorum Metni": comment.text.replace(/\n/g, ' '),
+                                        "Avatar": comment.avatar
                                     });
                                     fetchedCount++;
                                 });
@@ -5352,26 +5362,23 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
         // =========================================================================
         // Ana İşletici: Yorumları bulur, HTML Stüdyosunda çizer, resme çevirir 
-        // (Manuel veya Otomatik Hibrit Mod)
+        // (Manuel veya Otomatik Hibrit Mod) - CLAUDE CODE PER-ITEM İZOLASYONLU VERSİYON
         // =========================================================================
         window.baslatSSIndirme = async (isAuto = false, autoExcelData = [], endpointUrl = "", targetVideoId = "", subFolderName = "") => {
 
             const modalBtns = document.querySelectorAll('#ssModal button');
 
-            // YENİ: Sadece manuel kullanımda arayüzü ve modal butonlarını kilitle. 
-            // Arka planda otomatik çalışırken manuel pencereyi kilitleme!
+            // Sadece manuel kullanımda arayüzü ve modal butonlarını kilitle
             if (!isAuto) {
                 window.arayuzuKilitle();
                 modalBtns.forEach(b => b.disabled = true);
                 if (!(await window.oturumGuvenlikKontrolu())) {
-                    // Güvenlikten geçemezse butonları geri aç ve çık
                     modalBtns.forEach(b => b.disabled = false);
                     window.arayuzuAktiflestir();
                     return;
                 }
             }
 
-            // Eğer otomatik modda değilsek (manuel modal çalışıyorsa) textbox'tan isimleri al
             const usernames = isAuto ? [] : document.getElementById('ssUsernames').value.split('\n').map(u => u.trim().toLowerCase().replace('@', '')).filter(u => u.length > 0);
 
             if (!isAuto && usernames.length === 0) {
@@ -5387,13 +5394,92 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             }
 
             try {
+                const zip = new JSZip();
+                const studio = document.getElementById('yt-replica-studio');
+
+                // =========================================================
+                // OTOMATİK MOD (API İSTEĞİ ATMADAN DOĞRUDAN HAFIZAYI KULLANIR)
+                // =========================================================
+                if (isAuto) {
+                    for (let i = 0; i < autoExcelData.length; i++) {
+                        const row = autoExcelData[i];
+                        const hedefYazar = row["Yorum Sahibi"] || row["Kullanıcı Adı"] || "Bilinmiyor";
+                        const hedefMetin = row["Orijinal Yorum"] || "";
+                        const hedefTarih = row["Yorum Tarihi"] || "Tarih Yok";
+                        const hedefBegeni = row["Beğeni Sayısı"] || 0;
+
+                        // Tarayıcıların CORS/Cache engellerini aşmak için zaman damgası ekliyoruz
+                        const rawAvatar = row["Avatar URL"] || "https://via.placeholder.com/40";
+                        const hedefAvatar = rawAvatar.includes('?') ? rawAvatar + '&c=' + Date.now() : rawAvatar + '?c=' + Date.now();
+
+                        // KRİTİK DÜZELTME: Her yorum kendi try/catch'i içinde işleniyor.
+                        // Biri patlarsa (tainted canvas, network hatası, Apps Script hatası)
+                        // sadece O görsel atlanır, döngü DEVAM eder.
+                        try {
+                            studio.innerHTML = `
+                                <div class="yt-comment-wrapper">
+                                    <img class="yt-avatar" src="${hedefAvatar}" crossorigin="anonymous">
+                                    <div class="yt-comment-content">
+                                        <div class="yt-header">
+                                            <span class="yt-author">${escapeHTML(hedefYazar)}</span>
+                                            <span class="yt-time">${escapeHTML(hedefTarih)}</span>
+                                        </div>
+                                        <div class="yt-text">${escapeHTML(hedefMetin)}</div>
+                                        <div class="yt-actions">
+                                            <span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${hedefBegeni}</span>
+                                            <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
+                                            <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                            // Avatarın DOM üzerinde tamamen yüklenmesi için ufak bir bekleme süresi
+                            await bekle(300);
+
+                            const canvas = await html2canvas(studio.firstElementChild, { backgroundColor: "#0f0f0f", useCORS: true, scale: 2 });
+                            const imgBase64 = canvas.toDataURL("image/png").split(',')[1];
+
+                            const imgDosyaAdi = `${hedefYazar}_${i + 1}.png`;
+
+                            const imgRes = await fetch(endpointUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    action: "upload_file", fileName: imgDosyaAdi, mimeType: "image/png", base64Data: imgBase64,
+                                    ekip: currentUserEkip, videoId: targetVideoId, isFirstUpload: false,
+                                    ekleyen: currentUserAdSoyad,
+                                    subFolderName: subFolderName
+                                })
+                            });
+
+                            if (!imgRes.ok) throw new Error(`Sunucu ${imgRes.status} döndü`);
+                            const imgData = await imgRes.json();
+
+                            if (imgData.success) {
+                                row["Ekran Görüntüsü Linki"] = imgData.fileUrl;
+                            } else {
+                                throw new Error(imgData.error || "Bilinmeyen sunucu hatası");
+                            }
+
+                        } catch (itemErr) {
+                            // ARTIK SESSİZCE KAYBOLMUYOR: hem konsola hem satıra iz düşüyor
+                            console.error(`[SS Hatası] #${i} ${hedefYazar}:`, itemErr);
+                            row["Ekran Görüntüsü Linki"] = `HATA: ${itemErr.message}`;
+                            continue; // Döngü devam eder, sonraki yoruma geçer
+                        }
+                    }
+                    return; // Otomatik mod bittiyse direkt fonksiyondan çık
+                }
+
+                // =========================================================
+                // MANUEL MOD (SADECE KULLANICI ARAYÜZDEN İSTEDİĞİNDE API ÇAĞRILIR)
+                // =========================================================
                 let nextPageToken = '';
                 let allComments = [];
-                // Otomatik moddaysak gönderilen videoId'yi, manuelsek mevcut modal videoId'sini kullan
-                const vId = isAuto ? targetVideoId : currentSSVideoId;
+                const vId = currentSSVideoId;
                 const baseUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${vId}&key=${API_KEY}&maxResults=100&textFormat=plainText`;
 
-                // O videodaki TÜM yorumları çekiyoruz (Avatar ve Beğeni sayısını bulmak için)
                 do {
                     const data = await guvenliFetch(nextPageToken ? `${baseUrl}&pageToken=${nextPageToken}` : baseUrl);
 
@@ -5424,123 +5510,61 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     nextPageToken = data.nextPageToken || null;
                 } while (nextPageToken);
 
-                if (!isAuto) statusText.innerText = "🎯 Eşleşmeler Bulundu! Görüntüler Çekiliyor...";
+                statusText.innerText = "🎯 Eşleşmeler Bulundu! Görüntüler Çekiliyor...";
 
-                const zip = new JSZip();
-                const studio = document.getElementById('yt-replica-studio');
+                const matchedComments = allComments.filter(c => {
+                    const authorLower = c.author.toLowerCase().replace('@', '');
+                    return usernames.some(u => authorLower.includes(u));
+                });
 
-                // OTOMATİK MOD (Arka Planda Sadece Onaylanan Yorumların Birebir Tespiti ve Yüklenmesi)
-                if (isAuto) {
-                    for (let i = 0; i < autoExcelData.length; i++) {
-                        const row = autoExcelData[i];
-                        const hedefYazar = row["Yorum Sahibi"] || row["Kullanıcı Adı"] || "";
-                        const hedefMetin = row["Orijinal Yorum"] || "";
+                if (matchedComments.length === 0) throw new Error("Girdiğiniz isimlerle eşleşen bir yorum bulunamadı!");
 
-                        // Yazar adı VE Yorum Metni BİREBİR eşleşen tek yorumu bul
-                        const matchedComment = allComments.find(c =>
-                            c.author === hedefYazar &&
-                            c.text.replace(/\n/g, ' ').trim() === hedefMetin.trim()
-                        );
+                for (let i = 0; i < matchedComments.length; i++) {
+                    const c = matchedComments[i];
 
-                        if (matchedComment) {
-                            studio.innerHTML = `
-                                <div class="yt-comment-wrapper">
-                                    <img class="yt-avatar" src="${matchedComment.avatar}" crossorigin="anonymous">
-                                    <div class="yt-comment-content">
-                                        <div class="yt-header">
-                                            <span class="yt-author">${escapeHTML(matchedComment.author)}</span>
-                                            <span class="yt-time">${getRelativeTime(matchedComment.time)}</span>
+                    let rawAvatar = c.avatar || "https://via.placeholder.com/40";
+                    const safeAvatar = rawAvatar.includes('?') ? rawAvatar + '&c=' + Date.now() : rawAvatar + '?c=' + Date.now();
+
+                    studio.innerHTML = `
+                            <div class="yt-comment-wrapper">
+                                <img class="yt-avatar" src="${safeAvatar}" crossorigin="anonymous">
+                                <div class="yt-comment-content">
+                                    <div class="yt-header"><span class="yt-author">${escapeHTML(c.author)}</span><span class="yt-time">${getRelativeTime(c.time)}</span></div>
+                                    <div class="yt-text">${escapeHTML(c.text)}</div>
+                                    <div class="yt-actions"><span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${c.likes}</span>
+                                        <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
+                                    <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
                                         </div>
-                                        <div class="yt-text">${escapeHTML(matchedComment.text)}</div>
-                                        <div class="yt-actions">
-                                            <span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${matchedComment.likes}</span>
-                                            <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
-                                            <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
-                                        </div>
-                                    </div>
                                 </div>
-                            `;
-                            await bekle(200);
+                            </div>
+                        `;
+                    await bekle(300);
 
-                            const canvas = await html2canvas(studio.firstElementChild, { backgroundColor: "#0f0f0f", useCORS: true, scale: 2 });
-                            const imgBase64 = canvas.toDataURL("image/png").split(',')[1];
-                            const imgDosyaAdi = `${hedefYazar}_${i + 1}.png`;
+                    const canvas = await html2canvas(studio.firstElementChild, { backgroundColor: "#0f0f0f", useCORS: true, scale: 2 });
+                    const dosyaIsmi = `${c.author}_${i + 1}.png`;
 
-                            // isFirstUpload: false (Mevcut klasörü SİLMEDEN dosya ekle)
-                            const imgRes = await fetch(endpointUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    action: "upload_file", fileName: imgDosyaAdi, mimeType: "image/png", base64Data: imgBase64,
-                                    ekip: currentUserEkip, videoId: targetVideoId, isFirstUpload: false,
-                                    ekleyen: currentUserAdSoyad,
-                                    subFolderName: subFolderName
-                                })
-                            });
-                            const imgData = await imgRes.json();
-                            if (imgData.success) {
-                                // Ekran görüntüsü linkini doğrudan ait olduğu satıra işliyoruz (N sütununa denk gelecek)
-                                row["Ekran Görüntüsü Linki"] = imgData.fileUrl;
-                            }
-                        }
-                    }
-                    return; // İşlem bitince fonksiyondan çık
-
-                } else {
-                    // =========================================================
-                    // MANUEL MOD
-                    // =========================================================
-                    const matchedComments = allComments.filter(c => {
-                        const authorLower = c.author.toLowerCase().replace('@', '');
-                        return usernames.some(u => authorLower.includes(u));
-                    });
-
-                    if (matchedComments.length === 0) throw new Error("Girdiğiniz isimlerle eşleşen bir yorum bulunamadı!");
-
-                    for (let i = 0; i < matchedComments.length; i++) {
-                        const c = matchedComments[i];
-                        studio.innerHTML = `
-                                <div class="yt-comment-wrapper">
-                                    <img class="yt-avatar" src="${c.avatar}" crossorigin="anonymous">
-                                    <div class="yt-comment-content">
-                                        <div class="yt-header"><span class="yt-author">${escapeHTML(c.author)}</span><span class="yt-time">${getRelativeTime(c.time)}</span></div>
-                                        <div class="yt-text">${escapeHTML(c.text)}</div>
-                                        <div class="yt-actions"><span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${c.likes}</span>
-                                            <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
-                                        <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
-                                            </div>
-                                    </div>
-                                </div>
-                            `;
-                        await bekle(200);
-                        const canvas = await html2canvas(studio.firstElementChild, { backgroundColor: "#0f0f0f", useCORS: true, scale: 2 });
-                        const dosyaIsmi = `${c.author}_${i + 1}.png`;
-                        zip.file(dosyaIsmi, canvas.toDataURL("image/png").split(',')[1], { base64: true });
-                        statusText.innerText = `📸 Oluşturuluyor... (${i + 1}/${matchedComments.length})`;
-                    }
-
-                    statusText.innerText = "📦 Zip Dosyası Hazırlanıyor...";
-                    const content = await zip.generateAsync({ type: "blob" });
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(content);
-                    a.download = `Ekran_Goruntuleri_${currentSSVideoId}.zip`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(a.href);
-
-                    statusText.innerText = "İndirme Tamamlandı! ✅";
-                    setTimeout(kapatSSModal, 2500);
+                    zip.file(dosyaIsmi, canvas.toDataURL("image/png").split(',')[1], { base64: true });
+                    statusText.innerText = `📸 Oluşturuluyor... (${i + 1}/${matchedComments.length})`;
                 }
+
+                statusText.innerText = "📦 Zip Dosyası Hazırlanıyor...";
+                const content = await zip.generateAsync({ type: "blob" });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(content);
+                a.download = `Ekran_Goruntuleri_${currentSSVideoId}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+
+                statusText.innerText = "İndirme Tamamlandı! ✅";
+                setTimeout(kapatSSModal, 2500);
 
             } catch (error) {
                 if (!isAuto) statusText.innerText = `Hata: ${error.message}`;
                 else console.error("Otomatik SS Hatası:", error);
             } finally {
-                // BUG FIX BURADA: Otomatik ya da manuel fark etmeksizin modal butonlarını her halükarda serbest bırakıyoruz
                 modalBtns.forEach(b => b.disabled = false);
-
-                // Ana arayüz kilitlerini ise sadece manuel işlem yaptıysak kaldırıyoruz
                 if (!isAuto) {
                     window.arayuzuAktiflestir();
                 }
