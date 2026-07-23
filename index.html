@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v8.0</title>
 
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
@@ -305,7 +305,7 @@
         }
 
         /* =========================================================
-           MODERN AYARLAR KUTUSU (LIVA AI V7.2)
+           MODERN AYARLAR KUTUSU (LIVA AI V8.0)
            ========================================================= */
 
         /* =========================================================
@@ -797,7 +797,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v8.0
             </span>
             <span
                 style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
@@ -840,7 +840,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.2
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v8.0
                 </span>
             </h2>
 
@@ -1182,7 +1182,7 @@
             <p id="progressText">Başlatılıyor...</p>
             <progress id="downloadProgress" value="0" max="100" style="width: 100%; height: 20px;"></progress>
             <button id="cancelBtn" onclick="iptalEt()"
-                style="background-color: #e74c3c; width: auto; padding: 8px 20px; margin-top: 10px; font-size: 13px;">🛑
+                style="background-color: #e74c3c; width: auto; padding: 8px 20px; margin-top: 10px; font-size: 13px;">✕
                 İşlemi İptal Et ve Veriyi İndir</button>
         </div>
 
@@ -1586,7 +1586,7 @@
         // Firebase kütüphanelerini içe aktarıyoruz (Veritabanı ve Kimlik Doğrulama için)
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // Projeye ait Firebase bağlantı anahtarları
         const firebaseConfig = {
@@ -1616,9 +1616,35 @@
         let API_KEY = ""; // YouTube API Anahtarı (Firebase'den çekilecek)
         let currentUserEmail = ""; // Giriş yapan kullanıcının maili
         let currentUserEkip = "";    // YENİ: İzolasyon için ekip bilgisi (Boş ise email izolasyonu)
+        let sunucuSaatFarkiMs = 0; // Saat senkronizasyonu için global fark değişkeni
         let currentUserAdSoyad = ""; // YENİ: Geçmiş data modalında gösterilecek isim
         let isCancelled = false; // İptal butonuna basılıp basılmadığını kontrol eder
+        let aktifCommitVideoId = null; // Mid-commit iptalleri için mevcut video kimliği
+        let aktifCommitSubFolder = null; // Mid-commit iptalleri için mevcut klasör ismi
         let rpdHarcananSayaci = 0; // YENİ: Şu anki işlemde kaç adet Gemini isteği (RPD) harcandığını sayar — log kaydına yazılacak
+
+        async function versiyonKlasorunuTemizle(videoId, subFolderName) {
+            try {
+                const sheetConfigRef = doc(db, "sistem_ayarlari", "google_sheets");
+                const sheetConfigSnap = await getDoc(sheetConfigRef);
+                if (!sheetConfigSnap.exists() || !sheetConfigSnap.data().web_app_url) return;
+                const endpointUrl = sheetConfigSnap.data().web_app_url;
+                await fetch(endpointUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "delete_video_data",
+                        videoId: videoId,
+                        tarihAraligi: subFolderName,
+                        ekip: currentUserEkip,
+                        islemYapan: currentUserAdSoyad
+                    })
+                });
+            } catch (e) {
+                console.warn(`Yarım kalan veri temizliği başarısız (videoId: ${videoId}):`, e);
+                // Best-effort cleanup — a failure here should never block the user's flow
+            }
+        }
         let ustYonetimYetkisiAktif = localStorage.getItem('ustYonetimYetkisi') === 'true'; // YENİ: Durumu tarayıcı hafızasından çek
 
         // Kanal listeleme ve sayfalamada kullanılan değişkenler
@@ -1762,26 +1788,197 @@
         // =========================================================================
         function ilerlemeKaydet(videoId, checkpoint) {
             try {
-                localStorage.setItem(`ai_resume_${videoId}`, JSON.stringify(checkpoint));
+                localStorage.setItem(`liva_resume_${videoId}`, JSON.stringify(checkpoint));
             } catch (e) {
-                // localStorage doluysa (çok büyük bir iş yapılıyorsa) sessizce vazgeçiyoruz,
-                // bu bir "ekstra güvenlik ağı" olduğu için ana işlemi asla bozmamalı.
-                console.warn("İlerleme kaydedilemedi (tarayıcı hafızası dolu olabilir):", e);
+                console.warn("İlerleme kaydedilemedi:", e);
             }
         }
 
         function ilerlemeOku(videoId) {
             try {
-                const kayit = localStorage.getItem(`ai_resume_${videoId}`);
+                const kayit = localStorage.getItem(`liva_resume_${videoId}`);
                 return kayit ? JSON.parse(kayit) : null;
             } catch (e) {
-                return null; // Bozuk/okunamayan bir kayıt varsa yok saymak, hata vermekten daha güvenli
+                return null;
             }
         }
 
         function ilerlemeSil(videoId) {
-            localStorage.removeItem(`ai_resume_${videoId}`);
+            localStorage.removeItem(`liva_resume_${videoId}`);
         }
+
+        function bulkIlerlemeKaydet(checkpoint) {
+            try {
+                localStorage.setItem('liva_bulk_resume', JSON.stringify(checkpoint, (key, value) => {
+                    if (key === 'parentRef') return undefined; // Dairesel referansı yoksay
+                    return value;
+                }));
+            } catch (e) {
+                console.warn("Toplu ilerleme kaydedilemedi:", e);
+            }
+        }
+
+        function bulkIlerlemeOku() {
+            try {
+                const kayit = localStorage.getItem('liva_bulk_resume');
+                return kayit ? JSON.parse(kayit) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function bulkIlerlemeSil() {
+            localStorage.removeItem('liva_bulk_resume');
+        }
+
+        function bulkResumeListesiOlustur(checkpoint) {
+            if (!checkpoint || !checkpoint.videoIdListesi) return "";
+
+            let html = '<ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">';
+
+            checkpoint.videoIdListesi.forEach((vId, i) => {
+                let title = checkpoint.videoBasliklariMap ? (checkpoint.videoBasliklariMap[vId] || vId) : vId;
+                let safeTitle = escapeHTML(title);
+                let status = '⏳';
+
+                if (checkpoint.stage === "bulk_ai_analysis") {
+                    if (i < checkpoint.currentVideoIndex) status = '✅';
+                    else if (i === checkpoint.currentVideoIndex) status = '🔄';
+                } else if (checkpoint.stage === "bulk_review") {
+                    status = '✅';
+                } else if (checkpoint.stage === "bulk_commit") {
+                    let commitIdx = checkpoint.groupedVideoKeys ? checkpoint.groupedVideoKeys.indexOf(vId) : -1;
+                    if (commitIdx !== -1) {
+                        if (commitIdx < checkpoint.currentCommitIndex) status = '✅';
+                        else if (commitIdx === checkpoint.currentCommitIndex) status = '🔄';
+                    } else {
+                        status = '✅';
+                    }
+                }
+
+                html += `<li style="display: flex; gap: 8px; align-items: flex-start; line-height: 1.3;">
+                            <span style="flex-shrink: 0;">${status}</span>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="${safeTitle}">${safeTitle}</span>
+                         </li>`;
+            });
+
+            html += '</ul>';
+            return html;
+        }
+
+        window.kontrolEtVeGosterKalanIslem = () => {
+            const bulkCheckpoint = bulkIlerlemeOku();
+            let singleFoundKey = null;
+            let singleCheckpoint = null;
+
+            // Öncelik Toplu Analizindir (daha çok veri riski taşır)
+            if (!bulkCheckpoint) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith("liva_resume_")) {
+                        singleFoundKey = key;
+                        singleCheckpoint = JSON.parse(localStorage.getItem(key));
+                        break;
+                    }
+                }
+            }
+
+            if (bulkCheckpoint && bulkCheckpoint.stage) {
+                const modal = document.getElementById('resumeModal');
+                // Genel (Generic) bir ikon svg'si kullanıyoruz
+                document.getElementById('resumeThumb').src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmMzZTUwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIyIDE5YTIgMiAwIDAxLTIgMmgtNHMyIDEgMiAzSDZzMi0xIDItM0gyYTIgMiAwIDAxLTItMlY1YTIgMiAwIDAxMi0yaTIwYTIgMiAwIDAxMiAydjE0eiIvPjxwb2x5Z29uIHBvaW50cz0iMTAgOCAxNiAxMiAxMCAxNiAxMCA4IiBmaWxsPSIjMmQzZTUwIi8+PC9zdmc+";
+                document.getElementById('resumeTitle').innerText = "Toplu Video Analizi İşlemi";
+
+                let stageText = "";
+                const totalVideos = bulkCheckpoint.videoIdListesi ? bulkCheckpoint.videoIdListesi.length : 0;
+                if (bulkCheckpoint.stage === "bulk_ai_analysis") {
+                    stageText = `[Toplu Video Analizi]\nAnaliz İşlemleri Yarıda Kalmıştır.\nToplam ${totalVideos} Videodan ${bulkCheckpoint.currentVideoIndex || 0} adet tamamlanmıştır.`;
+                } else if (bulkCheckpoint.stage === "bulk_review") {
+                    stageText = `[Toplu Video Analizi]\nYorum İnceleme İşlemleri Yarıda Kalmıştır.`;
+                } else if (bulkCheckpoint.stage === "bulk_commit") {
+                    const keys = bulkCheckpoint.groupedVideoKeys || [];
+                    stageText = `[Toplu Video Analizi]\nOnaylanan Yorumların Veritabanına Yüklenme İşlemleri Yarıda Kalmıştır.\nToplam ${keys.length} Videodan ${bulkCheckpoint.currentCommitIndex || 0} adet yüklenmiştir.`;
+                }
+
+                document.getElementById('resumeStageText').innerText = stageText;
+
+                const listContainer = document.getElementById('resumeListContainer');
+                if (listContainer) {
+                    listContainer.innerHTML = bulkResumeListesiOlustur(bulkCheckpoint);
+                    listContainer.style.display = 'block';
+                }
+
+                modal.style.display = 'flex';
+
+                document.getElementById('btn-resume-yes').onclick = () => {
+                    if (bulkCheckpoint.isAI && document.getElementById('aiModelSelect').options.length === 0) {
+                        alert("Yarım kalan işlem Yapay Zeka gerektiriyor. Lütfen devam etmeden önce (zaten doldurulmuş olan) API anahtarınız ile 'Doğrula ve Kilidi Aç' butonuna tıklayarak modelleri yükleyin.");
+                        modal.style.display = 'none';
+                        return;
+                    }
+                    modal.style.display = 'none';
+                    window.aktifBulkResumeCheckpoint = bulkCheckpoint; // Bulk motora sinyal gönder
+                    window.topluAnaliziBaslat();
+                };
+
+                document.getElementById('btn-resume-no').onclick = async () => {
+                    modal.style.display = 'none';
+                    if (bulkCheckpoint.stage === "bulk_commit" && bulkCheckpoint.groupedVideoKeys && bulkCheckpoint.videolaraGoreGrup) {
+                        const vId = bulkCheckpoint.groupedVideoKeys[bulkCheckpoint.currentCommitIndex];
+                        if (vId && bulkCheckpoint.videolaraGoreGrup[vId] && bulkCheckpoint.videolaraGoreGrup[vId].length > 0) {
+                            const subFolderName = bulkCheckpoint.videolaraGoreGrup[vId][0]["Yorumların Tarih Aralığı"] || "Belirtilmedi";
+                            await versiyonKlasorunuTemizle(vId, subFolderName);
+                        }
+                    }
+                    bulkIlerlemeSil();
+                };
+
+            } else if (singleCheckpoint && singleCheckpoint.stage) {
+                const modal = document.getElementById('resumeModal');
+                document.getElementById('resumeThumb').src = singleCheckpoint.videoThumbnail || "https://via.placeholder.com/120x90";
+                document.getElementById('resumeTitle').innerText = singleCheckpoint.videoTitle || singleCheckpoint.videoId;
+
+                let stageText = "";
+                if (singleCheckpoint.stage === "ai_analysis") {
+                    const total = singleCheckpoint.jsFiltredenGecenler ? singleCheckpoint.jsFiltredenGecenler.length : 0;
+                    stageText = `Analiz İşlemleri Yarıda Kalmış.\nKalan Analiz Adedi: ${singleCheckpoint.radarIndex || 0} / ${total}`;
+                } else if (singleCheckpoint.stage === "review") {
+                    const total = singleCheckpoint.aiVerisi ? singleCheckpoint.aiVerisi.length : 0;
+                    stageText = `Yorum İnceleme İşlemleri Yarıda Kalmış.\nKalan İnceleme Adedi: ${singleCheckpoint.currentIndex || 0} / ${total}`;
+                } else if (singleCheckpoint.stage === "screenshot_generation") {
+                    stageText = `Yorum Verileri Google Drive'a Yüklenirken Yarıda Kalmış.`;
+                }
+
+                document.getElementById('resumeStageText').innerText = stageText;
+
+                const listContainer = document.getElementById('resumeListContainer');
+                if (listContainer) {
+                    listContainer.style.display = 'none';
+                    listContainer.innerHTML = "";
+                }
+
+                modal.style.display = 'flex';
+
+                document.getElementById('btn-resume-yes').onclick = () => {
+                    if (singleCheckpoint.isAI && document.getElementById('aiModelSelect').options.length === 0) {
+                        alert("Yarım kalan işlem Yapay Zeka gerektiriyor. Lütfen devam etmeden önce (zaten doldurulmuş olan) API anahtarınız ile 'Doğrula ve Kilidi Aç' butonuna tıklayarak modelleri yükleyin.");
+                        modal.style.display = 'none';
+                        return;
+                    }
+                    modal.style.display = 'none';
+                    window.aktifResumeCheckpoint = singleCheckpoint;
+                    window.yorumMotorunuCalistir(singleCheckpoint.videoId, null);
+                };
+
+                document.getElementById('btn-resume-no').onclick = async () => {
+                    modal.style.display = 'none';
+                    if (singleCheckpoint.stage === "screenshot_generation") {
+                        await versiyonKlasorunuTemizle(singleCheckpoint.videoId, singleCheckpoint.tarihAraligiMetni);
+                    }
+                    localStorage.removeItem(singleFoundKey);
+                };
+            }
+        };
 
         // =========================================================================
         // FİREBASE KİŞİSEL VERİ SENKRONİZASYONU VE KOTA (RPD) YÖNETİCİSİ
@@ -1818,18 +2015,25 @@
             "models/gemini-2.5-pro": 0,
             "models/gemini-3-flash": 20,
             "models/gemini-3.1-flash-lite": 500,
-            "models/gemini-3.5-flash": 20
+            "models/gemini-3.5-flash-lite": 500,
+            "models/gemini-3.5-flash": 20,
+            "models/gemini-3.6-flash": 20
         };
 
-        // Her gün SAAT 10:00'da sıfırlanacak şekilde "Mevcut Döngü Günü"nü hesaplar
+        function dogruSuAn() {
+            return new Date(Date.now() + sunucuSaatFarkiMs);
+        }
+
         function getResetGunu() {
-            const simdi = new Date();
-            let resetTarihi = new Date(simdi);
-            // Eğer saat sabah 10:00'dan küçükse, henüz dünkü kotayı kullanıyoruz demektir
-            if (simdi.getHours() < 10) {
-                resetTarihi.setDate(simdi.getDate() - 1);
-            }
-            return resetTarihi.toLocaleDateString('tr-TR');
+            const dogruZaman = dogruSuAn();
+            // RPD resmi olarak Pasifik Saatinde (PT) gece yarısı sıfırlanır.
+            // Kullanıcının kendi saat dilimi veya bozuk sistem saati bu hesaplamayı etkilemez.
+            return new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Los_Angeles',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(dogruZaman);
         }
 
         function getDailyRPD(modelName) {
@@ -1953,7 +2157,7 @@
                     const option = document.createElement('option');
                     option.value = m.name;
                     option.text = m.displayName || m.name.replace('models/', '');
-                    if (m.name.includes("3.1-flash-lite")) option.selected = true; // Favori modelimiz varsa otomatik seç
+                    if (m.name.includes("3.5-flash-lite")) option.selected = true; // Favori modelimiz varsa otomatik seç
                     aiModelSelect.appendChild(option);
                 });
 
@@ -1979,6 +2183,9 @@
                 modelSelectRow.style.display = "flex";
                 window.modelSecildi();
 
+                // Kilit açıldıktan sonra, bekleyen bir resume işlemi varsa modalı otomatik tekrar göster
+                window.kontrolEtVeGosterKalanIslem();
+
             } catch (error) {
                 // Olası bir hatada kullanıcıya mesaj gösterip eski haline sıfırlıyoruz (Error handling)
                 alert(error.message);
@@ -1999,10 +2206,9 @@
             const select = document.getElementById('aiTemplateSelect');
             if (!select) return;
 
-            select.innerHTML = '<option value="new">📝 Yeni / Özel Prompt (Boş)</option>';
-            select.innerHTML += '<option value="criteria-based-theological-analysis">🔒 Varsayılan: 11 Kriterli Teolojik Analiz</option>';
-            // YENİ ŞABLON BURAYA EKLENDİ
+            select.innerHTML = '<option value="criteria-based-theological-analysis" selected>🔒 Varsayılan: 11 Kriterli Teolojik Analiz</option>';
             select.innerHTML += '<option value="religious-questions-and-doubts">🔒 Varsayılan: Dini Sorular ve Şüpheler (Cevap Hazırlama)</option>';
+            select.innerHTML += '<option value="new">📝 Yeni / Özel Prompt (Boş)</option>';
 
             let sablonlar = JSON.parse(localStorage.getItem('ai_prompt_templates')) || {};
             for (let isim in sablonlar) {
@@ -2133,9 +2339,25 @@
                         }
                         if (kisiselData.rpd_kayitlari) {
                             for (const [key, value] of Object.entries(kisiselData.rpd_kayitlari)) {
-                                localStorage.setItem(key, value);
+                                const localValue = localStorage.getItem(key);
+                                if (localValue === null || parseInt(value) < parseInt(localValue)) {
+                                    localStorage.setItem(key, value);
+                                }
                             }
                         }
+                    }
+
+                    // KULLANICI SAATİNİ SUNUCU İLE SENKRONİZE ETME
+                    try {
+                        const saatRef = doc(db, "kullanici_ayarlari", currentUserEmail);
+                        const senkZamani = Date.now();
+                        await setDoc(saatRef, { saat_senk_test: serverTimestamp() }, { merge: true });
+                        const saatSnap = await getDoc(saatRef);
+                        if (saatSnap.exists() && saatSnap.data().saat_senk_test) {
+                            sunucuSaatFarkiMs = saatSnap.data().saat_senk_test.toDate().getTime() - senkZamani;
+                        }
+                    } catch (e) {
+                        console.warn("Saat senkronizasyonu başarısız, yerel saat kullanılacak:", e);
                     }
 
                     // Kullanıcı yetkiliyse, güvenli bir şekilde YouTube API anahtarını veritabanından çekeriz
@@ -2147,6 +2369,7 @@
                         document.getElementById('loadingScreen').style.display = 'none';
                         document.getElementById('loginScreen').style.display = 'none';
                         document.getElementById('mainApp').style.display = 'block'; // Ana ekranı aç
+                        window.kontrolEtVeGosterKalanIslem(); // ADIM 3: Kapanmadan önce yarım kalan iş var mı kontrolü
                     } else {
                         alert("Kritik Hata: API Kasası veritabanında bulunamadı! Yöneticinize başvurun.");
                         signOut(auth);
@@ -2247,6 +2470,30 @@
         // ANA LOG KAYIT SİSTEMİ (GENİŞLETİLMİŞ ŞEMA)
         // Yeni `yorumlarin_tarih_araligi` parametresini Firestore'a işler.
         // =========================================================================
+        function guncelleVideoRozeti(videoId, analizDurumu) {
+            globalAnalyzedVideosCache.set(videoId, analizDurumu);
+            const checkbox = document.querySelector(`.bulk-video-checkbox[data-video-id="${videoId}"]`);
+            if (checkbox) {
+                const videoItem = checkbox.closest('.video-item');
+                if (videoItem) {
+                    const statsP = videoItem.querySelector('.video-stats');
+                    if (statsP) {
+                        const spans = statsP.querySelectorAll('span');
+                        spans.forEach(s => {
+                            if (s.innerText.includes('Daha Önce Analiz Edildi') || s.innerText.includes('Taranmış (Sonuç Yok)')) {
+                                s.remove();
+                            }
+                        });
+                        if (analizDurumu === 'dolu') {
+                            statsP.insertAdjacentHTML('beforeend', ` <span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold; margin-left: 10px;">✅ Daha Önce Analiz Edildi</span>`);
+                        } else {
+                            statsP.insertAdjacentHTML('beforeend', ` <span style="background: #94a3b8; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold; margin-left: 10px;">⚪ Taranmış (Sonuç Yok)</span>`);
+                        }
+                    }
+                }
+            }
+        }
+
         async function islemLogla(videoId, videoBaslik, indirilenSayi, format, detay, ekstraDetaylar = {}) {
             try {
                 const trTarih = ekstraDetaylar.masterTarihi || new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
@@ -2258,6 +2505,7 @@
                     ekip: currentUserEkip,
                     tarih_saat: trTarih,
                     zaman_damgasi: new Date().toISOString(),
+                    sunucu_zaman_damgasi: serverTimestamp(),
                     video_id: videoId,
                     video_baslik: videoBaslik,
                     indirilen_yorum_sayisi: indirilenSayi,
@@ -2277,29 +2525,11 @@
                     youtube_kanal_id: ekstraDetaylar.kanalId || "-"
                 });
 
-                // islemLogla fonksiyonu içerisindeki rozet güncelleme bloğu
                 if (detay === "AI Analizi Yapıldı") {
-                    // YENİ: İşlem anında indirilen sayıya göre durumu belirliyoruz
                     const analizDurumu = parseInt(indirilenSayi) > 0 ? 'dolu' : 'bos';
-                    globalAnalyzedVideosCache.set(videoId, analizDurumu);
-
-                    const checkbox = document.querySelector(`.bulk-video-checkbox[data-video-id="${videoId}"]`);
-                    if (checkbox) {
-                        const videoItem = checkbox.closest('.video-item');
-                        if (videoItem) {
-                            const statsP = videoItem.querySelector('.video-stats');
-                            // Çift rozet basılmasını engellemek için her iki metni de kontrol et
-                            if (statsP && !statsP.innerHTML.includes('Daha Önce Analiz Edildi') && !statsP.innerHTML.includes('Taranmış (Sonuç Yok)')) {
-                                if (analizDurumu === 'dolu') {
-                                    statsP.innerHTML += ` <span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 10px;">✅ Daha Önce Analiz Edildi</span>`;
-                                } else {
-                                    statsP.innerHTML += ` <span style="background: #34495E; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 10px;">⚪ Taranmış (Sonuç Yok)</span>`;
-                                }
-                            }
-                        }
-                    }
+                    guncelleVideoRozeti(videoId, analizDurumu);
                 }
-                return docRef.id; // YENİ: Toplu analizde Drive linklerini sonradan güncelleyebilmek için ID'yi döndürüyoruz
+                return docRef.id;
             } catch (error) {
                 console.error("Log yazılamadı:", error);
                 return null;
@@ -3170,13 +3400,23 @@
         };
 
         // İndirme işlemini veya yapay zeka analizini durduran fonksiyon
-        window.iptalEt = () => {
+        window.iptalEt = async () => {
+            if (!confirm("İşlemleri iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) return;
+
             // İşlemin iptal edildiğini belirten temel bayrağımızı true yapıyoruz
             isCancelled = true;
 
             const btn = document.getElementById('cancelBtn');
             btn.innerText = "Durduruluyor, Bekleyin...";
             btn.disabled = true;
+
+            if (aktifCommitVideoId !== null) {
+                const progressText = document.getElementById('progressText');
+                if (progressText) progressText.innerText = "Yarım kalan veriler temizleniyor...";
+                await versiyonKlasorunuTemizle(aktifCommitVideoId, aktifCommitSubFolder);
+                aktifCommitVideoId = null;
+                aktifCommitSubFolder = null;
+            }
 
             // YENİ EKLENEN KISIM:
             // İptal butonuna basıldığında tüm sisteme "islemIptalEdildi" isimli zili (event) çalıyoruz.
@@ -3542,39 +3782,23 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         // =========================================================================
         // YAPAY ZEKA OTONOM YÖNETİCİSİ (Aşama 0, Aşama 1 ve Aşama 2'yi sırasıyla çalıştırır)
         // =========================================================================
-        async function yapayZekaMotorunuCalistir(commentsArray, apiKey, promptText, isDefault, progressText, progressBar, videoId) {
-
-            // ---- "KALDIĞIN YERDEN DEVAM ET" KONTROLÜ ----
-            // Değişkenleri en başta tanımlıyoruz; ya sıfırdan hesaplanacaklar ya da eski kayıttan geri yüklenecekler.
+        async function yapayZekaMotorunuCalistir(commentsArray, apiKey, promptText, isDefault, progressText, progressBar, videoId, baseCheckpoint = null) {
             let jsFiltredenGecenler;
             let filtrelenmisYorumlar = [];
             let nihaiExcelVerisi = [];
             let baslangicRadarIndex = 0;
             let baslangicCerrahIndex = 0;
-            let devamEdiliyor = false;
 
-            const kayitliIlerleme = ilerlemeOku(videoId);
-            // Sadece AYNI video + AYNI prompt/şablon için kaydedilmiş bir ilerleme varsa devam teklifi sunuyoruz
-            // (Farklı bir şablonla tekrar denenirse eski yarım kalmış veri anlamsız olur, o yüzden eşleştirme şart)
-            if (kayitliIlerleme && kayitliIlerleme.promptText === promptText && kayitliIlerleme.isDefault === isDefault) {
-                const devamEt = confirm(
-                    "Bu video için daha önce yarıda kalmış bir yapay zeka analizi bulundu.\n" +
-                    "Kaldığınız yerden devam etmek ister misiniz?\n\n" +
-                    "(\"İptal\"e basarsanız sıfırdan başlanır ve eski kayıt silinir.)"
-                );
-                if (devamEt) {
-                    jsFiltredenGecenler = kayitliIlerleme.jsFiltredenGecenler;
-                    filtrelenmisYorumlar = kayitliIlerleme.filtrelenmisYorumlar;
-                    nihaiExcelVerisi = kayitliIlerleme.nihaiExcelVerisi;
-                    baslangicRadarIndex = kayitliIlerleme.radarIndex;
-                    baslangicCerrahIndex = kayitliIlerleme.cerrahIndex;
-                    devamEdiliyor = true;
-                } else {
-                    ilerlemeSil(videoId);
-                }
-            }
+            const kayitliIlerleme = baseCheckpoint && baseCheckpoint.stage === "ai_analysis" ? baseCheckpoint : null;
 
-            if (!devamEdiliyor) {
+            // Onay işlemi global panelde yapıldığı için ek alert sormadan direkt verileri hafızadan doldur
+            if (kayitliIlerleme) {
+                jsFiltredenGecenler = kayitliIlerleme.jsFiltredenGecenler || [];
+                filtrelenmisYorumlar = kayitliIlerleme.filtrelenmisYorumlar || [];
+                nihaiExcelVerisi = kayitliIlerleme.nihaiExcelVerisi || [];
+                baslangicRadarIndex = kayitliIlerleme.radarIndex || 0;
+                baslangicCerrahIndex = kayitliIlerleme.cerrahIndex || 0;
+            } else {
                 // AŞAMA 0: MUAZZAM ZAMAN TASARRUFU SAĞLAYAN JAVASCRIPT ÖN FİLTRESİ
                 // Yapay zekaya gitmeden önce on binlerce yorum tarayıcı RAM'inde sıfır maliyetle temizlenir
                 progressText.innerText = `🤖 Aşama 0: JavaScript Hızlı Ön Filtreleme (Gürültüler Temizleniyor)...`;
@@ -3602,6 +3826,23 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 // Eğer ön filtreden hiç yorum geçemediyse sistemi boşuna yormadan işlemi bitir
                 if (jsFiltredenGecenler.length === 0) return [];
             }
+
+            const saveStageData = (rIdx, cIdx) => {
+                if (baseCheckpoint) {
+                    baseCheckpoint.stage = "ai_analysis";
+                    baseCheckpoint.jsFiltredenGecenler = jsFiltredenGecenler;
+                    baseCheckpoint.filtrelenmisYorumlar = filtrelenmisYorumlar;
+                    baseCheckpoint.nihaiExcelVerisi = nihaiExcelVerisi;
+                    baseCheckpoint.radarIndex = rIdx;
+                    baseCheckpoint.cerrahIndex = cIdx;
+
+                    if (baseCheckpoint.isBulk) {
+                        bulkIlerlemeKaydet(baseCheckpoint.parentRef);
+                    } else {
+                        ilerlemeKaydet(videoId, baseCheckpoint);
+                    }
+                }
+            };
 
             // AŞAMA 1: RADAR (Hızlı Tarama - 100 Yorumluk Paketler)
             // Ön filtreden geçenler Flash-Lite modeline 100'er 100'er yedirilir
@@ -3658,14 +3899,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     }
                 }
 
-                // YENİ: Bu paket (100 yorum) başarıyla bitti — "an fotoğrafını" tarayıcı hafızasına kaydediyoruz.
-                // Sekme şimdi kapansa bile, program bir dahaki sefere buradan devam edebilecek.
-                ilerlemeKaydet(videoId, {
-                    promptText, isDefault,
-                    jsFiltredenGecenler, filtrelenmisYorumlar, nihaiExcelVerisi,
-                    radarIndex: i + radarBatchSize, // bir sonraki paket buradan başlayacak
-                    cerrahIndex: 0 // Cerrah aşaması henüz başlamadı
-                });
+                saveStageData(i + radarBatchSize, 0);
 
                 // RPD limitlerini aşmamak için her 100'lük paketten sonra zorunlu bekleme (4.5 sn)
                 if (i + radarBatchSize < jsFiltredenGecenler.length) await bekle(4500);
@@ -3728,24 +3962,12 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     }
                 }
 
-                // YENİ: Cerrah paketi de bitti, checkpoint'i güncelliyoruz.
-                // Artık radar tamamen bittiği için radarIndex'i listenin sonu olarak sabitliyoruz,
-                // böylece bir dahaki resume'da radar aşaması hiç tekrar çalışmaz.
-                ilerlemeKaydet(videoId, {
-                    promptText, isDefault,
-                    jsFiltredenGecenler, filtrelenmisYorumlar, nihaiExcelVerisi,
-                    radarIndex: jsFiltredenGecenler.length,
-                    cerrahIndex: i + cerrahBatchSize
-                });
+                saveStageData(jsFiltredenGecenler.length, i + cerrahBatchSize);
 
                 if (i + cerrahBatchSize < filtrelenmisYorumlar.length) await bekle(4500);
             }
 
-            // YENİ: İş başarıyla tamamen bitti — artık kayıtlı checkpoint'e ihtiyaç kalmadı, temizliyoruz.
-            // (Aksi halde bir dahaki sefere "yarıda kalmış iş var mı?" diye boşuna sorardık.)
-            ilerlemeSil(videoId);
-
-            // Oluşan tablo verisini (JSON) Excel'e basılması için ana fonksiyona geri yolluyoruz
+            // (Checkpoint silme işlemi Phase 2'nin en sonuna (bulut aktarımı bitişine) taşındı)
             return nihaiExcelVerisi;
         }
 
@@ -3784,23 +4006,39 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             });
         };
 
-        // =========================================================================
-        // %100 KUSURSUZLAŞTIRILMIŞ ANA İŞLETİCİ MOTORU
-        // Mantıksal paradokslar temizlendi, AI kontrolleri küresel güvenliğe taşındı.
-        // =========================================================================
+        // Yardımcı Fonksiyon: Ekran Görüntüsü Yükleme (Otomatik Tekrar Deneme Mekanizması)
+        async function tekGorseluDeneyerekYukle(ss, endpointUrl, targetVideoId, subFolderName, maxDenemeSayisi = 3, beklemeMs = 5000) {
+            for (let deneme = 1; deneme <= maxDenemeSayisi; deneme++) {
+                try {
+                    const imgRes = await fetch(endpointUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: "upload_file", fileName: ss.fileName, mimeType: "image/png",
+                            base64Data: ss.base64Data, ekip: currentUserEkip, videoId: targetVideoId,
+                            isFirstUpload: false, ekleyen: currentUserAdSoyad, subFolderName: subFolderName
+                        })
+                    });
+                    const imgData = await imgRes.json();
+                    if (imgData.success) {
+                        ss.rowRef["Ekran Görüntüsü Linki"] = imgData.fileUrl;
+                        return true;
+                    }
+                    if (deneme < maxDenemeSayisi) await bekle(beklemeMs);
+                } catch (uploadErr) {
+                    if (deneme === maxDenemeSayisi) {
+                        ss.rowRef["Ekran Görüntüsü Linki"] = `HATA: ${uploadErr.message}`;
+                        return false;
+                    }
+                    await bekle(beklemeMs);
+                }
+            }
+            ss.rowRef["Ekran Görüntüsü Linki"] = "HATA: 3 denemeye rağmen yüklenemedi";
+            return false;
+        }
+
         // =========================================================================
         // %100 KUSURSUZLAŞTIRILMIŞ ANA İŞLETİCİ MOTORU (Tekli Video İçin)
-        // GÜNCELLEME: Tüm yorumlar (thread bazında) API'den çekilir, 
-        // ardından RAM üzerinde yerel olarak kusursuzca filtrelenir.
-        // =========================================================================
-        // =========================================================================
-        // %100 KUSURSUZLAŞTIRILMIŞ ANA İŞLETİCİ MOTORU (Tekli Video İçin)
-        // GÜNCELLEME: Tüm yorumlar (thread bazında) API'den çekilir, 
-        // ardından RAM üzerinde yerel olarak kusursuzca filtrelenir.
-        // =========================================================================
-        // =========================================================================
-        // ANA İŞLETİCİ MOTORU (TEKLİ VİDEO İÇİN REFACTOR)
-        // Akıllı Otomatik (Smart Auto) Delta Algoritması ve Context-Aware Klasörleme
         // =========================================================================
         window.yorumMotorunuCalistir = async (videoId, btnElement = null) => {
             window.arayuzuKilitle();
@@ -3809,26 +4047,32 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             rpdHarcananSayaci = 0;
             let masterLogTarihi = null;
 
-            const isAI = document.getElementById('aiAnalysisCheck').checked;
-            const includeReplies = document.getElementById('includeReplies').checked;
-            const flattenReplies = document.getElementById('flattenReplies').checked;
-            const exportFormat = document.getElementById('exportFormat').value;
+            // ADIM 3: Global modal'dan gelen Resume sinyali varsa onu yakala
+            const cp = window.aktifResumeCheckpoint;
+            window.aktifResumeCheckpoint = null; // Tüketildikten sonra temizle
+
+            const isAI = cp ? cp.isAI : document.getElementById('aiAnalysisCheck').checked;
+            const includeReplies = cp ? cp.includeReplies : document.getElementById('includeReplies').checked;
+            const flattenReplies = cp ? cp.flattenReplies : document.getElementById('flattenReplies').checked;
+            const exportFormat = cp ? cp.exportFormat : document.getElementById('exportFormat').value;
 
             const minLikesInput = document.getElementById('minLikes').value.trim();
-            const minLikesFilter = minLikesInput === "" ? 0 : parseInt(minLikesInput, 10);
+            const minLikesFilter = cp ? cp.minLikesFilter : (minLikesInput === "" ? 0 : parseInt(minLikesInput, 10));
 
             const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
-            const aiTemplateSelect = document.getElementById('aiTemplateSelect').value;
-            const aiTemplateText = document.getElementById('aiTemplateText').value.trim();
+            const aiTemplateSelect = cp ? cp.aiTemplateSelect : document.getElementById('aiTemplateSelect').value;
+            const aiTemplateText = cp ? cp.aiTemplateText : document.getElementById('aiTemplateText').value.trim();
 
             let startTimestamp = 0;
             let endTimestamp = Infinity;
-            let tarihAraligiMetni = ""; // YENİ: Log ve Google Drive API'ye yönlendirilecek spesifik string
+            let tarihAraligiMetni = cp ? cp.tarihAraligiMetni : "";
 
             // -----------------------------------------------------------------
             // 1. ADIM: "SMART AUTO" İNKREMENTAL SENKRONİZASYON ALGORİTMASI
             // -----------------------------------------------------------------
-            if (window.tarihModu === 'otomatik') {
+            if (cp && cp.tarihAraligiMetni) {
+                // Resume durumunda önceden kaydedilmiş tarih aralığı klasör ismi aynen kullanılır
+            } else if (window.tarihModu === 'otomatik') {
                 const simdi = new Date();
                 endTimestamp = simdi.getTime();
                 const bitisMetni = livaTarihFormatla(simdi); // Akıllı modda bitiş kesinlikle şu andır.
@@ -3947,7 +4191,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const cancelBtn = document.getElementById('cancelBtn');
 
             progressContainer.style.display = 'block';
-            cancelBtn.innerText = "🛑 İşlemi İptal Et ve Veriyi İndir";
+            cancelBtn.innerText = "✕  İşlemi İptal Et ve Veriyi İndir";
             cancelBtn.disabled = false;
             setStatus("");
 
@@ -3960,6 +4204,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             let processedCount = 0;
             let targetCommentCount = 0;
             let videoTitle = videoId;
+            let videoThumbnailUrl = "";
             let kanalHandleForLog = "-"; // YENİ: Hata almamak için değişkeni burada tanımlıyoruz.
 
             try {
@@ -3969,6 +4214,11 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 if (statsData.items && statsData.items.length > 0) {
                     targetCommentCount = parseInt(statsData.items[0].statistics.commentCount) || 0;
                     videoTitle = statsData.items[0].snippet.title;
+                    videoThumbnailUrl = statsData.items[0].snippet.thumbnails?.medium?.url || "";
+
+                    // ADIM 3: Resume işlemi için zorunlu video detayları (Eksikse tamamla)
+                    if (cp && !cp.videoTitle) cp.videoTitle = videoTitle;
+                    if (cp && !cp.videoThumbnail) cp.videoThumbnail = videoThumbnailUrl;
 
                     // YENİ: Tekli analizde Kanal ID (Handle) bilgisini çekiyoruz
                     try {
@@ -4010,138 +4260,146 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
                 const baseUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${API_KEY}&maxResults=100&textFormat=plainText`;
 
-                // =========================================================================
-                // 3. ADIM: ANA YORUM VE YANIT ÇEKME DÖNGÜSÜ
-                // =========================================================================
-                do {
-                    const data = await guvenliFetch(nextPageToken ? `${baseUrl}&pageToken=${nextPageToken}` : baseUrl);
+                // ADIM 3: Yönlendirme (Routing). Resume (Geçmiş Aşama) varsa Youtube'dan baştan çekmeyi Atla!
+                if (cp && (cp.stage === "ai_analysis" || cp.stage === "review" || cp.stage === "screenshot_generation")) {
+                    rawCommentsForAI = cp.rawCommentsForAI || [];
+                    excelData = cp.excelData || [];
+                    progressText.innerText = `Kaldığı aşamaya (${cp.stage}) geçiş yapılıyor...`;
+                    await bekle(1000);
+                } else {
+                    // =========================================================================
+                    // 3. ADIM: ANA YORUM VE YANIT ÇEKME DÖNGÜSÜ
+                    // =========================================================================
+                    do {
+                        const data = await guvenliFetch(nextPageToken ? `${baseUrl}&pageToken=${nextPageToken}` : baseUrl);
 
-                    if (data.items) {
-                        for (const item of data.items) {
-                            const snippet = item.snippet.topLevelComment.snippet;
-                            let threadRawData = [];
+                        if (data.items) {
+                            for (const item of data.items) {
+                                const snippet = item.snippet.topLevelComment.snippet;
+                                let threadRawData = [];
 
-                            threadRawData.push({
-                                isParent: true,
-                                author: snippet.authorDisplayName,
-                                text: snippet.textDisplay,
-                                time: new Date(snippet.publishedAt).getTime(),
-                                likes: snippet.likeCount || 0,
-                                avatar: snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
-                            });
+                                threadRawData.push({
+                                    isParent: true,
+                                    author: snippet.authorDisplayName,
+                                    text: snippet.textDisplay,
+                                    time: new Date(snippet.publishedAt).getTime(),
+                                    likes: snippet.likeCount || 0,
+                                    avatar: snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
+                                });
 
-                            if (includeReplies && item.snippet.totalReplyCount > 0) {
-                                if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
-                                    item.replies.comments.forEach(c => {
-                                        threadRawData.push({
-                                            isParent: false,
-                                            author: c.snippet.authorDisplayName,
-                                            text: c.snippet.textDisplay,
-                                            time: new Date(c.snippet.publishedAt).getTime(),
-                                            likes: c.snippet.likeCount || 0,
-                                            avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
+                                if (includeReplies && item.snippet.totalReplyCount > 0) {
+                                    if (item.replies && item.replies.comments && item.replies.comments.length === item.snippet.totalReplyCount) {
+                                        item.replies.comments.forEach(c => {
+                                            threadRawData.push({
+                                                isParent: false,
+                                                author: c.snippet.authorDisplayName,
+                                                text: c.snippet.textDisplay,
+                                                time: new Date(c.snippet.publishedAt).getTime(),
+                                                likes: c.snippet.likeCount || 0,
+                                                avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
+                                            });
                                         });
-                                    });
-                                } else {
-                                    let rToken = '';
-                                    do {
-                                        const rUrl = `https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=${item.id}&key=${API_KEY}&maxResults=100&textFormat=plainText` + (rToken ? `&pageToken=${rToken}` : '');
-                                        const rData = await guvenliFetch(rUrl);
-                                        if (rData.items) {
-                                            rData.items.forEach(c => {
-                                                threadRawData.push({
-                                                    isParent: false,
-                                                    author: c.snippet.authorDisplayName,
-                                                    text: c.snippet.textDisplay,
-                                                    time: new Date(c.snippet.publishedAt).getTime(),
-                                                    likes: c.snippet.likeCount || 0,
-                                                    avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
+                                    } else {
+                                        let rToken = '';
+                                        do {
+                                            const rUrl = `https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=${item.id}&key=${API_KEY}&maxResults=100&textFormat=plainText` + (rToken ? `&pageToken=${rToken}` : '');
+                                            const rData = await guvenliFetch(rUrl);
+                                            if (rData.items) {
+                                                rData.items.forEach(c => {
+                                                    threadRawData.push({
+                                                        isParent: false,
+                                                        author: c.snippet.authorDisplayName,
+                                                        text: c.snippet.textDisplay,
+                                                        time: new Date(c.snippet.publishedAt).getTime(),
+                                                        likes: c.snippet.likeCount || 0,
+                                                        avatar: c.snippet.authorProfileImageUrl || "https://via.placeholder.com/40"
+                                                    });
                                                 });
-                                            });
-                                        }
-                                        rToken = rData.nextPageToken || null;
-                                        if (isCancelled) break;
-                                    } while (rToken);
+                                            }
+                                            rToken = rData.nextPageToken || null;
+                                            if (isCancelled) break;
+                                        } while (rToken);
+                                    }
+                                    processedCount += item.snippet.totalReplyCount;
                                 }
-                                processedCount += item.snippet.totalReplyCount;
-                            }
 
-                            const filteredThread = threadRawData.filter(comment => {
-                                return comment.likes >= minLikesFilter &&
-                                    comment.time >= startTimestamp &&
-                                    comment.time <= endTimestamp;
-                            });
+                                const filteredThread = threadRawData.filter(comment => {
+                                    return comment.likes >= minLikesFilter &&
+                                        comment.time >= startTimestamp &&
+                                        comment.time <= endTimestamp;
+                                });
 
-                            if (filteredThread.length > 0) {
-                                const parentExists = filteredThread.some(c => c.isParent);
+                                if (filteredThread.length > 0) {
+                                    const parentExists = filteredThread.some(c => c.isParent);
 
-                                if (isAI) {
-                                    filteredThread.forEach(comment => {
-                                        rawCommentsForAI.push({
-                                            "Yorum Tarihi": livaTarihFormatla(new Date(comment.time)),
-                                            "Yorum Sahibi": comment.author,
-                                            "Beğeni Sayısı": comment.likes,
-                                            "Yorum Metni": comment.text.replace(/\n/g, ' '),
-                                            "Avatar": comment.avatar
-                                        });
-                                        fetchedCount++;
-                                    });
-                                } else if (exportFormat === 'xlsx') {
-                                    if (flattenReplies || !parentExists) {
+                                    if (isAI) {
                                         filteredThread.forEach(comment => {
-                                            excelData.push({
+                                            rawCommentsForAI.push({
                                                 "Yorum Tarihi": livaTarihFormatla(new Date(comment.time)),
-                                                "Kullanıcı Adı": comment.author,
+                                                "Yorum Sahibi": comment.author,
                                                 "Beğeni Sayısı": comment.likes,
-                                                "Orijinal Yorum": comment.text.replace(/\n/g, ' ')
+                                                "Yorum Metni": comment.text.replace(/\n/g, ' '),
+                                                "Avatar": comment.avatar
                                             });
                                             fetchedCount++;
                                         });
-                                    } else {
-                                        const parentComment = filteredThread.find(c => c.isParent);
-                                        const replies = filteredThread.filter(c => !c.isParent);
+                                    } else if (exportFormat === 'xlsx') {
+                                        if (flattenReplies || !parentExists) {
+                                            filteredThread.forEach(comment => {
+                                                excelData.push({
+                                                    "Yorum Tarihi": livaTarihFormatla(new Date(comment.time)),
+                                                    "Kullanıcı Adı": comment.author,
+                                                    "Beğeni Sayısı": comment.likes,
+                                                    "Orijinal Yorum": comment.text.replace(/\n/g, ' ')
+                                                });
+                                                fetchedCount++;
+                                            });
+                                        } else {
+                                            const parentComment = filteredThread.find(c => c.isParent);
+                                            const replies = filteredThread.filter(c => !c.isParent);
 
-                                        let row = {
-                                            "Yorum Tarihi": livaTarihFormatla(new Date(parentComment.time)),
-                                            "Kullanıcı Adı": parentComment.author,
-                                            "Beğeni Sayısı": parentComment.likes,
-                                            "Orijinal Yorum": parentComment.text.replace(/\n/g, ' ')
-                                        };
+                                            let row = {
+                                                "Yorum Tarihi": livaTarihFormatla(new Date(parentComment.time)),
+                                                "Kullanıcı Adı": parentComment.author,
+                                                "Beğeni Sayısı": parentComment.likes,
+                                                "Orijinal Yorum": parentComment.text.replace(/\n/g, ' ')
+                                            };
 
-                                        if (replies.length > 0) {
-                                            row["Alt Yanıtlar"] = replies.map(r => `(${livaTarihFormatla(new Date(r.time))}) - ${r.author} : ${r.text.replace(/\n/g, ' ')}`).join("\n");
+                                            if (replies.length > 0) {
+                                                row["Alt Yanıtlar"] = replies.map(r => `(${livaTarihFormatla(new Date(r.time))}) - ${r.author} : ${r.text.replace(/\n/g, ' ')}`).join("\n");
+                                            }
+                                            excelData.push(row);
+                                            fetchedCount += filteredThread.length;
                                         }
-                                        excelData.push(row);
-                                        fetchedCount += filteredThread.length;
-                                    }
-                                } else {
-                                    if (flattenReplies || !parentExists) {
-                                        filteredThread.forEach(comment => {
-                                            txtLines.push(`(${livaTarihFormatla(new Date(comment.time))}) - [👍 ${comment.likes} Beğeni] - ${comment.author} : ${comment.text.replace(/\n/g, ' ')}`);
-                                            fetchedCount++;
-                                        });
                                     } else {
-                                        const parentComment = filteredThread.find(c => c.isParent);
-                                        const replies = filteredThread.filter(c => !c.isParent);
+                                        if (flattenReplies || !parentExists) {
+                                            filteredThread.forEach(comment => {
+                                                txtLines.push(`(${livaTarihFormatla(new Date(comment.time))}) - [👍 ${comment.likes} Beğeni] - ${comment.author} : ${comment.text.replace(/\n/g, ' ')}`);
+                                                fetchedCount++;
+                                            });
+                                        } else {
+                                            const parentComment = filteredThread.find(c => c.isParent);
+                                            const replies = filteredThread.filter(c => !c.isParent);
 
-                                        txtLines.push(`(${livaTarihFormatla(new Date(parentComment.time))}) - [👍 ${parentComment.likes} Beğeni] - ${parentComment.author} : ${parentComment.text.replace(/\n/g, ' ')}`);
+                                            txtLines.push(`(${livaTarihFormatla(new Date(parentComment.time))}) - [👍 ${parentComment.likes} Beğeni] - ${parentComment.author} : ${parentComment.text.replace(/\n/g, ' ')}`);
 
-                                        replies.forEach(r => {
-                                            txtLines.push(`    ---> (${livaTarihFormatla(new Date(r.time))}) - [👍 ${r.likes} Beğeni] - ${r.author} : ${r.text.replace(/\n/g, ' ')}`);
-                                        });
-                                        fetchedCount += filteredThread.length;
+                                            replies.forEach(r => {
+                                                txtLines.push(`    ---> (${livaTarihFormatla(new Date(r.time))}) - [👍 ${r.likes} Beğeni] - ${r.author} : ${r.text.replace(/\n/g, ' ')}`);
+                                            });
+                                            fetchedCount += filteredThread.length;
+                                        }
                                     }
                                 }
-                            }
 
-                            processedCount++;
-                            progressBar.value = processedCount;
-                            progressText.innerText = `Çekiliyor ve Filtreleniyor... ${processedCount} / ${targetCommentCount}`;
-                            if (isCancelled) break;
+                                processedCount++;
+                                progressBar.value = processedCount;
+                                progressText.innerText = `Çekiliyor ve Filtreleniyor... ${processedCount} / ${targetCommentCount}`;
+                                if (isCancelled) break;
+                            }
                         }
-                    }
-                    nextPageToken = data.nextPageToken || null;
-                } while (nextPageToken && !isCancelled);
+                        nextPageToken = data.nextPageToken || null;
+                    } while (nextPageToken && !isCancelled);
+                } // YouTube Fetch else bloğu bitişi
 
                 let aiStorageDownloadUrl = null;
                 let aiStorageFolderUrl = null;
@@ -4168,55 +4426,108 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         return dB - dA;
                     });
 
-                    dateOfLastComment = sortedComments[0]["Yorum Tarihi"] || "Tarih Bulunamadı";
+                    dateOfLastComment = sortedComments[0] ? (sortedComments[0]["Yorum Tarihi"] || "Tarih Bulunamadı") : "Tarih Bulunamadı";
 
-                    const aiResultData = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar, videoId);
+                    let aiResultData = [];
 
-                    if (aiResultData === null) {
-                        setStatus(`Yapay zeka analizi iptal edildi.`, "#d35400");
-                        progressContainer.style.display = 'none';
-                        window.arayuzuAktiflestir();
-                        return;
-                    }
+                    // ADIM 3: Sistemin tüm aşamalarında taşınacak Ana Checkpoint Objesi
+                    const baseCheckpoint = cp || {
+                        videoId, videoTitle, videoThumbnail: videoThumbnailUrl,
+                        tarihAraligiMetni, isAI, exportFormat, includeReplies, flattenReplies, minLikesFilter, aiTemplateSelect, aiTemplateText,
+                        rawCommentsForAI
+                    };
 
-                    progressContainer.style.display = 'none';
-                    const onaylanmisVeriler = await aiSonuclariniIncele(aiResultData, aiTemplateSelect);
-                    progressContainer.style.display = 'block';
-
-                    if (onaylanmisVeriler.length === 0) {
-                        setStatus(`İnceleme sonucu tüm yorumlar reddedildi. İndirilecek veri yok.`, "#e74c3c");
-
-                        const md = new Date();
-                        const mlog = `${String(md.getDate()).padStart(2, '0')}.${String(md.getMonth() + 1).padStart(2, '0')}.${md.getFullYear()} ${String(md.getHours()).padStart(2, '0')}:${String(md.getMinutes()).padStart(2, '0')}:${String(md.getSeconds()).padStart(2, '0')}`;
-                        const sablonAdiForLog = aiTemplateSelect === "new" ? "Özel Şablon" : aiTemplateSelect;
-
-                        // YENİ: İncelemeden hiçbiri geçemediği için fetchedCount yerine 0 gönderiyoruz
-                        await islemLogla(videoId, videoTitle, 0, exportFormat, "AI Analizi Yapıldı", {
-                            isAI, includeReplies, flattenReplies, minLikesFilter,
-                            sablonAdi: sablonAdiForLog,
-                            rpdHarcanan: rpdHarcananSayaci,
-                            storageUrl: null,
-                            folderUrl: null,
-                            masterTarihi: mlog,
-                            tarihAraligi: tarihAraligiMetni,
-                            kanalId: kanalHandleForLog
-                        });
-                        firebaseVerileriniGuncelle();
-
-                        window.arayuzuAktiflestir();
-                        return;
-                    }
-
-                    excelData = onaylanmisVeriler;
-
-                    try {
-                        const sheetConfigRef = doc(db, "sistem_ayarlari", "google_sheets");
-                        const sheetConfigSnap = await getDoc(sheetConfigRef);
-
-                        if (!sheetConfigSnap.exists() || !sheetConfigSnap.data().web_app_url) {
-                            throw new Error("Apps Script Web App URL bulunamadı!");
+                    // Screenshot veya Review aşamasına ışınlanmıyorsak AI Engine'i çalıştırıyoruz
+                    if (!cp || (cp.stage !== "review" && cp.stage !== "screenshot_generation")) {
+                        aiResultData = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar, videoId, baseCheckpoint);
+                        if (aiResultData === null) {
+                            setStatus(`Yapay zeka analizi iptal edildi.`, "#d35400");
+                            progressContainer.style.display = 'none';
+                            window.arayuzuAktiflestir();
+                            return;
                         }
-                        const endpointUrl = sheetConfigSnap.data().web_app_url;
+                    }
+
+                    let onaylanmisVeriler = [];
+                    // Screenshot aşamasına ışınlanmıyorsak Review (İnceleme) Modalı çalıştırıyoruz
+                    if (!cp || cp.stage !== "screenshot_generation") {
+                        progressContainer.style.display = 'none';
+                        const reviewData = (cp && cp.stage === "review") ? cp.aiVerisi : aiResultData;
+                        onaylanmisVeriler = await aiSonuclariniIncele(reviewData, aiTemplateSelect, baseCheckpoint);
+                        progressContainer.style.display = 'block';
+
+                        if (onaylanmisVeriler.length === 0) {
+                            ilerlemeSil(videoId); // Tamamı reddedildiyse hafızayı boşalt
+                            setStatus(`İnceleme sonucu tüm yorumlar reddedildi. İndirilecek veri yok.`, "#e74c3c");
+
+                            const md = new Date();
+                            const mlog = `${String(md.getDate()).padStart(2, '0')}.${String(md.getMonth() + 1).padStart(2, '0')}.${md.getFullYear()} ${String(md.getHours()).padStart(2, '0')}:${String(md.getMinutes()).padStart(2, '0')}:${String(md.getSeconds()).padStart(2, '0')}`;
+                            const sablonAdiForLog = aiTemplateSelect === "new" ? "Özel Şablon" : aiTemplateSelect;
+
+                            // YENİ: İncelemeden hiçbiri geçemediği için fetchedCount yerine 0 gönderiyoruz
+                            await islemLogla(videoId, videoTitle, 0, exportFormat, "AI Analizi Yapıldı", {
+                                isAI, includeReplies, flattenReplies, minLikesFilter,
+                                sablonAdi: sablonAdiForLog,
+                                rpdHarcanan: rpdHarcananSayaci,
+                                storageUrl: null,
+                                folderUrl: null,
+                                masterTarihi: mlog,
+                                tarihAraligi: tarihAraligiMetni,
+                                kanalId: kanalHandleForLog
+                            });
+                            firebaseVerileriniGuncelle();
+
+                            window.arayuzuAktiflestir();
+                            return;
+                        }
+
+                        // İnceleme bitti, ekran görüntüsü aşamasına geçiliyor. Checkpoint'i ekran görüntüleri için güncelle:
+                        baseCheckpoint.stage = "screenshot_generation";
+                        baseCheckpoint.excelData = onaylanmisVeriler;
+                        ilerlemeKaydet(videoId, baseCheckpoint);
+                        excelData = onaylanmisVeriler;
+                    } else {
+                        // Zaten doğrudan ekran görüntüsü aşamasından geliyorsa veriyi doğrudan al
+                        excelData = cp.excelData;
+                    }
+
+                    const versiyonKlasoru = tarihAraligiMetni;
+
+                    const sheetConfigRef = doc(db, "sistem_ayarlari", "google_sheets");
+                    const sheetConfigSnap = await getDoc(sheetConfigRef);
+                    if (!sheetConfigSnap.exists() || !sheetConfigSnap.data().web_app_url) {
+                        throw new Error("Apps Script Web App URL bulunamadı!");
+                    }
+                    const endpointUrl = sheetConfigSnap.data().web_app_url;
+
+                    // ---------------------------------------------------------
+                    // PHASE 1: PRE-FLIGHT & IN-MEMORY SCREENSHOT GENERATION
+                    // ---------------------------------------------------------
+                    progressText.innerText = "Sistem ön kontrolleri yapılıyor...";
+                    const isCanvasWorking = await testHtml2Canvas();
+                    if (!isCanvasWorking) {
+                        throw new Error("Ekran görüntüsü modülü engellendi! Lütfen reklam engelleyici veya gizlilik eklentilerinizi (Canvas Fingerprinting kalkanını) kapatın.");
+                    }
+
+                    progressText.innerText = "Onaylanan yorumların ekran görüntüleri hazırlanıyor (Hafızaya Alınıyor)...";
+                    const generatedScreenshots = await window.baslatSSIndirme(true, excelData, endpointUrl, videoId, versiyonKlasoru);
+
+                    if (isCancelled) {
+                        throw new Error("İşlem kullanıcı tarafından iptal edildi.");
+                    }
+
+
+                    // ---------------------------------------------------------
+                    // PHASE 2: ATOMIC CLOUD COMMIT SEQUENCE
+                    // ---------------------------------------------------------
+                    try {
+                        const masterDateObj = new Date();
+                        const masterLogTarihi = `${String(masterDateObj.getDate()).padStart(2, '0')}.${String(masterDateObj.getMonth() + 1).padStart(2, '0')}.${masterDateObj.getFullYear()} ${String(masterDateObj.getHours()).padStart(2, '0')}:${String(masterDateObj.getMinutes()).padStart(2, '0')}:${String(masterDateObj.getSeconds()).padStart(2, '0')}`;
+
+                        // Phase 2.1: Drive Upload - Excel
+                        aktifCommitVideoId = videoId;
+                        aktifCommitSubFolder = versiyonKlasoru;
+                        await versiyonKlasorunuTemizle(aktifCommitVideoId, aktifCommitSubFolder);
 
                         progressText.innerText = "Temizlenen Excel verisi Google Drive'a yükleniyor...";
                         const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -4225,19 +4536,6 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         const base64Data = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
 
                         const dosyaAdi = `AI_Analiz_${videoId}.xlsx`;
-
-                        const masterDateObj = new Date();
-                        const gun = String(masterDateObj.getDate()).padStart(2, '0');
-                        const ay = String(masterDateObj.getMonth() + 1).padStart(2, '0');
-                        const yil = masterDateObj.getFullYear();
-                        const saat = String(masterDateObj.getHours()).padStart(2, '0');
-                        const dakika = String(masterDateObj.getMinutes()).padStart(2, '0');
-                        const saniye = String(masterDateObj.getSeconds()).padStart(2, '0');
-                        masterLogTarihi = `${gun}.${ay}.${yil} ${saat}:${dakika}:${saniye}`;
-
-                        // YENİ: Context-Aware Directory Structuring
-                        // Google Drive klasör ismi, analizin tarih skalasını birebir yansıtacak şekilde yapılandırıldı.
-                        const versiyonKlasoru = tarihAraligiMetni;
 
                         const response = await fetch(endpointUrl, {
                             method: 'POST',
@@ -4264,15 +4562,52 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                             throw new Error(responseData.error || "Drive yükleme hatası.");
                         }
 
-                        progressText.innerText = "Onaylanan yorumların ekran görüntüleri Drive'a yükleniyor...";
-                        await window.baslatSSIndirme(true, excelData, endpointUrl, videoId, versiyonKlasoru);
+                        // Phase 2.2: Drive Upload - Sequential Screenshots (Prevents Apps Script concurrency locks)
+                        progressText.innerText = "Ekran görüntüleri sırayla Drive'a yükleniyor...";
+                        for (let i = 0; i < generatedScreenshots.length; i++) {
+                            if (isCancelled) throw new Error("İşlem kullanıcı tarafından iptal edildi.");
+                            const ss = generatedScreenshots[i];
+                            progressText.innerText = `Ekran görüntüsü Drive'a yükleniyor... (${i + 1}/${generatedScreenshots.length})`;
 
+                            await tekGorseluDeneyerekYukle(ss, endpointUrl, videoId, versiyonKlasoru);
+                        }
+                        if (isCancelled) throw new Error("İşlem kullanıcı tarafından iptal edildi.");
+
+                        const toplamSS = generatedScreenshots.length;
+                        const basarisizSS = generatedScreenshots.filter(ss => ss.rowRef["Ekran Görüntüsü Linki"] && ss.rowRef["Ekran Görüntüsü Linki"].startsWith("HATA:")).length;
+
+                        if (toplamSS > 0 && basarisizSS === toplamSS) {
+                            alert("Sistemik Hata: Hiçbir ekran görüntüsü yüklenemedi. Lütfen uzantısı (eklentisi) olmayan temiz bir tarayıcıdan tekrar deneyin.");
+                            progressContainer.style.display = 'none';
+                            window.arayuzuAktiflestir();
+                            ilerlemeSil(videoId); // ADIM 3: Eklentiler (AdBlock vb.) sebebiyle sistemik çöküş, iptal et
+                            await versiyonKlasorunuTemizle(videoId, versiyonKlasoru); // YENİ: Phase 2.1'de önden yüklenen yetim Excel dosyasını sil
+                            aktifCommitVideoId = null;
+                            aktifCommitSubFolder = null;
+                            return;
+                        } else if (toplamSS > 0 && basarisizSS > 0) {
+                            alert(`Uyarı: ${toplamSS} yorumdan ${basarisizSS} tanesinin ekran görüntüsü yüklenemedi, lütfen yöneticiye bildirin.`);
+                        }
+
+                        // Phase 2.3: Sheets Batch Write (Awaited per constraint)
+                        progressText.innerText = "Veriler Google Sheets'e işleniyor...";
+                        await arkaPlandaSheetsPush(excelData, videoId, videoTitle, aiStorageDownloadUrl, tarihAraligiMetni, aiStorageFolderUrl, masterLogTarihi);
+
+                        ilerlemeSil(videoId); // ADIM 3: Phase 2 (Bulut aktarımı) %100 başarıyla tamamlandı, yarım kalan iş kaydını sil.
+                        aktifCommitVideoId = null;
+                        aktifCommitSubFolder = null;
                     } catch (driveErr) {
+                        if (isCancelled) {
+                            ilerlemeSil(videoId);
+                            aktifCommitVideoId = null;
+                            aktifCommitSubFolder = null;
+                            return; // Lokal indirmeyi es geçip işlemi tamamen durdur
+                        }
                         console.error("Google Drive / SS Yükleme Hatası:", driveErr);
                         alert("Dosyalar Google Drive'a yüklenemedi ancak Excel bilgisayarınıza indirilecek.");
+                        aktifCommitVideoId = null;
+                        aktifCommitSubFolder = null;
                     }
-
-                    arkaPlandaSheetsPush(excelData, videoId, videoTitle, aiStorageDownloadUrl, tarihAraligiMetni, aiStorageFolderUrl, masterLogTarihi);
                 }
 
                 if (excelData.length > 0) {
@@ -4335,7 +4670,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     URL.revokeObjectURL(a.href);
                 }
 
-                let islemDetayi = isCancelled ? "İşlem Durduruldu" : (isAI ? "AI Analizi Yapıldı" : "Başarılı");
+                let islemDetayi = isCancelled ? "İşlem Durduruldu" : (isAI ? "AI Analizi Yapıldı" : "Yorum Verileri İndirildi");
                 const sablonAdiForLog = isAI ? (aiTemplateSelect === "new" ? "Özel Şablon" : aiTemplateSelect) : "";
 
                 // YENİ: Nihai Excel veya TXT dosyasına tam olarak kaç satır yazıldığını hesaplıyoruz
@@ -4934,25 +5269,29 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         window.topluAnaliziBaslat = async () => {
             window.arayuzuKilitle();
             if (!(await window.oturumGuvenlikKontrolu())) return;
-            const secilenKutular = Array.from(document.querySelectorAll('.bulk-video-checkbox:checked'));
 
-            if (secilenKutular.length === 0) {
+            const bcp = window.aktifBulkResumeCheckpoint;
+            window.aktifBulkResumeCheckpoint = null;
+
+            const secilenKutular = bcp ? [] : Array.from(document.querySelectorAll('.bulk-video-checkbox:checked'));
+
+            if (!bcp && secilenKutular.length === 0) {
                 alert("Lütfen en az bir video seçin.");
                 window.arayuzuAktiflestir();
                 return;
             }
 
-            const isAI = document.getElementById('aiAnalysisCheck').checked;
-            const includeReplies = document.getElementById('includeReplies').checked;
-            const flattenReplies = document.getElementById('flattenReplies').checked;
-            const exportFormat = document.getElementById('exportFormat').value;
+            const isAI = bcp ? bcp.isAI : document.getElementById('aiAnalysisCheck').checked;
+            const includeReplies = bcp ? bcp.includeReplies : document.getElementById('includeReplies').checked;
+            const flattenReplies = bcp ? bcp.flattenReplies : document.getElementById('flattenReplies').checked;
+            const exportFormat = bcp ? bcp.exportFormat : document.getElementById('exportFormat').value;
             const minLikesInput = document.getElementById('minLikes').value.trim();
-            const minLikesFilter = minLikesInput === "" ? 0 : parseInt(minLikesInput, 10);
+            const minLikesFilter = bcp ? bcp.minLikesFilter : (minLikesInput === "" ? 0 : parseInt(minLikesInput, 10));
             const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
-            const aiTemplateSelect = document.getElementById('aiTemplateSelect').value;
-            const aiTemplateText = document.getElementById('aiTemplateText').value.trim();
+            const aiTemplateSelect = bcp ? bcp.aiTemplateSelect : document.getElementById('aiTemplateSelect').value;
+            const aiTemplateText = bcp ? bcp.aiTemplateText : document.getElementById('aiTemplateText').value.trim();
 
-            if (isAI) {
+            if (isAI && !bcp) {
                 if (!geminiApiKey) {
                     alert("Yapay zeka analizi için lütfen API anahtarınızı doğrulayın.");
                     window.arayuzuAktiflestir();
@@ -4965,30 +5304,39 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 }
             }
 
-            const videoIdListesi = secilenKutular.map(cb => cb.dataset.videoId);
-            let yorumSayilariMap = {};
-            try {
-                for (let i = 0; i < videoIdListesi.length; i += 50) {
-                    const grup = videoIdListesi.slice(i, i + 50);
-                    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${grup.join(',')}&key=${API_KEY}`);
-                    const veri = await res.json();
-                    (veri.items || []).forEach(v => yorumSayilariMap[v.id] = parseInt(v.statistics.commentCount) || 0);
+            const videoIdListesi = bcp ? bcp.videoIdListesi : secilenKutular.map(cb => cb.dataset.videoId);
+            const videoBasliklariMap = bcp ? bcp.videoBasliklariMap : {};
+            if (!bcp) {
+                secilenKutular.forEach(cb => {
+                    videoBasliklariMap[cb.dataset.videoId] = cb.dataset.videoTitle || cb.dataset.videoId;
+                });
+            }
+
+            let yorumSayilariMap = bcp ? bcp.yorumSayilariMap : {};
+            if (!bcp) {
+                try {
+                    for (let i = 0; i < videoIdListesi.length; i += 50) {
+                        const grup = videoIdListesi.slice(i, i + 50);
+                        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${grup.join(',')}&key=${API_KEY}`);
+                        const veri = await res.json();
+                        (veri.items || []).forEach(v => yorumSayilariMap[v.id] = parseInt(v.statistics.commentCount) || 0);
+                    }
+                } catch (e) {
+                    alert("Video istatistikleri alınamadı: " + e.message);
+                    window.arayuzuAktiflestir();
+                    return;
                 }
-            } catch (e) {
-                alert("Video istatistikleri alınamadı: " + e.message);
-                window.arayuzuAktiflestir();
-                return;
             }
             const toplamYorumTahmini = Object.values(yorumSayilariMap).reduce((a, b) => a + b, 0);
 
-            if (isAI) {
+            if (isAI && !bcp) {
                 const tahminiRadar = Math.ceil(toplamYorumTahmini / 100);
                 const tahminiCerrah = Math.ceil((toplamYorumTahmini * 0.15) / 20);
                 const selectedModel = document.getElementById('aiModelSelect').value;
                 const kalanRPD = getDailyRPD(selectedModel);
 
                 let mesaj = `📊 TOPLU İŞ KOTA ÖN TAHMİNİ\n\n` +
-                    `${secilenKutular.length} video, toplam ~${toplamYorumTahmini} yorum.\n` +
+                    `${videoIdListesi.length} video, toplam ~${toplamYorumTahmini} yorum.\n` +
                     `• Kesin: ~${tahminiRadar} Ön-Eleme isteği.\n` +
                     `• Tahmini: ~${tahminiCerrah} Derin Analiz isteği.\n\n` +
                     `Kalan günlük hakkınız (${selectedModel}): ${kalanRPD} istek.\n`;
@@ -4996,7 +5344,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 mesaj += `\nDevam edilsin mi?`;
                 if (!confirm(mesaj)) { window.arayuzuAktiflestir(); return; }
             } else {
-                if (!confirm(`${secilenKutular.length} video indirilecek. Devam edilsin mi?`)) { window.arayuzuAktiflestir(); return; }
+                if (!confirm(`${videoIdListesi.length} video indirilecek. Devam edilsin mi?`)) { window.arayuzuAktiflestir(); return; }
             }
 
             isCancelled = false;
@@ -5006,166 +5354,218 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             progressContainer.style.display = 'block';
 
             const zip = new JSZip();
-            let basariliVideoSayisi = 0;
-            let topluYapayZekaHavuzu = [];
+            let basariliVideoSayisi = bcp ? (bcp.basariliVideoSayisi || 0) : 0;
+            let topluYapayZekaHavuzu = bcp ? (bcp.topluYapayZekaHavuzu || []) : [];
 
-            const globalTarihModu = window.tarihModu || 'manuel';
+            const globalTarihModu = bcp ? bcp.globalTarihModu : (window.tarihModu || 'manuel');
             const globalStartDateInput = document.getElementById('filterStartDate').value;
             const globalEndDateInput = document.getElementById('filterEndDate').value;
-            const globalStartTimestamp = globalStartDateInput ? new Date(globalStartDateInput).getTime() : 0;
-            const globalEndTimestamp = globalEndDateInput ? new Date(globalEndDateInput).getTime() : Infinity;
+            const globalStartTimestamp = bcp ? bcp.globalStartTimestamp : (globalStartDateInput ? new Date(globalStartDateInput).getTime() : 0);
+            const globalEndTimestamp = bcp ? bcp.globalEndTimestamp : (globalEndDateInput ? new Date(globalEndDateInput).getTime() : Infinity);
 
-            // YENİ: Kanal ID tespit ediliyor ve log referansları hafızası açılıyor (HATA BURADAN ÇÖZÜLÜYOR)
             const rawChannelLink = document.getElementById('channelLink').value.trim();
             const extractedHandle = extractChannelHandle(rawChannelLink);
-            const kanalHandleForLog = extractedHandle ? "@" + extractedHandle : "-";
-            let logKayitIdleri = {};
+            const kanalHandleForLog = bcp ? bcp.kanalHandleForLog : (extractedHandle ? "@" + extractedHandle : "-");
+            let logKayitIdleri = bcp ? (bcp.logKayitIdleri || {}) : {};
+
+            const bulkCheckpoint = bcp || {
+                stage: "bulk_ai_analysis", isBulk: true,
+                isAI, includeReplies, flattenReplies, exportFormat, minLikesFilter,
+                aiTemplateSelect, aiTemplateText,
+                videoIdListesi, videoBasliklariMap, yorumSayilariMap,
+                globalTarihModu, globalStartTimestamp, globalEndTimestamp, kanalHandleForLog,
+                currentVideoIndex: 0, topluYapayZekaHavuzu: [], logKayitIdleri: {}, basariliVideoSayisi: 0
+            };
 
             try {
-                for (let i = 0; i < secilenKutular.length; i++) {
-                    if (isCancelled) break;
-                    const videoId = secilenKutular[i].dataset.videoId;
-                    const videoBaslik = secilenKutular[i].dataset.videoTitle || videoId;
-                    const hedefYorumSayisi = yorumSayilariMap[videoId] || 0;
+                const skipAIPhase = bcp && (bcp.stage === "bulk_review" || bcp.stage === "bulk_commit");
+                const startIndex = bcp && bcp.stage === "bulk_ai_analysis" ? bcp.currentVideoIndex : 0;
 
-                    let currentStartTimestamp = globalStartTimestamp;
-                    let currentEndTimestamp = globalEndTimestamp;
-                    let tarihAraligiMetni = "";
+                if (!skipAIPhase) {
+                    for (let i = startIndex; i < videoIdListesi.length; i++) {
+                        if (isCancelled) break;
+                        const videoId = videoIdListesi[i];
+                        const videoBaslik = videoBasliklariMap[videoId];
+                        const hedefYorumSayisi = yorumSayilariMap[videoId] || 0;
 
-                    // -----------------------------------------------------------------
-                    // Akıllı Otomatik (Smart Auto) Hesaplama - Bulk Uyumluluğu
-                    // -----------------------------------------------------------------
-                    if (globalTarihModu === 'otomatik') {
-                        const simdi = new Date();
-                        currentEndTimestamp = simdi.getTime();
-                        const bitisMetni = livaTarihFormatla(simdi);
+                        bulkCheckpoint.currentVideoIndex = i;
+                        bulkCheckpoint.topluYapayZekaHavuzu = topluYapayZekaHavuzu;
+                        bulkCheckpoint.logKayitIdleri = logKayitIdleri;
+                        bulkCheckpoint.basariliVideoSayisi = basariliVideoSayisi;
+                        bulkIlerlemeKaydet(bulkCheckpoint);
 
-                        if (!isAI) {
-                            currentStartTimestamp = 0;
-                            tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                        // Bulk Aşamasını ve indeksini kaydet
+                        bulkCheckpoint.currentVideoIndex = i;
+                        bulkCheckpoint.topluYapayZekaHavuzu = topluYapayZekaHavuzu;
+                        bulkCheckpoint.logKayitIdleri = logKayitIdleri;
+                        bulkCheckpoint.basariliVideoSayisi = basariliVideoSayisi;
+                        bulkIlerlemeKaydet(bulkCheckpoint);
+
+                        let currentStartTimestamp = globalStartTimestamp;
+                        let currentEndTimestamp = globalEndTimestamp;
+                        let tarihAraligiMetni = "";
+
+                        if (bcp && bcp.tarihAraligiMetniMap && bcp.tarihAraligiMetniMap[videoId]) {
+                            tarihAraligiMetni = bcp.tarihAraligiMetniMap[videoId];
                         } else {
-                            const gecmisDurum = await gecmisAnalizKontroluYap(videoId);
-                            if (gecmisDurum.exists) {
-                                // YENİ: Toplu analizde de boş sonuçlu logları siliyor ve baştan başlatıyoruz
-                                if (gecmisDurum.yorumSayisi === 0) {
-                                    for (let id of gecmisDurum.bosLogIdleri) {
-                                        await deleteDoc(doc(db, "log_kayitlari", id));
-                                    }
+                            // -----------------------------------------------------------------
+                            // Akıllı Otomatik (Smart Auto) Hesaplama - Bulk Uyumluluğu
+                            // -----------------------------------------------------------------
+                            if (globalTarihModu === 'otomatik') {
+                                const simdi = new Date();
+                                currentEndTimestamp = simdi.getTime();
+                                const bitisMetni = livaTarihFormatla(simdi);
+
+                                if (!isAI) {
                                     currentStartTimestamp = 0;
                                     tarihAraligiMetni = `En Başından - ${bitisMetni}`;
-                                    globalAnalyzedVideosCache.delete(videoId);
-                                } else if (gecmisDurum.tarih || gecmisDurum.tarihAraligi) {
-                                    let lastTime = null;
-                                    if (gecmisDurum.tarihAraligi && gecmisDurum.tarihAraligi !== "Belirtilmedi" && gecmisDurum.tarihAraligi.includes("-")) {
-                                        const endDateStr = gecmisDurum.tarihAraligi.split("-")[1].trim();
-                                        lastTime = livaTarihCozumle(endDateStr);
-                                    }
-                                    if (!lastTime) {
-                                        const p = gecmisDurum.tarih.split(" ");
-                                        const d = p[0].split(".");
-                                        const t = p[1].split(":");
-                                        lastTime = new Date(d[2], d[1] - 1, d[0], t[0], t[1], t[2] || 0).getTime();
-                                    }
-                                    currentStartTimestamp = lastTime + 60000;
-                                    tarihAraligiMetni = `${livaTarihFormatla(new Date(currentStartTimestamp))} - ${bitisMetni}`;
                                 } else {
-                                    currentStartTimestamp = 0;
-                                    tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                                    const gecmisDurum = await gecmisAnalizKontroluYap(videoId);
+                                    if (gecmisDurum.exists) {
+                                        // YENİ: Toplu analizde de boş sonuçlu logları siliyor ve baştan başlatıyoruz
+                                        if (gecmisDurum.yorumSayisi === 0) {
+                                            for (let id of gecmisDurum.bosLogIdleri) {
+                                                await deleteDoc(doc(db, "log_kayitlari", id));
+                                            }
+                                            currentStartTimestamp = 0;
+                                            tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                                            globalAnalyzedVideosCache.delete(videoId);
+                                        } else if (gecmisDurum.tarih || gecmisDurum.tarihAraligi) {
+                                            let lastTime = null;
+                                            if (gecmisDurum.tarihAraligi && gecmisDurum.tarihAraligi !== "Belirtilmedi" && gecmisDurum.tarihAraligi.includes("-")) {
+                                                const endDateStr = gecmisDurum.tarihAraligi.split("-")[1].trim();
+                                                lastTime = livaTarihCozumle(endDateStr);
+                                            }
+                                            if (!lastTime) {
+                                                const p = gecmisDurum.tarih.split(" ");
+                                                const d = p[0].split(".");
+                                                const t = p[1].split(":");
+                                                lastTime = new Date(d[2], d[1] - 1, d[0], t[0], t[1], t[2] || 0).getTime();
+                                            }
+                                            currentStartTimestamp = lastTime + 60000;
+                                            tarihAraligiMetni = `${livaTarihFormatla(new Date(currentStartTimestamp))} - ${bitisMetni}`;
+                                        } else {
+                                            currentStartTimestamp = 0;
+                                            tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                                        }
+                                    } else {
+                                        currentStartTimestamp = 0;
+                                        tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                                    }
                                 }
-                            } else {
-                                currentStartTimestamp = 0;
-                                tarihAraligiMetni = `En Başından - ${bitisMetni}`;
+                                if (tarihAraligiMetni) {
+                                    bulkCheckpoint.tarihAraligiMetniMap = bulkCheckpoint.tarihAraligiMetniMap || {};
+                                    bulkCheckpoint.tarihAraligiMetniMap[videoId] = tarihAraligiMetni;
+                                }
                             }
                         }
-                    }
-                    progressBar.max = secilenKutular.length;
-                    progressBar.value = i;
-                    progressText.innerText = `📦 Video ${i + 1}/${secilenKutular.length} işleniyor: ${videoBaslik}`;
+                        progressBar.max = videoIdListesi.length;
+                        progressBar.value = i;
+                        progressText.innerText = `📦 Video ${i + 1}/${secilenKutular.length} işleniyor: ${videoBaslik}`;
 
-                    const rpdOncesi = rpdHarcananSayaci;
+                        const rpdOncesi = rpdHarcananSayaci;
 
-                    const { excelData: fetchedExcel, txtLines: fetchedTxt, rawCommentsForAI, fetchedCount } =
-                        await bulkVideoYorumlariniIsle(videoId, hedefYorumSayisi, {
-                            minLikesFilter, isAI, includeReplies, flattenReplies, exportFormat,
-                            startTimestamp: currentStartTimestamp, endTimestamp: currentEndTimestamp
-                        },
-                            (yapilan, hedef) => { progressText.innerText = `📦 Video ${i + 1}/${secilenKutular.length}: ${videoBaslik}\nYorumlar: ${yapilan}/${hedef}`; });
+                        const { excelData: fetchedExcel, txtLines: fetchedTxt, rawCommentsForAI, fetchedCount } =
+                            await bulkVideoYorumlariniIsle(videoId, hedefYorumSayisi, {
+                                minLikesFilter, isAI, includeReplies, flattenReplies, exportFormat,
+                                startTimestamp: currentStartTimestamp, endTimestamp: currentEndTimestamp
+                            },
+                                (yapilan, hedef) => { progressText.innerText = `📦 Video ${i + 1}/${secilenKutular.length}: ${videoBaslik}\nYorumlar: ${yapilan}/${hedef}`; });
 
-                    let excelData = fetchedExcel;
+                        let excelData = fetchedExcel;
 
-                    if (isAI && rawCommentsForAI.length > 0 && !isCancelled) {
-                        const aiSonuc = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar, videoId);
-                        if (aiSonuc === null) { isCancelled = true; break; }
+                        if (isAI && rawCommentsForAI.length > 0 && !isCancelled) {
+                            const isResumingThisVideoAI = bcp && bcp.stage === "bulk_ai_analysis" && bcp.currentVideoIndex === i && bcp.nestedAI;
+                            bulkCheckpoint.nestedAI = isResumingThisVideoAI
+                                ? bcp.nestedAI
+                                : { isBulk: true, rawCommentsForAI };
+                            bulkCheckpoint.nestedAI.parentRef = bulkCheckpoint;
+                            bulkCheckpoint.nestedAI.isBulk = true;
 
-                        aiSonuc.forEach(satir => {
-                            satir["Kaynak Video ID"] = videoId;
-                            satir["Kaynak Video Başlığı"] = videoBaslik;
-                            // YENİ: Havuzda işlem gören yorumların spesifik analiz aralıklarını tutar
-                            satir["Yorumların Tarih Aralığı"] = tarihAraligiMetni;
-                            topluYapayZekaHavuzu.push(satir);
-                        });
+                            const aiSonuc = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar, videoId, bulkCheckpoint.nestedAI);
+                            bulkCheckpoint.nestedAI = null;
+                            if (aiSonuc === null) { isCancelled = true; break; }
 
-                        basariliVideoSayisi++;
-                        excelData = aiSonuc;
-                    } else if (!isAI) {
-                        if (excelData.length > 0) {
-                            const gorulen = new Set();
-                            excelData = excelData.filter(satir => {
-                                const anahtar = (satir["Yorum Sahibi"] || satir["Kullanıcı Adı"] || "") + "|" + (satir["Orijinal Yorum"] || satir["Yorum Metni"] || "");
-                                if (gorulen.has(anahtar)) return false;
-                                gorulen.add(anahtar); return true;
+                            aiSonuc.forEach(satir => {
+                                satir["Kaynak Video ID"] = videoId;
+                                satir["Kaynak Video Başlığı"] = videoBaslik;
+                                // YENİ: Havuzda işlem gören yorumların spesifik analiz aralıklarını tutar
+                                satir["Yorumların Tarih Aralığı"] = tarihAraligiMetni;
+                                topluYapayZekaHavuzu.push(satir);
                             });
-                        }
 
-                        const bosMu = (exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && fetchedTxt.length === 0);
-
-                        if (!bosMu) {
-                            if (exportFormat === 'xlsx') {
-                                const worksheet = XLSX.utils.json_to_sheet(excelData);
-                                const workbook = XLSX.utils.book_new();
-                                XLSX.utils.book_append_sheet(workbook, worksheet, "Yorumlar");
-                                const xlsxArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-                                zip.file(`Yorumlar_${videoId}.xlsx`, xlsxArray);
-                            } else {
-                                zip.file(`Yorumlar_${videoId}.txt`, fetchedTxt.join("\n"));
-                            }
                             basariliVideoSayisi++;
+                            excelData = aiSonuc;
+                        } else if (!isAI) {
+                            if (excelData.length > 0) {
+                                const gorulen = new Set();
+                                excelData = excelData.filter(satir => {
+                                    const anahtar = (satir["Yorum Sahibi"] || satir["Kullanıcı Adı"] || "") + "|" + (satir["Orijinal Yorum"] || satir["Yorum Metni"] || "");
+                                    if (gorulen.has(anahtar)) return false;
+                                    gorulen.add(anahtar); return true;
+                                });
+                            }
+
+                            const bosMu = (exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && fetchedTxt.length === 0);
+
+                            if (!bosMu) {
+                                if (exportFormat === 'xlsx') {
+                                    const worksheet = XLSX.utils.json_to_sheet(excelData);
+                                    const workbook = XLSX.utils.book_new();
+                                    XLSX.utils.book_append_sheet(workbook, worksheet, "Yorumlar");
+                                    const xlsxArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                                    zip.file(`Yorumlar_${videoId}.xlsx`, xlsxArray);
+                                } else {
+                                    zip.file(`Yorumlar_${videoId}.txt`, fetchedTxt.join("\n"));
+                                }
+                                basariliVideoSayisi++;
+                            }
                         }
+
+                        const rpdBuVideoda = rpdHarcananSayaci - rpdOncesi;
+                        const bosMuData = (exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && fetchedTxt.length === 0);
+                        const islemDetayi = isCancelled ? "İşlem Durduruldu" : (isAI ? "AI Analizi Yapıldı" : (bosMuData ? "Boş Sonuç" : "Yorum Verileri İndirildi"));
+                        const sablonAdiForLog = isAI ? (aiTemplateSelect === "new" ? "Özel Şablon" : aiTemplateSelect) : "";
+
+                        // YENİ: Toplu analizde YZ onayı en son yapılacağı için başlangıçta 0 gönderiyoruz. 
+                        // Eğer YZ kapalıysa doğrudan txt/excel satır sayısını gönderiyoruz.
+                        const finalYorumSayisi = isAI ? 0 : (exportFormat === 'xlsx' ? excelData.length : fetchedTxt.length);
+
+                        // Firestore yetki hatasına takılmamak için log bilgisini şimdilik hafızada (metaMap) tutuyoruz
+                        bulkCheckpoint.logMetaMap = bulkCheckpoint.logMetaMap || {};
+                        bulkCheckpoint.logMetaMap[videoId] = {
+                            videoBaslik, finalYorumSayisi, exportFormat, islemDetayi, isAI, includeReplies, flattenReplies, minLikesFilter, sablonAdiForLog, rpdBuVideoda, tarihAraligiMetni, kanalHandleForLog
+                        };
+
+                        // Sadece Yapay Zeka analizlerinde rozet gösterimi yapılır (Standart indirmelerde rozet eklenmez)
+                        if (isAI) {
+                            guncelleVideoRozeti(videoId, finalYorumSayisi > 0 ? 'dolu' : 'bos');
+                        }
+
+                        bulkCheckpoint.basariliVideoSayisi = basariliVideoSayisi;
+                        bulkIlerlemeKaydet(bulkCheckpoint);
+
                     }
-
-                    const rpdBuVideoda = rpdHarcananSayaci - rpdOncesi;
-                    const bosMuData = (exportFormat === 'xlsx' && excelData.length === 0) || (exportFormat === 'txt' && fetchedTxt.length === 0);
-                    const islemDetayi = isCancelled ? "İşlem Durduruldu" : (isAI ? "AI Analizi Yapıldı" : (bosMuData ? "Boş Sonuç" : "Başarılı"));
-                    const sablonAdiForLog = isAI ? (aiTemplateSelect === "new" ? "Özel Şablon" : aiTemplateSelect) : "";
-
-                    // YENİ: Toplu analizde YZ onayı en son yapılacağı için başlangıçta 0 gönderiyoruz. 
-                    // Eğer YZ kapalıysa doğrudan txt/excel satır sayısını gönderiyoruz.
-                    const finalYorumSayisi = isAI ? 0 : (exportFormat === 'xlsx' ? excelData.length : fetchedTxt.length);
-
-                    // YENİ: fetchedCount yerine finalYorumSayisi değişkeni gönderildi
-                    const logId = await islemLogla(videoId, videoBaslik, finalYorumSayisi, exportFormat, islemDetayi, {
-                        isAI, includeReplies, flattenReplies, minLikesFilter,
-                        sablonAdi: sablonAdiForLog, rpdHarcanan: rpdBuVideoda, topluIslem: true,
-                        tarihAraligi: tarihAraligiMetni,
-                        kanalId: kanalHandleForLog
-                    });
-
-                    if (logId) logKayitIdleri[videoId] = logId; // YENİ: Drive linki için veritabanı ID'sini hafızaya alıyoruz
-                }
+                } // skipAIPhase kontrol bloğunun sonu
 
                 // =========================================================================
                 // TOPLU YAPAY ZEKA İNCELEME EKRANI (HATA DÜZELTİLDİ)
                 // =========================================================================
-                if (isAI && !isCancelled && topluYapayZekaHavuzu.length > 0) {
-                    progressContainer.style.display = 'none';
+                if (isAI && !isCancelled && (topluYapayZekaHavuzu.length > 0 || (bcp && bcp.stage === "bulk_review"))) {
+                    let onaylanmisVeriler = [];
 
-                    // DÜZELTME: 'aiResultData' yerine, tüm videoların sonuçlarını biriktirdiğimiz 
-                    // 'topluYapayZekaHavuzu' değişkenini inceleme ekranına (modala) gönderiyoruz.
-                    const onaylanmisVeriler = await aiSonuclariniIncele(topluYapayZekaHavuzu, aiTemplateSelect);
+                    if (!bcp || bcp.stage !== "bulk_commit") {
+                        bulkCheckpoint.stage = "bulk_review";
+                        bulkCheckpoint.aiVerisi = topluYapayZekaHavuzu;
+                        bulkIlerlemeKaydet(bulkCheckpoint);
 
-                    progressContainer.style.display = 'block';
+                        progressContainer.style.display = 'none';
+                        onaylanmisVeriler = await aiSonuclariniIncele(topluYapayZekaHavuzu, aiTemplateSelect, bulkCheckpoint);
+                        progressContainer.style.display = 'block';
+                    }
 
-                    if (onaylanmisVeriler.length === 0) {
+                    if ((!bcp || bcp.stage !== "bulk_commit") && onaylanmisVeriler.length === 0) {
+                        bulkIlerlemeSil();
                         setStatus(`İnceleme sonucu tüm toplu yorumlar reddedildi. İndirilecek veri yok.`, "#e74c3c");
                         window.arayuzuAktiflestir();
                         return;
@@ -5188,31 +5588,68 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         const saniye = String(masterDateObj.getSeconds()).padStart(2, '0');
                         const masterLogTarihi = `${gun}.${ay}.${yil} ${saat}:${dakika}:${saniye}`;
 
-                        const videolaraGoreGrup = {};
-                        onaylanmisVeriler.forEach(satir => {
-                            const vid = satir["Kaynak Video ID"];
-                            if (!vid) return;
-                            if (!videolaraGoreGrup[vid]) videolaraGoreGrup[vid] = [];
-                            videolaraGoreGrup[vid].push(satir);
-                        });
+                        let videolaraGoreGrup = {};
+                        let groupedKeys = [];
 
-                        for (const vid of Object.keys(videolaraGoreGrup)) {
+                        if (bcp && bcp.stage === "bulk_commit") {
+                            videolaraGoreGrup = bcp.videolaraGoreGrup;
+                            groupedKeys = bcp.groupedVideoKeys;
+                            onaylanmisVeriler = bcp.excelData;
+                        } else {
+                            onaylanmisVeriler.forEach(satir => {
+                                const vid = satir["Kaynak Video ID"];
+                                if (!vid) return;
+                                if (!videolaraGoreGrup[vid]) videolaraGoreGrup[vid] = [];
+                                videolaraGoreGrup[vid].push(satir);
+                            });
+                            groupedKeys = Object.keys(videolaraGoreGrup);
+
+                            bulkCheckpoint.stage = "bulk_commit";
+                            bulkCheckpoint.excelData = onaylanmisVeriler;
+                            bulkCheckpoint.videolaraGoreGrup = videolaraGoreGrup;
+                            bulkCheckpoint.groupedVideoKeys = groupedKeys;
+                            bulkCheckpoint.currentCommitIndex = 0;
+                            bulkIlerlemeKaydet(bulkCheckpoint);
+                        }
+
+                        const startCommitIndex = bcp && bcp.stage === "bulk_commit" ? bcp.currentCommitIndex : 0;
+
+                        for (let c = startCommitIndex; c < groupedKeys.length; c++) {
                             if (isCancelled) break;
+                            const vid = groupedKeys[c];
+
+                            bulkCheckpoint.currentCommitIndex = c;
+                            bulkIlerlemeKaydet(bulkCheckpoint);
 
                             const videoExcelData = videolaraGoreGrup[vid];
                             const videoTitle = videoExcelData[0]["Kaynak Video Başlığı"] || vid;
-
-                            // Context-Aware Directory Structuring
                             const versiyonKlasoru = videoExcelData[0]["Yorumların Tarih Aralığı"] || `En Başından - ${livaTarihFormatla(masterDateObj)}`;
+
+                            // Phase 1 for this video (RAM generation)
+                            progressText.innerText = `[Toplu] ${videoTitle} ön kontrolleri yapılıyor...`;
+                            const isCanvasWorking = await testHtml2Canvas();
+                            if (!isCanvasWorking) throw new Error("html2canvas engellendi!");
+
+                            progressText.innerText = `[Toplu] ${videoTitle} ekran görüntüleri RAM'de hazırlanıyor...`;
+                            const generatedScreenshots = await window.baslatSSIndirme(true, videoExcelData, endpointUrl, vid, versiyonKlasoru);
+                            if (isCancelled) break;
+
+                            // Phase 2 (Commit)
+                            aktifCommitVideoId = vid;
+                            aktifCommitSubFolder = versiyonKlasoru;
+                            await versiyonKlasorunuTemizle(aktifCommitVideoId, aktifCommitSubFolder);
+
+                            progressText.innerText = `[Toplu] ${videoTitle} Excel dosyası Drive'a yükleniyor...`;
 
                             const worksheet = XLSX.utils.json_to_sheet(videoExcelData);
                             const workbook = XLSX.utils.book_new();
                             XLSX.utils.book_append_sheet(workbook, worksheet, "AI_Temiz_Veri");
                             const base64Data = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-
                             const dosyaAdi = `AI_Analiz_${vid}.xlsx`;
 
-                            progressText.innerText = `[Toplu] ${videoTitle} Excel dosyası Drive'a yükleniyor...`;
+                            // Lokal Excel yedeğini bulut işlemlerinden (ve olası hatalardan/continue'dan) tamamen bağımsız olarak en başta ZIP'e ekliyoruz
+                            const xlsxArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                            zip.file(dosyaAdi, xlsxArray);
 
                             try {
                                 const response = await fetch(endpointUrl, {
@@ -5239,53 +5676,83 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                     aiStorageDownloadUrl = responseData.fileUrl;
                                     aiStorageFolderUrl = responseData.folderUrl;
 
-                                    // Veritabanını (Firestore) Geriye Dönük Güncelle
-                                    if (logKayitIdleri[vid]) {
-                                        await setDoc(doc(db, "log_kayitlari", logKayitIdleri[vid]), {
-                                            indirme_linki: aiStorageDownloadUrl,
-                                            klasor_linki: aiStorageFolderUrl,
-                                            indirilen_yorum_sayisi: videoExcelData.length
-                                        }, { merge: true });
+                                    // Phase 2.2: Sequential Drive Upload for bulk video
+                                    progressText.innerText = `[Toplu] ${videoTitle} ekran görüntüleri sırayla Drive'a yükleniyor...`;
+                                    for (let s = 0; s < generatedScreenshots.length; s++) {
+                                        if (isCancelled) throw new Error("İşlem kullanıcı tarafından iptal edildi.");
+                                        const ss = generatedScreenshots[s];
+                                        progressText.innerText = `[Toplu] Ekran görüntüsü Drive'a yükleniyor... (${s + 1}/${generatedScreenshots.length})`;
 
-                                        // Arayüz (UI) ve Önbellek Rozetlerini Geriye Dönük Güncelle
-                                        const analizDurumu = videoExcelData.length > 0 ? 'dolu' : 'bos';
-                                        globalAnalyzedVideosCache.set(vid, analizDurumu);
+                                        await tekGorseluDeneyerekYukle(ss, endpointUrl, vid, versiyonKlasoru);
+                                    }
+                                    if (isCancelled) throw new Error("İşlem kullanıcı tarafından iptal edildi.");
 
-                                        const checkbox = document.querySelector(`.bulk-video-checkbox[data-video-id="${vid}"]`);
-                                        if (checkbox) {
-                                            const videoItem = checkbox.closest('.video-item');
-                                            if (videoItem) {
-                                                const statsP = videoItem.querySelector('.video-stats');
-                                                if (statsP) {
-                                                    statsP.innerHTML = statsP.innerHTML.replace(/<span.*?Daha Önce Analiz Edildi<\/span>/g, '').replace(/<span.*?Taranmış \(Sonuç Yok\)<\/span>/g, '');
-                                                    if (analizDurumu === 'dolu') {
-                                                        statsP.innerHTML += ` <span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold; margin-left: 10px;">✅ Daha Önce Analiz Edildi</span>`;
-                                                    } else {
-                                                        statsP.innerHTML += ` <span style="background: #94a3b8; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; font-weight: bold; margin-left: 10px;">⚪ Taranmış (Sonuç Yok)</span>`;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                    const toplamSS = generatedScreenshots.length;
+                                    const basarisizSS = generatedScreenshots.filter(ss => ss.rowRef["Ekran Görüntüsü Linki"] && ss.rowRef["Ekran Görüntüsü Linki"].startsWith("HATA:")).length;
+
+                                    if (toplamSS > 0 && basarisizSS === toplamSS) {
+                                        alert(`Sistemik Hata: [${videoTitle}] için hiçbir ekran görüntüsü yüklenemedi. Bu video atlanıyor. Tarayıcı eklentilerinizi kontrol edin.`);
+                                        await versiyonKlasorunuTemizle(vid, versiyonKlasoru); // YENİ: Phase 2.1'de önden yüklenen yetim Excel dosyasını sil
+                                        aktifCommitVideoId = null;
+                                        aktifCommitSubFolder = null;
+                                        continue; // Sheet, UI ve Log güncellemelerini es geçip doğrudan sıradaki videoya geçiyoruz
+                                    } else if (toplamSS > 0 && basarisizSS > 0) {
+                                        alert(`Uyarı: [${videoTitle}] - ${toplamSS} yorumdan ${basarisizSS} tanesinin ekran görüntüsü yüklenemedi, lütfen yöneticiye bildirin.`);
+                                    }
+
+                                    // Phase 2.3: Sheet Write
+                                    progressText.innerText = `[Toplu] ${videoTitle} verileri Google Sheets'e işleniyor...`;
+                                    await arkaPlandaSheetsPush(videoExcelData, vid, videoTitle, aiStorageDownloadUrl, versiyonKlasoru, aiStorageFolderUrl, masterLogTarihi);
+
+                                    // Phase 2.4: Log & UI Update (Artık setDoc yerine doğrudan islemLogla kullanılıyor)
+                                    const meta = bulkCheckpoint.logMetaMap ? bulkCheckpoint.logMetaMap[vid] : null;
+                                    if (meta) {
+                                        await islemLogla(vid, meta.videoBaslik, videoExcelData.length, meta.exportFormat, meta.islemDetayi, {
+                                            isAI: meta.isAI, includeReplies: meta.includeReplies, flattenReplies: meta.flattenReplies, minLikesFilter: meta.minLikesFilter,
+                                            sablonAdi: meta.sablonAdiForLog, rpdHarcanan: meta.rpdBuVideoda, topluIslem: true,
+                                            tarihAraligi: meta.tarihAraligiMetni, kanalId: meta.kanalHandleForLog,
+                                            storageUrl: aiStorageDownloadUrl, folderUrl: aiStorageFolderUrl
+                                        });
+                                        // Başarıyla loglandığı için bekleyen listesinden çıkarıyoruz
+                                        delete bulkCheckpoint.logMetaMap[vid];
+                                        bulkIlerlemeKaydet(bulkCheckpoint);
                                     }
                                 }
-
-                                progressText.innerText = `[Toplu] ${videoTitle} ekran görüntüleri Drive'a yükleniyor...`;
-                                await window.baslatSSIndirme(true, videoExcelData, endpointUrl, vid, versiyonKlasoru);
-
-                                arkaPlandaSheetsPush(videoExcelData, vid, videoTitle, aiStorageDownloadUrl, versiyonKlasoru, aiStorageFolderUrl, masterLogTarihi);
-
                             } catch (driveErr) {
-                                console.error(`[Toplu] Video ${vid} Bulut Yükleme Hatası:`, driveErr);
+                                if (isCancelled) {
+                                    if (bulkCheckpoint.logMetaMap) delete bulkCheckpoint.logMetaMap[vid]; // İptal edilen in-progress videonun logunu tamamen sil
+                                } else {
+                                    console.error(`[Toplu] Video ${vid} Bulut Yükleme Hatası:`, driveErr);
+                                }
                             }
-
-                            const xlsxArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-                            zip.file(dosyaAdi, xlsxArray);
+                            aktifCommitVideoId = null;
+                            aktifCommitSubFolder = null;
                         }
-
                     } catch (driveErr) {
+                        if (isCancelled) {
+                            bulkIlerlemeSil();
+                            return; // Lokal ZIP indirmesini es geçip işlemi tamamen durdur
+                        }
                         console.error("Toplu İşlem Bulut Hatası:", driveErr);
                         alert("Dosyalar Google Drive'a yüklenemedi ancak ZIP paketi halinde bilgisayarınıza indirilecek.");
                     }
+                }
+
+                // İncelemeden hiçbir yorumu geçemeyen (veya baştan 0 sonuç veren) videoların son loglaması
+                if (bulkCheckpoint.logMetaMap && !isCancelled) {
+                    for (const [vid, meta] of Object.entries(bulkCheckpoint.logMetaMap)) {
+                        await islemLogla(vid, meta.videoBaslik, meta.finalYorumSayisi, meta.exportFormat, meta.islemDetayi, {
+                            isAI: meta.isAI, includeReplies: meta.includeReplies, flattenReplies: meta.flattenReplies, minLikesFilter: meta.minLikesFilter,
+                            sablonAdi: meta.sablonAdiForLog, rpdHarcanan: meta.rpdBuVideoda, topluIslem: true,
+                            tarihAraligi: meta.tarihAraligiMetni, kanalId: meta.kanalHandleForLog,
+                            storageUrl: null, folderUrl: null
+                        });
+                    }
+                }
+
+                // ADIM 3: Tüm işlemler başarıyla tamamlandığı (veya sıfır sonuçla bittiği) için Toplu Checkpoint temizlenir
+                if (!isCancelled) {
+                    bulkIlerlemeSil();
                 }
 
                 if (basariliVideoSayisi === 0 && (!isAI || topluYapayZekaHavuzu.length === 0)) {
@@ -5398,78 +5865,62 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 const studio = document.getElementById('yt-replica-studio');
 
                 // =========================================================
-                // OTOMATİK MOD (API İSTEĞİ ATMADAN DOĞRUDAN HAFIZAYI KULLANIR)
+                // OTOMATİK MOD (PHASE 1: IN-MEMORY SCREENSHOT GENERATION)
+                // Memory-first architecture: No network calls. Stores base64 in RAM.
                 // =========================================================
                 if (isAuto) {
+                    let screenshotsToUpload = []; // Array holding RAM-only images
+
                     for (let i = 0; i < autoExcelData.length; i++) {
+                        if (isCancelled) break; // Check for global cancellation trigger
+
                         const row = autoExcelData[i];
                         const hedefYazar = row["Yorum Sahibi"] || row["Kullanıcı Adı"] || "Bilinmiyor";
                         const hedefMetin = row["Orijinal Yorum"] || "";
                         const hedefTarih = row["Yorum Tarihi"] || "Tarih Yok";
                         const hedefBegeni = row["Beğeni Sayısı"] || 0;
 
-                        // Tarayıcıların CORS/Cache engellerini aşmak için zaman damgası ekliyoruz
                         const rawAvatar = row["Avatar URL"] || "https://via.placeholder.com/40";
                         const hedefAvatar = rawAvatar.includes('?') ? rawAvatar + '&c=' + Date.now() : rawAvatar + '?c=' + Date.now();
 
-                        // KRİTİK DÜZELTME: Her yorum kendi try/catch'i içinde işleniyor.
-                        // Biri patlarsa (tainted canvas, network hatası, Apps Script hatası)
-                        // sadece O görsel atlanır, döngü DEVAM eder.
                         try {
                             studio.innerHTML = `
-                                <div class="yt-comment-wrapper">
-                                    <img class="yt-avatar" src="${hedefAvatar}" crossorigin="anonymous">
-                                    <div class="yt-comment-content">
-                                        <div class="yt-header">
-                                            <span class="yt-author">${escapeHTML(hedefYazar)}</span>
-                                            <span class="yt-time">${escapeHTML(hedefTarih)}</span>
-                                        </div>
-                                        <div class="yt-text">${escapeHTML(hedefMetin)}</div>
-                                        <div class="yt-actions">
-                                            <span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${hedefBegeni}</span>
-                                            <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
-                                            <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
-                                        </div>
-                                    </div>
+                        <div class="yt-comment-wrapper">
+                            <img class="yt-avatar" src="${hedefAvatar}" crossorigin="anonymous">
+                            <div class="yt-comment-content">
+                                <div class="yt-header">
+                                    <span class="yt-author">${escapeHTML(hedefYazar)}</span>
+                                    <span class="yt-time">${escapeHTML(hedefTarih)}</span>
                                 </div>
-                            `;
+                                <div class="yt-text">${escapeHTML(hedefMetin)}</div>
+                                <div class="yt-actions">
+                                    <span class="yt-icon">👍</span> <span class="yt-likes" style="margin-right:15px;">${hedefBegeni}</span>
+                                    <span class="yt-icon yt-icon-dislike">👎</span> <span class="yt-likes" style="margin-right:15px;">0</span>
+                                    <span class="yt-author" style="margin-left:20px;">Yanıtla</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
 
-                            // Avatarın DOM üzerinde tamamen yüklenmesi için ufak bir bekleme süresi
                             await bekle(300);
 
                             const canvas = await html2canvas(studio.firstElementChild, { backgroundColor: "#0f0f0f", useCORS: true, scale: 2 });
                             const imgBase64 = canvas.toDataURL("image/png").split(',')[1];
-
                             const imgDosyaAdi = `${hedefYazar}_${i + 1}.png`;
 
-                            const imgRes = await fetch(endpointUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    action: "upload_file", fileName: imgDosyaAdi, mimeType: "image/png", base64Data: imgBase64,
-                                    ekip: currentUserEkip, videoId: targetVideoId, isFirstUpload: false,
-                                    ekleyen: currentUserAdSoyad,
-                                    subFolderName: subFolderName
-                                })
+                            // Store in RAM for Phase 2 sequential execution
+                            screenshotsToUpload.push({
+                                fileName: imgDosyaAdi,
+                                base64Data: imgBase64,
+                                rowRef: row // Keep a reference to directly inject the URL later
                             });
-
-                            if (!imgRes.ok) throw new Error(`Sunucu ${imgRes.status} döndü`);
-                            const imgData = await imgRes.json();
-
-                            if (imgData.success) {
-                                row["Ekran Görüntüsü Linki"] = imgData.fileUrl;
-                            } else {
-                                throw new Error(imgData.error || "Bilinmeyen sunucu hatası");
-                            }
-
                         } catch (itemErr) {
-                            // ARTIK SESSİZCE KAYBOLMUYOR: hem konsola hem satıra iz düşüyor
                             console.error(`[SS Hatası] #${i} ${hedefYazar}:`, itemErr);
                             row["Ekran Görüntüsü Linki"] = `HATA: ${itemErr.message}`;
-                            continue; // Döngü devam eder, sonraki yoruma geçer
+                            // Continue loop; don't break the whole batch for one tainted canvas
                         }
                     }
-                    return; // Otomatik mod bittiyse direkt fonksiyondan çık
+                    return screenshotsToUpload; // Return the RAM-cached array to Phase 2
                 }
 
                 // =========================================================
@@ -5600,6 +6051,36 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         // MİMARİ YARDIMCILAR (DRY & KISS PRENSİPLERİ)
         // Tarih işlemlerinde tekrarlanan kodları engellemek için modüler fonksiyonlar.
         // =========================================================================
+
+        // Step 1: Pre-flight pixel test to securely verify if html2canvas is being blocked or distorted by anti-fingerprinting extensions
+        async function testHtml2Canvas() {
+            try {
+                const testDiv = document.createElement('div');
+                testDiv.style.width = '10px';
+                testDiv.style.height = '10px';
+                testDiv.style.backgroundColor = '#ff0000'; // Pure distinct red
+                testDiv.style.position = 'fixed';
+                testDiv.style.top = '-9999px';
+                testDiv.style.left = '-9999px';
+                document.body.appendChild(testDiv);
+
+                // Render the test element
+                const canvas = await html2canvas(testDiv, { logging: false, width: 10, height: 10 });
+                const ctx = canvas.getContext('2d');
+                const pixel = ctx.getImageData(5, 5, 1, 1).data; // Read from center
+                document.body.removeChild(testDiv);
+
+                // Verify the color is matching (with slight tolerance for anti-aliasing/color profile shifts)
+                // Check Red > 240, Green < 15, Blue < 15, and Alpha (Opacity) > 240
+                if (pixel[0] > 240 && pixel[1] < 15 && pixel[2] < 15 && pixel[3] > 240) {
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error("html2canvas pre-flight test failed:", error);
+                return false;
+            }
+        }
 
         // Tarih objesini istenen "DD.MM.YYYY HH:MM" literal formatına dönüştürür.
         const livaTarihFormatla = (dateObj) => {
@@ -5742,7 +6223,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         // =========================================================================
         // YENİ ÖZELLİK 2: Dinamik Yorum İnceleme Modalı (Onay/Red)
         // =========================================================================
-        function aiSonuclariniIncele(aiVerisi, templateType) {
+        function aiSonuclariniIncele(aiVerisi, templateType, checkpointBase = null) {
             return new Promise((resolve) => {
                 if (!aiVerisi || aiVerisi.length === 0) {
                     resolve([]);
@@ -5760,6 +6241,36 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
                 let currentIndex = 0;
                 let onaylananVeriler = [];
+
+                // isBulk flag'i gönderilmişse bulk key'ine yazdırıyoruz, yoksa single key'e.
+                if (checkpointBase && (checkpointBase.stage === "review" || checkpointBase.stage === "bulk_review") && checkpointBase.currentIndex) {
+                    currentIndex = checkpointBase.currentIndex;
+                    onaylananVeriler = checkpointBase.onaylananVeriler || [];
+                } else if (checkpointBase) {
+                    checkpointBase.stage = checkpointBase.isBulk ? "bulk_review" : "review";
+                    checkpointBase.aiVerisi = aiVerisi;
+                    checkpointBase.currentIndex = 0;
+                    checkpointBase.onaylananVeriler = [];
+
+                    if (checkpointBase.isBulk) {
+                        bulkIlerlemeKaydet(checkpointBase);
+                    } else {
+                        ilerlemeKaydet(checkpointBase.videoId, checkpointBase);
+                    }
+                }
+
+                const kaydetReviewState = () => {
+                    if (checkpointBase) {
+                        checkpointBase.currentIndex = currentIndex;
+                        checkpointBase.onaylananVeriler = onaylananVeriler;
+
+                        if (checkpointBase.isBulk) {
+                            bulkIlerlemeKaydet(checkpointBase);
+                        } else {
+                            ilerlemeKaydet(checkpointBase.videoId, checkpointBase);
+                        }
+                    }
+                };
 
                 // YENİ EKLENEN KISIM (Zil Dinleyici):
                 // Saniyede iki kez kontrol etmek (setInterval) yerine, 'iptalEt' butonunun çaldığı zili dinliyoruz.
@@ -5790,6 +6301,15 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     commentTurkishTranslate.innerText = currentObj["Orijinal Yorum - Türkçe Çeviri"] || "-";
                     original.innerText = currentObj["Orijinal Yorum"] || "-";
 
+                    const vTitle = currentObj["Kaynak Video Başlığı"] || (checkpointBase ? checkpointBase.videoTitle : "") || "";
+                    const titleContainer = document.getElementById('revVideoTitleContainer');
+                    if (vTitle && titleContainer) {
+                        document.getElementById('revVideoTitle').innerText = vTitle;
+                        titleContainer.style.display = 'block';
+                    } else if (titleContainer) {
+                        titleContainer.style.display = 'none';
+                    }
+
                     if (templateType === "criteria-based-theological-analysis") {
                         category.innerText = `${currentObj["Kategori"] || "-"}`;
                     } else if (templateType === "religious-questions-and-doubts") {
@@ -5811,6 +6331,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     document.getElementById('btn-reddet').disabled = true;
                     onaylananVeriler.push(aiVerisi[currentIndex]);
                     currentIndex++;
+                    kaydetReviewState(); // ADIM 3: Her Onayda durumu RAM + Storage'a yedekle
                     siradakiYorumuGoster();
                 };
 
@@ -5818,6 +6339,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     document.getElementById('btn-onayla').disabled = true;
                     document.getElementById('btn-reddet').disabled = true;
                     currentIndex++;
+                    kaydetReviewState(); // ADIM 3: Her Reddedişte durumu RAM + Storage'a yedekle
                     siradakiYorumuGoster();
                 };
             });
@@ -6503,6 +7025,33 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         </div>
     </div>
 
+    <!-- ADIM 3: KALDIĞIN YERDEN DEVAM ET MODALI -->
+    <div id="resumeModal" class="ss-modal" style="z-index: 10001;">
+        <div class="ss-modal-content" style="max-width: 450px; text-align: center; padding: 25px;">
+            <h3 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-top: 0;">🔄 Yarım
+                Kalan İşlem Bulundu</h3>
+            <img id="resumeThumb"
+                style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                src="" alt="Video">
+            <p id="resumeTitle"
+                style="font-weight: bold; font-size: 15px; color: #2c3e50; margin: 15px 0; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            </p>
+            <div
+                style="background: #fdf2e9; padding: 12px; border-radius: 6px; margin-bottom: 10px; border: 1px dashed #e67e22;">
+                <span id="resumeStageText" style="font-size: 14px; color: #d35400; font-weight: bold;"></span>
+            </div>
+            <div id="resumeListContainer"
+                style="display: none; max-height: 150px; overflow-y: auto; text-align: left; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 20px; background: #f8fafc; font-size: 13px; color: #34495e;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button id="btn-resume-yes" style="background-color: #27ae60; margin: 0; padding: 12px;">Kaldığım yerden
+                    devam et</button>
+                <button id="btn-resume-no" style="background-color: #e74c3c; margin: 0; padding: 12px;">Hayır, temizle
+                    ve yeniden başla</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MADDE 2: DİNAMİK HTML YORUM İNCELEME MODALI (GÜNCELLENMİŞ SCROLL DESTEKLİ VERSİYON) -->
     <div id="reviewModal" class="ss-modal">
         <!-- // Pencere dış sınırlarını ekrandan taşmayacak şekilde (90vh) kilitliyoruz ve Flexbox dikey mimarisine geçiriyoruz -->
@@ -6528,6 +7077,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     🗃️ <span id="revCategory" style="color: #e67e22; font-weight: bold;">Kategori</span> |
                     🌍 <span id="revLang">Dil</span> |
                     🕒 <span id="revCommentDate">Yorum Tarihi</span>
+                </div>
+                <div id="revVideoTitleContainer"
+                    style="font-size: 13px; color: #2980b9; font-weight: bold; margin-bottom: 10px; display: none;">
+                    🎬 Video: <span id="revVideoTitle"></span>
                 </div>
 
                 <p id="revCommentTurkishTranslate"
