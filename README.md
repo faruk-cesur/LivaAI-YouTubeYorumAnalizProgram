@@ -3,121 +3,99 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı v7.1</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v8.0)</strong>
 </h2>
 
-<h3>Liva AI - Detaylı Kullanım Rehberi</h3>
-
-[Rehber Videosunu İzlemek için Tıkla!](https://youtu.be/EQgztO0zY48)
-
-<hr>
-
-## 🚀 Yeni Kayıt Otomasyonu (v7.1)
-
-*   **📝 Entegre Kayıt Talebi Sistemi:** Giriş ekranına doğrudan entegre, şık bir kayıt paneli eklenmiştir. Başvurular doğrudan Firestore üzerinde izole bir havuzda toplanır.
-*   **🌍 Esnek Uluslararası İletişim:** Telefon numarası formatı, yurt dışındaki (Almanya, Azerbaycan, İran vb.) tebliğ ekiplerinin de sisteme başvurabilmesi adına esnetilmiştir. Başında `+` işareti olan tüm uluslararası numaralar kabul edilir ve `wa.me` WhatsApp köprü yapısıyla %100 uyumlu çalışır.
-*   **🎯 Kurşun Geçirmez Girdi ve Yaş Doğrulama Motoru:** Form gönderimi esnasında e-posta, telefon ve şifre güvenlik denetimleri eksiksiz yapılır. Doğum tarihi alanı hem takvim seçiminde hem de klavyeden elle girişlerde sahte veri girişleri otonom olarak engellenir. Not alanı isteğe bağlı hale getirilmiştir.
-*   **🔐 Otomatik Üye Üretimi ve Akıllı Giriş Denetimi:** Yönetici panelinden bir başvuru onaylandığı an, kullanıcının verileriyle Firebase Authentication hesabı, Firestore rol tanımlamaları ve şifre kayıtları otomatik olarak oluşturulur. Başvurusu hala inceleme aşamasında olan kullanıcılar sisteme girmeye çalıştığında *"Kayıt talebiniz hala incelenmektedir..."* uyarısıyla karşılanır. Reddedilen talepler (❌) ise veritabanından güvenle temizlenir.
-*   **💎 Kalıcı Üst Yönetim Yetkisi:** Üst yönetim yetkisi, sayfa yenilense bile tarayıcı yerel hafızasında (`localStorage`) kilitli kalır. Bu sayede yöneticinin sürekli şifre girme zorunluluğu ortadan kalkar. Yetki, yalnızca "Güvenli Çıkış" yapıldığında tamamen imha edilir.
+<h2 align="center">
+  <a href="https://youtu.be/EQgztO0zY48">
+    <img src="https://img.shields.io/badge/REHBER_VİDEOSUNU_İZLE-FF0000?style=flat-square&logo=youtube&logoColor=white" width="300">
+  </a>
+</h2>
 
 <hr>
 
-## 🔥 Öne Çıkan Yeni Özellikler (v7.0)
-
-*   **🤖 %100 Otonom İş Akışı ve Bulut Veritabanı Entegrasyonu (Google Drive & Google Sheets):** Yapay zeka yorum analizi sistemi **TAMAMEN OTOMASYONA** dönüştürülmüştür. Analiz edilen tüm veriler ve onaylanan yorumların ekran görüntüleri Google Drive üzerinde hiyerarşik bir veritabanı gibi otomatik olarak klasörlenir. Aynı zamanda temizlenen ve filtreden geçen yorum verileri Google Sheets (E-Tablo) üzerindeki ana veritabanına otomatik olarak gönderilir. Tüm bu Drive klasörleme ve E-Tablo aktarım süreçleri, Yönetici Paneli'ndeki log kayıtları üzerinden tek tıkla dinamik olarak yönetilebilir ve silinebilir.
-*   **🛡️ Gelişmiş Rol Bazlı Erişim Kontrolü (RBAC):** Sisteme "Üst Yönetim Şifresi" ve "Kullanıcı Panel İzni" mantığı getirildi. Artık "Ortak Yönetici Şifresi" kaldırıldı. Yöneticiler her şeyi kontrol ederken, izin verilen "Kullanıcılar" paneli sadece rehber (read-only) mantığında görebilir. İşlemler sütunu ve butonlar yetkisiz kişilerden otomatik olarak gizlenir.
-*   **👥 Yönetici Panelinden Dinamik Yetkilendirme:** Ekip tablosu üzerinden kullanıcılara tek tıkla "Erişim İzni Ver / Kaldır" butonu eklendi.
-*   **🧩 Modüler ve Esnek Ekip Ekleme Formu:** Ekip üyesi eklerken Ad Soyad, Telefon, E-posta, Şifre, Rol (Zorunlu) ve Doğum Tarihi, Ekip Adı, Sorumlu Olunan Diller, Panel İzni (İsteğe Bağlı) alanları ile detaylı profil oluşturma imkanı sağlandı. Tablo üzerinden bu bilgilerin tamamı (kalem ikonu ✏️ ile) güncellenebilir hale getirildi.
-*   **🔒 İkincil Onay Kalkanı (Re-Authentication):** Ekip üyesi silme veya rol değiştirme gibi kritik işlemlerde, kullanıcının kendi hesap şifresini canlı olarak Firebase sunucularında doğrulaması sağlandı. Veritabanına (Firestore) dışarıdan müdahale edilmesini engelleyen katı güvenlik kuralları (Security Rules) yazıldı.
-*   **⏳ Otonom Tarih Çakışması Kontrol Motoru (Senaryo A & B):** Kullanıcının analiz etmek istediği tarih aralığı, veritabanındaki geçmiş analiz kayıtlarıyla karşılaştırılarak veri kaybı veya mükerrer token harcaması önlenir. Çakışma durumunda sistem kullanıcıya otomatik tarih düzeltme teklifi sunar (Senaryo A: Mükerrer Analiz, Senaryo B: Veri Kaybı).
-*   **📅 Dinamik Tarih Seçim Arayüzü:** Akıllı Otomatik ve Manuel tarih modu geçişleri modernize edildi. Gelecek (henüz yaşanmamış) zaman seçimi, tarayıcı takvim arayüzü (min/max özellikleri) ve anlık JavaScript denetimleriyle engellendi.
-
-<hr>
-
-## 🌟 Eski Sürümdeki Mevcut Özellikler (v6.0)
-
-* **Kusursuz Video Türü Ayrımı (%100 Doğruluk):** Sistem artık YouTube Data API'nin resmi sistem playlist yapılarını (`UUSH` ve `UULF`) kullanarak Shorts ve Uzun videoları sıfır hata ve maksimum hızla ayrıştırır
-* **🗂️ Toplu Yorum Analizi Modu (Bulk Processing):** Kanal tarama ekranında tek seferde birden fazla video seçerek ardışık analiz başlatabilirsiniz. Sistem tüm videoları sırayla işler, raporları ayrı ayrı üretir ve tek bir `.zip` arşivi olarak bilgisayarınıza indirir.
-* **🔒 Gelişmiş Yönetici Paneli (Admin Dashboard):** Veritabanı (Firestore) üzerinden şifre doğrulamalı, tüm ekibin indirme hareketlerini izleyebileceğiniz ve "Daha Önce Analiz Edildi" rozetlerini tek tıkla sıfırlayabileceğiniz merkezi yönetim alanı eklenmiştir.
-* **📊 Akıllı Kullanıcı Bazlı RPD Tüketim Özeti:** Ekip üyelerinin Gemini API kotalarını nasıl harcadığını canlı takip eden; Bugün, Son 7 Gün ve Toplam harcanan RPD miktarını anlık hesaplayan analitik özet tablosu panele entegre edilmiştir.
-* **👥 Güvenli Ekip Yönetimi, Telefon No ve Düzenleme:** Admin paneli üzerinden ekip üyelerine Ad Soyad, Telefon ve Rol atayabilir, kalem (✏️) butonuyla bilgileri düzenleyebilir veya tek tıkla yetkilerini kalıcı olarak iptal edebilirsiniz.
-* **🛡️ Otonom Güvenlik Duvarı:** Ekip listesinden silinen veya yetkisi düşürülen bir kullanıcı, tarayıcı sekmelerini açık bıraksa bile herhangi bir işlem butonuna bastığı an güvenlik kontrolüne takılır, sistem yetkilerinin sonlandırıldığını anlar ve kullanıcıyı otomatik olarak dışarı atar.
-* **🏷️ Akıllı Durum Rozetleri ve Emojiler:** Karışık listeleme modunda videoların yanına otomatik olarak `📱 Shorts` veya `🖥️ Uzun Video` rozetleri basılır. Ayrıca daha önce işlenen videoların yanında beliren `✅ Daha Önce Analiz Edildi` rozeti ekip içi mükerrer çalışmayı tamamen engeller.
-* **✨ Livâü'l-Hamd Favicon:** Uygulamaya harici dosya bağımlılığı olmadan doğrudan koda gömülü, altın renkli şık bir "L" monogram favicon yerleştirilmiştir.
-
-<hr>
 Bu proje, YouTube içerik üreticilerinin ve tebliğ ekiplerinin videolara gelen on binlerce yorumu tek tıkla çekip, otonom yapay zeka mimarisiyle analiz ettirebilmesi için geliştirilmiş sunucusuz (serverless) bir web uygulamasıdır. 
 
-Eski sürümlerde veriler yapay zekaya manuel olarak beslenirken; v5.0 ile birlikte sistem kendi içindeki **Gemini AI** motorunu kullanarak yorumları okur, sınıflandırır, özetler ve doğrudan hazır bir Excel tablosu olarak sunar.
+Sistem, kendi içindeki **Gemini AI** motorunu kullanarak yorumları okur, sınıflandırır, özetler ve doğrudan Google Drive ile entegre çalışarak hazır bir Excel tablosu olarak sunar.
 
-<img width="647" height="484" alt="image" src="https://github.com/user-attachments/assets/eae45d25-67fe-4036-8c06-7c095422df28" />
+<table border="0">
+  <tr>
+    <td>
+      <img width="640" alt="Liva AI - Arayüz 1" src="https://github.com/user-attachments/assets/e05b7ab3-683f-4acb-9315-29dfe1a7b1b4" />
+    </td>
+    <td>
+      <img width="700" alt="Liva AI - Arayüz 2" src="https://github.com/user-attachments/assets/6708931e-5f09-4a07-9115-5e95fb097156" />
+    </td>
+  </tr>
+</table>
 
-## 🌟 Eski Sürümdeki Mevcut Özellikler (v5.0)
+<br>
+<hr>
 
-* **🧠 Otonom Yapay Zeka (Cascade) Mimarisi:** API kotalarını korumak için sistem 3 aşamalı çalışır:
-  * **Aşama 0 (JS Ön Filtre):** 4 kelimeden kısa basit övgüler (spam) tarayıcı RAM'inde sıfır maliyetle anında silinir. *(İhtida/şehadet bildiren kelimeler istisna olarak korunur).*
-  * **Aşama 1 (Hızlı Ön Eleme):** Gemini modeli, kalan yorumları büyük paketler halinde tarayarak sadece din, şüphe, felsefe veya duygu barındıranların kimliğini (ID) seçer.
-  * **Aşama 2 (Derin Analiz):** Sadece nitelikli yorumlar cerrah titizliğiyle incelenip 1. tekil şahıs ağzından ("Ben" diliyle) Türkçe özetlenerek kategorize edilir.
-* **☁️ Firebase Bulut Senkronizasyonu (Cloud Sync):** Cihaz bağımsızlığı! Yetkili girişinden sonra girdiğiniz API anahtarları, özel prompt şablonlarınız ve kota kayıtlarınız buluta kaydedilir. Telefondan veya başka bilgisayardan girseniz bile tüm ayarlarınız geri yüklenir.
-* **⏱️ Akıllı Kota (RPD) Yöneticisi:** Google'ın günlük ücretsiz istek limitlerine (RPD) takılmamak için seçtiğiniz modelin günlük kotasını anlık olarak hesaplar, arayüzde gösterir ve her gün saat 10:00'da kotaları otomatik sıfırlar.
-* **🌍 Otomatik Çeviri Entegrasyonu:** Yorumlar hangi dilde yazılmış olursa olsun (Rusça, Arapça, İngilizce vb.), Excel çıktısına Google Translate (gtx) üzerinden anlık **%100 Türkçe Çevirisi** eklenir.
-* **🛡️ Mükerrer Kayıt Engelleyici (Deduplication):** Yapay zekanın "halüsinasyon" görüp aynı yorumu iki kez listelemesi ihtimaline karşı analiz sonrasında tarih ve kullanıcı adı taraması yapılarak liste otomatik olarak teke düşürülür.
-* **📋 Dinamik Prompt Şablonları:** Sisteme entegre gelen *11 Kriterli Teolojik Analiz* ve *Dini Sorular/Şüpheler (Cevap Hazırlama)* şablonlarını kullanabilir veya tamamen kendi özel analiz promptunuzu oluşturup kaydedebilirsiniz.
+## ✨ Temel ve Güçlü Özellikler
 
-<img width="636" height="807" alt="image" src="https://github.com/user-attachments/assets/6e9ca67c-5bb9-467b-a382-df609ee95359" />
+*   **🧠 Otonom Yapay Zeka (Cascade) Mimarisi:** API kotalarını korumak için sistem 3 aşamalı çalışır. Gereksiz yorumlar RAM üzerinde maliyetsizce elenir; nitelikli, teolojik, felsefi veya dini şüphe barındıran yorumlar cerrah titizliğiyle incelenip 1. tekil şahıs ("Ben") diliyle Türkçe özetlenir.
+*   **🤖 %100 Otonom İş Akışı ve Bulut Entegrasyonu:** Onaylanan yorumların ekran görüntüleri Google Drive üzerinde otomatik klasörlenir. Temizlenen veriler Google Sheets (E-Tablo) üzerindeki ana veritabanına otomatik aktarılır.
+*   **🗂️ Toplu Yorum Analizi (Bulk Processing):** Kanal tarama ekranında birden fazla video seçerek ardışık analiz başlatılabilir. Sistem tüm videoları sırayla işler ve raporları ayrı ayrı üretir.
+*   **🛡️ Gelişmiş Rol Bazlı Erişim Kontrolü (RBAC):** "Üst Yönetim Şifresi" ile yöneticiler tüm bulut süreçlerini kontrol ederken, izni olmayan kullanıcılar paneli sadece "Salt Okunur" (Read-only) modunda görüntüleyebilir. Yönetici Panelinden tek tıkla dinamik yetkilendirme yapılabilir.
+*   **⏱️ Akıllı Kota (RPD) Yöneticisi:** Google'ın günlük ücretsiz istek limitlerine takılmamak için seçtiğiniz modelin kotasını anlık hesaplar. Tüketim özetleri Günlük ve Toplam bazda Admin panelinden takip edilebilir.
+*   **🌍 Otomatik Çeviri & Dil Desteği:** Hangi dilde yazılmış olursa olsun (Arapça, Rusça, İngilizce vb.) yorumlara Google Translate (gtx) üzerinden anlık %100 Türkçe çeviri eklenir.
 
-## ⚙️ Klasik ve Güçlü Özellikler
-
-* **Çift Formatlı Dışa Aktarım:** Verileri istatistiksel analiz için yapay zeka destekli Excel (`.xlsx`), geleneksel semantik LLM analizi için hiyerarşik Metin Belgesi (`.txt`) formatında indirebilirsiniz.
-* **İki Farklı Çalışma Modu:**
-  * **Tekil Video Modu:** Direkt link ile hedef videonun yorumlarını indirip analiz eder.
-  * **Kanal Tarama Modu:** Hedef kanalın yüklediği tüm videoları (Yeniden Eskiye, Eskiden Yeniye veya En Popüler) listeleyip istatistiklerini görebilirsiniz.
-* **Alt Yanıt (Reply) Mimarisi:** Ana yorumlara gelen alt yanıtları, sohbet akışını bozmadan ve LLM mantığına uygun şekilde hiyerarşik bağlarla çeker.
-* **Taban Beğeni Filtresi:** Sadece belirli bir beğeni sayısına (Örn: +5 Beğeni) ulaşan nitelikli yorumları filtreleyebilme imkanı.
-
-<img width="650" height="906" alt="image" src="https://github.com/user-attachments/assets/260cbc87-73f6-4eb8-b26f-6ec12b5cfab6" />
+<br>
+<hr>
 
 ## 🚀 Kurulum ve Kullanım
 
-Bu aracı kullanmak için ekstra bir kurulum yapmanıza (Node.js, Python vb.) gerek bulunmuyor.
+Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Python vb.) kurmanıza gerek yoktur.
 
-* **1.** Google AI Studio üzerinde Gemini API anahtarı (API Key) oluşturuyoruz:
-  * Siteye Git: Google AI Studio platformuna [Google AI Studio](https://aistudio.google.com/) bağlantısına tıklayarak doğrudan ulaşabilirsiniz.
-  * Giriş Yap: Google hesabınızla oturum açın.
-  * Anahtar Bölümüne Geç: Sol alt menüdeki "Get API key" (API anahtarı al) butonuna tıklayın.
-  * Oluşturma Ekranını Aç: Açılan sayfada "Create API key" (API anahtarı oluştur) butonuna basın.
-  * Proje Seç: "Create project" tıklayarak yeni bir proje oluşturun.
-  * Anahtarı Kopyala: Ekranda görünen benzersiz API anahtarınızı kopyalayın.
-* **2.** Bu bağlantı adresinden web uygulamasını açıyoruz: [YouTube Comment Downloader](https://faruk-cesur.github.io/YouTubeCommentDownloader/)
-* **3.** Firebase güvenliği sayesinde yalnızca yetkilendirilmiş ekip üyesi e-posta ve şifresiyle **Giriş Yapıyoruz**.
-* **4.** Yapay zeka modülünü kullanmak için **Kişisel Gemini API** anahtarımızı giriyoruz. (Sistem ping atmadan akıllı filtreleme ile hesabınızdaki çalışan aktif modelleri anında tarayıp listeler).
-* **5.** İstediğimiz modeli, analiz şablonunu ve video linkini belirleyip süreci başlatıyoruz.
-* **6.** Canlı "Tahmini Süre" ve "Kalan Yorum" sayacını takip ederek işlemin bitmesini bekliyor ve Excel dosyamızı alıyoruz.
+1.  **API Anahtarı Alın:** [Google AI Studio](https://aistudio.google.com/)'ya giriş yapın. Sol menüden "Get API key" sekmesine geçip yeni bir proje üzerinden benzersiz Gemini API anahtarınızı oluşturun ve kopyalayın.
+2.  **Sisteme Giriş Yapın:** [Liva AI - YouTube Yorum Analiz Programı](https://faruk-cesur.github.io/LivaAI-YouTubeYorumAnalizProgram/) adresinden uygulamayı açın.
+3.  **Yetkilendirme:** Firebase güvenliği kalkanından geçmek için ekip e-posta ve şifrenizle giriş yapın. Yeni üyeyseniz giriş ekranındaki "Kayıt Talebi" formunu doldurarak onay bekleyin.
+4.  **Analizi Başlatın:** Kişisel Gemini API anahtarınızı girin. İstediğiniz analiz şablonunu (ör. *11 Kriterli Teolojik Analiz*) ve hedef video linkini belirleyerek süreci başlatın.
+5.  **Sonuçları Alın:** Canlı ilerleme çubuğunu takip edin. İşlem bitiminde Excel dosyanız cihazınıza inecek ve tüm kayıtlar bulut veritabanına işlenecektir.
 
-> **💡 Güvenlik Notu:** API anahtarınız ve şablonlarınız Firebase Firestore üzerinde sadece size ait güvenli bir dökümanda saklanır ve üçüncü şahıslarla paylaşılmaz.
+> **💡 Güvenlik Notu:** API anahtarınız ve özel şablonlarınız Firebase Firestore üzerinde sadece size ait güvenli bir belgede şifrelenerek saklanır, kesinlikle üçüncü şahıslarla paylaşılmaz.
 
-## 🤖 Klasik RAG Mimarisi (.txt Uyumluluğu)
+<img width="600" alt="giriş ekranı" src="https://github.com/user-attachments/assets/284f0c3b-ac2b-4ccc-b07c-0920944debea" />
 
-Eğer yerleşik Gemini motoru yerine kendi özel modellerinizi (ChatGPT, Claude) kullanmak isterseniz, yapay zeka onay kutusunu kapatıp yorumları `.txt` olarak indirebilirsiniz. Alt yorumları farklı satırlarda gör işaretlendiğinde, programın ürettiği çıktı şu şekildedir:
+<br>
+<hr>
 
-```text
-(28.08.2025 - 15:13) - [👍 977 Beğeni] - @KullaniciAdi : Yorum metni...
-(05.12.2026 - 09:25) - [👍 651 Beğeni] - @DigerKullanici : Diğer yorum...
+## 🛑 v8.0 - Kesintisiz Mimari ve Bulut Güvenliği (En Yeni Sürüm)
 
-```
+*   **🧠 Güvenli ve Kesintisiz Veri İşleme:** Yorum resimleri ve analiz dosyaları arka planda önce geçici bellekte (RAM) güvenle hazırlanır, ardından Google Drive ve Sheets'e adım adım yüklenir. Bu sayede internet yavaşlasa dahi eksik veya hatalı dosya yüklenmesinin önüne geçilir.
+*   **🔄 "Kaldığın Yerden Devam Et" (Akıllı İlerleme Kaydı):** Tarayıcı aniden kapansa, sayfa yanlışlıkla yenilense veya elektrik kesilse bile ilerleme kaybolmaz. Sistem kalınan yeri otomatik hatırlar; tekli ve toplu video analizlerinde önceden onaylanmış yorumlar baştan sorulmaz.
+*   **📦 Otomatik Bulut Temizliği ve İptal Güvenliği:** Bir analiz yarıda iptal edildiğinde veya sorun yaşandığında, bulutta (Drive/Sheets) çöp veya öksüz dosya bırakılmaz. Sistem yarım kalan verileri anında temizleyerek veritabanı kirliliğini önler.
+*   **🛡️ Eklenti ve Engelleyici Teşhis Kalkanı:** Reklam engelleyici veya gizlilik eklentilerinin görüntü modülünü bozup bozmadığı, analiz başlamadan saniyeler önce gizli bir testle tespit edilir. Veri kaybı yaşanmadan işlem güvene alınır.
+*   **♻️ Anlık Ağ Kopmalarına Karşı Otomatik Yeniden Deneme:** Yorum görselleri yüklenirken internet koparsa sistem pes etmez; 5'er saniye bekleyerek 3 kez tekrar dener. Geçici bağlantı sorunları tolere edilir.
+*   **🕒 Doğru ve Hilesiz Günlük Kota (RPD) Takibi:** Kota sayacı, yerel bilgisayar saatinden bağımsızlaştırılarak doğrudan resmi Pasifik Saati'ne (PT) ve Firestore sunucu saatine (`serverTimestamp`) kilitlendi. Manipülasyon ve hatalar engellendi.
+*   **🏷️ Anlık Rozet Güncellemeleri ve Canlı Durum Listesi:** Videoların yanındaki *"Daha Önce Analiz Edildi"* rozetleri analiz bitiminde sayfayı yenilemeden anında yansır. Toplu işlemlerde detaylı ve kaydırılabilir durum takip listesi arayüze entegre edildi.
+
+<details>
+<summary><b>Geçmiş Sürüm Notları (v5.0 - v7.2) Göster / Gizle</b></summary>
+
+*   **(v7.2) Ekran Görselleri Optimizasyonu:** Ekran görselleri oluşturulurken karşılaşılan bir hata çözüldü ve sistem optimize edildi.
+*   **(v7.1) Kayıt Otomasyonu:** Entegre kayıt talebi formu, uluslararası telefon numarası (wa.me) uyumluluğu, kurşun geçirmez yaş doğrulama motoru ve kalıcı üst yönetim yetkisi (localStorage).
+*   **(v7.0) Rol Bazlı Otonomi:** RBAC ile dinamik ekip yetkilendirmesi, otonom tarih çakışması (Senaryo A & B) tespiti ve ikincil şifre doğrulama kalkanı (Re-Authentication).
+*   **(v6.0) Toplu Analiz & Dashboard:** Merkezi Admin Dashboard, çoklu video (Bulk) işleme, kusursuz Shorts/Uzun Video ayrımı, akıllı kullanıcı bazlı RPD harcama istatistikleri.
+*   **(v5.0) RAG Mimarisi:** Gemini entegrasyonu, 4 kelimelik spam ön filtre, mükerrer kayıt engelleyici ve dinamik prompt şablonları. ChatGPT veya Claude gibi harici modeller için `.txt` (Hiyerarşik Metin Belgesi) uyumluluğu.
+</details>
+
+<br>
+<hr>
 
 ## 🛠️ Kullanılan Teknolojiler
 
-* **Arayüz (UI):** HTML5, CSS3 (Modern Flexbox)
-* **Mantık & Veri İşleme:** Vanilla JavaScript (ES6 Modules, Asenkron Fetch API)
-* **Backend & Kimlik Doğrulama:** Firebase Firestore, Firebase Authentication
-* **Yapay Zeka & API'ler:** Google Generative AI API (Gemini), Google Translate API (gtx), YouTube Data API v3
-* **Veri Formatlama:** SheetJS (Excel .xlsx dışa aktarımı için)
+*   **Arayüz (UI):** HTML5, CSS3 (Modern Flexbox)
+*   **Mantık & Veri İşleme:** Vanilla JavaScript (ES6 Modules, Asenkron Fetch API)
+*   **Backend & Kimlik Doğrulama:** Firebase Firestore, Firebase Authentication
+*   **Yapay Zeka & API'ler:** Google Generative AI API (Gemini), Google Translate API (gtx), YouTube Data API v3
+*   **Veri Formatlama:** SheetJS (Excel .xlsx dışa aktarımı için)
 
 ## 👨‍💻 Geliştirici
 
-**Faruk Cesur** bu projeyi geliştirmiştir. Projeye katkıda bulunmak veya iletişim kurmak için [Livâü'l-Hamd Instagram adresi](https://www.instagram.com/livaulhamd.official/) üzerinden iletişime geçebilirsiniz.
+**Faruk Cesur** bu projeyi geliştirmiştir. Projeye katkıda bulunmak veya iletişime geçmek için [Livâü'l-Hamd Instagram adresi](https://www.instagram.com/livaulhamd.official/) üzerinden ulaşabilirsiniz.
 
----
-
-*Bu yazılım, dijital mecralardaki bilgi kirliliğini temizleyerek hakikati arayan insanlara ulaşmayı kolaylaştırmak gayesiyle geliştirilmiştir.*
+<div align="center">
+  <i>Bu yazılım, dijital mecralardaki bilgi kirliliğini temizleyerek hakikati arayan insanlara ulaşmayı kolaylaştırmak gayesiyle geliştirilmiştir.</i>
+</div>
