@@ -94,7 +94,7 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 ## 👨‍💻 Geliştirici
 
-**Faruk Cesur** bu projeyi geliştirmiştir. Projeye katkıda bulunmak veya iletişime geçmek için [Livâü'l-Hamd Instagram adresi](https://www.instagram.com/livaulhamd.official/) üzerinden ulaşabilirsiniz.
+**Faruk Cesur** bu projeyi geliştirmiştir. İletişime geçmek için [Livâü'l-Hamd Instagram adresi](https://www.instagram.com/livaulhamd.official/) üzerinden ulaşabilirsiniz.
 
 <div align="center">
   <i>Bu yazılım, dijital mecralardaki bilgi kirliliğini temizleyerek hakikati arayan insanlara ulaşmayı kolaylaştırmak gayesiyle geliştirilmiştir.</i>
