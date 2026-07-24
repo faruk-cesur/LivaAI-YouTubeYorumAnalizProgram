@@ -3623,7 +3623,7 @@
         // =========================================================================================
         // YAPAY ZEKA MİMARİSİ (AŞAMA 1) - RADAR (YENİ ŞABLON DESTEĞİ İLE)
         // =========================================================================================
-        async function radarIstekAt(batchData, apiKey, userPrompt, templateType) {
+        async function radarIstekAt(batchData, apiKey, userPrompt, templateType, modelOverride) {
             const selectedModel = modelOverride || document.getElementById('aiModelSelect').value;
             if (getDailyRPD(selectedModel) <= 0) throw new Error("RPD_LIMIT");
 
@@ -3703,8 +3703,7 @@ EXAMPLE OUTPUT: [0, 2, 5, 12]`;
         // Görevi: Radarın seçtiği o az sayıdaki değerli yorumu alıp 11 kritere göre özetlemek.
         // Çözüm: Modele tarih ve yazar bilgisi sorulmaz (Ayrıca Token tasarrufu sağlar). Sadece "id" numarası gönderilir ve JavaScript hafızasındaki orijinal, hatasız verilerle eşleştirilir.
         // =========================================================================
-        async function cerrahIstekAt(batchData, apiKey, userPrompt, templateType) {
-            // Seçilen modeli kontrol ediyoruz
+        async function cerrahIstekAt(batchData, apiKey, userPrompt, templateType, modelOverride) {
             const selectedModel = modelOverride || document.getElementById('aiModelSelect').value;
             if (getDailyRPD(selectedModel) <= 0) throw new Error("RPD_LIMIT");
 
