@@ -3275,7 +3275,7 @@
 
                 tablo.innerHTML = "";
                 modeller.forEach(m => {
-                    const defaultRpd = BASE_RPD[m.name] !== undefined ? BASE_RPD[m.name] : modelRPDVarsayilaniHesapla(m.name);
+                    const defaultRpd = modelRPDDegeriniGetir(m.name);
 
                     const satir = `
                         <tr style="background:#f8fafc; border-bottom: 1px solid #e2e8f0;">
@@ -4742,12 +4742,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         await islemLogla(videoId, videoTitle, 0, exportFormat, "AI Analizi Yapıldı", {
                             isAI, includeReplies, flattenReplies, minLikesFilter,
                             sablonAdi: sablonAdiForLog,
+                            modelAdi: selectedModelName, // DÜZELTME: mühürlü model adı, DOM fallback'ine bırakılmamalı
                             rpdHarcanan: rpdHarcananSayaci,
-                            storageUrl: null,
-                            folderUrl: null,
-                            masterTarihi: mlog,
-                            tarihAraligi: tarihAraligiMetni,
-                            kanalId: kanalHandleForLog
+                            storageUrl: null, folderUrl: null,
+                            masterTarihi: mlog, tarihAraligi: tarihAraligiMetni, kanalId: kanalHandleForLog
                         });
                         firebaseVerileriniGuncelle();
                     }
@@ -5875,7 +5873,9 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     for (const [vid, meta] of Object.entries(bulkCheckpoint.logMetaMap)) {
                         await islemLogla(vid, meta.videoBaslik, meta.finalYorumSayisi, meta.exportFormat, meta.islemDetayi, {
                             isAI: meta.isAI, includeReplies: meta.includeReplies, flattenReplies: meta.flattenReplies, minLikesFilter: meta.minLikesFilter,
-                            sablonAdi: meta.sablonAdiForLog, rpdHarcanan: meta.rpdBuVideoda, topluIslem: true,
+                            sablonAdi: meta.sablonAdiForLog,
+                            modelAdi: meta.selectedModelName || selectedModelName,
+                            rpdHarcanan: meta.rpdBuVideoda, topluIslem: true,
                             tarihAraligi: meta.tarihAraligiMetni, kanalId: meta.kanalHandleForLog,
                             storageUrl: null, folderUrl: null
                         });
