@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v8.0)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v8.1)</strong>
 </h2>
 
 <h2 align="center">
@@ -61,7 +61,16 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 <br>
 <hr>
 
-## 🛑 v8.0 - Kesintisiz Mimari ve Bulut Güvenliği (En Yeni Sürüm)
+## 🌟 v8.1 - Gelişmiş Model Yönetimi ve Arayüz İyileştirmeleri (En Yeni Sürüm)
+
+*   **🎨 Yenilenen İnceleme Ekranı:** Yapay zekanın süzdüğü yorumları onayladığınız veya reddettiğiniz inceleme penceresinin tasarımı tamamen yenilendi. Artık sonuçları okumak ve kontrol etmek çok daha ferah, kolay ve göz yormayan bir yapıya kavuştu.
+*   **⚙️ Akıllı Model Yönetimi ve Temiz Liste:** Kullanıcıların kafasını karıştıran, çalışmayan veya yorum analiziyle ilgisi olmayan gereksiz yapay zeka modelleri (resim, ses modelleri vb.) listeden tamamen temizlendi. Ayrıca yöneticiler artık yeni çıkan modelleri yönetim paneli üzerinden tek tıkla sisteme çekip günlük limitlerini anında ayarlayabilecek.
+*   **📊 Log Kayıtlarında Model Takibi:** Yöneticiler için log tablosu detaylandırıldı. Hangi videonun hangi yapay zeka sürümüyle (örneğin Gemini 3.5 Flash-Lite) analiz edildiği artık sistem loglarına otomatik olarak kaydediliyor. Böylece geçmişe dönük analizlerin kalitesi ve limit tüketimi daha iyi takip edilebilecek.
+
+<br>
+<hr>
+
+## 🛑 v8.0 - Kesintisiz Mimari ve Bulut Güvenliği
 
 *   **🧠 Güvenli ve Kesintisiz Veri İşleme:** Yorum resimleri ve analiz dosyaları arka planda önce geçici bellekte (RAM) güvenle hazırlanır, ardından Google Drive ve Sheets'e adım adım yüklenir. Bu sayede internet yavaşlasa dahi eksik veya hatalı dosya yüklenmesinin önüne geçilir.
 *   **🔄 "Kaldığın Yerden Devam Et" (Akıllı İlerleme Kaydı):** Tarayıcı aniden kapansa, sayfa yanlışlıkla yenilense veya elektrik kesilse bile ilerleme kaybolmaz. Sistem kalınan yeri otomatik hatırlar; tekli ve toplu video analizlerinde önceden onaylanmış yorumlar baştan sorulmaz.
