@@ -8136,8 +8136,22 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             let analizEdilenSonuclar = [];
 
             try {
+                const headers = dbFiltreliVeri.length > 0 ? Object.keys(dbFiltreliVeri[0]) : [];
+                const orjYorumKey = headers.find(h => h.toLowerCase().includes("orijinal") && !h.toLowerCase().includes("çeviri")) || "Orijinal Yorum";
+                const ozetKey = headers.find(h => h.toLowerCase().includes("özet")) || "Yorum Özeti";
+                const ceviriKey = headers.find(h => h.toLowerCase().includes("çeviri")) || "Orijinal Yorum - Türkçe Çeviri";
+
                 // Radar sistemine benzer bir yapı kurularak her satıra birer ID tahsis edilir
-                const veriPaketi = dbFiltreliVeri.map((row, index) => ({ id: index, data: JSON.stringify(row) }));
+                // YENİ: Token israfını önlemek ve AI doğruluk oranını artırmak için,
+                // modele tüm satır (linkler, tarihler vb.) değil, SADECE yorum metinleri gönderilir.
+                const veriPaketi = dbFiltreliVeri.map((row, index) => {
+                    const daraltilmisMetinler = {
+                        "Orijinal Yorum": row[orjYorumKey] || "",
+                        "Yorum Özeti": row[ozetKey] || "",
+                        "Türkçe Çeviri": row[ceviriKey] || ""
+                    };
+                    return { id: index, data: JSON.stringify(daraltilmisMetinler) };
+                });
 
                 // YENİ: Progress barı görünür yap ve maksimum değerini (toplam işlem sayısını) ayarla
                 progressBar.style.display = 'block';
