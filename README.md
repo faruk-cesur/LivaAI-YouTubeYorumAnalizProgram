@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v8.1)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v9.0)</strong>
 </h2>
 
 <h2 align="center">
@@ -61,28 +61,27 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 <br>
 <hr>
 
-## 🌟 v8.1 - Gelişmiş Model Yönetimi ve Arayüz İyileştirmeleri (En Yeni Sürüm)
+## 🌟 v9.0 - Yorumlar Veritabanı ve Akıllı Çeviri (En Yeni Sürüm)
 
-*   **🎨 Yenilenen İnceleme Ekranı:** Yapay zekanın süzdüğü yorumları onayladığınız veya reddettiğiniz inceleme penceresinin tasarımı tamamen yenilendi. Artık sonuçları okumak ve kontrol etmek çok daha ferah, kolay ve göz yormayan bir yapıya kavuştu.
-*   **⚙️ Akıllı Model Yönetimi ve Temiz Liste:** Kullanıcıların kafasını karıştıran, çalışmayan veya yorum analiziyle ilgisi olmayan gereksiz yapay zeka modelleri (resim, ses modelleri vb.) listeden tamamen temizlendi. Ayrıca yöneticiler artık yeni çıkan modelleri yönetim paneli üzerinden tek tıkla sisteme çekip günlük limitlerini anında ayarlayabilecek.
-*   **📊 Log Kayıtlarında Model Takibi:** Yöneticiler için log tablosu detaylandırıldı. Hangi videonun hangi yapay zeka sürümüyle (örneğin Gemini 3.5 Flash-Lite) analiz edildiği artık sistem loglarına otomatik olarak kaydediliyor. Böylece geçmişe dönük analizlerin kalitesi ve limit tüketimi daha iyi takip edilebilecek.
+*   **🗂️ Yorumlar Veritabanı Merkezi:** Yönetim paneline eklenen "Yorumlar Veritabanını Aç" butonu ile yepyeni bir merkeze kavuştuk! Gerçekleştirilen tüm yapay zeka analiz işlemlerini tek bir tabloda inceleyebilir, geçmiş verileri detaylıca filtreleyebilir ve hatta bu eski verileri kendi içerisinde yapay zeka ile **tekrar analiz ederek** dilediğiniz spesifik içeriklere anında ulaşabilirsiniz.
+*   **✨ Yapay Zeka ile Hassas Türkçe Çeviri:** Bazen Google Translate'in otomatik çevirilerinin kültürel veya teolojik anlamda yetersiz kalabildiğini fark ettik. Artık inceleme ekranında, yorumun hemen üstünde "✨ Yapay Zeka ile Türkçe'ye Çevir" butonu bulunuyor. Çeviriyi yetersiz bulduğunuzda bu butona basarak, metni yapay zekanın gücüyle kusursuz bir Türkçe'ye çevirtebilir ve tek tuşla eski çevirinin üzerine yazarak onaylayabilirsiniz.
+*   **✏️ Hızlı Kategori Düzenleme:** Eğer incelediğiniz yorum değerliyse fakat atandığı kategori doğru değilse (veya daha uygun bir kategori varsa), artık "Düzenle" butonuna basarak o yorumun kategorisini işlem esnasında anında değiştirebilirsiniz.
+*   **🔍 Gelişmiş Log Filtreleri ve Modern Arayüz:** Log kayıtları filtreleme paneli modern bir görünüme kavuşturuldu. Filtre seçenekleri artırılarak çok daha esnek bir arama altyapısı sunuldu. Ayrıca tablo ve menü başlıkları ekranın üstüne sabitlenerek kaydırma esnasında kaybolması engellendi.
+*   **📊 Log Tablosunda Akıllı Sayfalama:** Binlerce log kaydının sistemi yormasını engellemek için tabloya "Sayfalama (Pagination)" özelliği eklendi. Artık kayıtlar çok daha hızlı ve sayfalar halinde düzenli yükleniyor. Ayrıca "Kullanılan Prompt" sütununa tıklanabilir bir **(👁️)** ikonu eklenerek, uzun komutların tamamını ekranı bozmadan tek tıkla okuyabilmeniz sağlandı.
 
 <br>
 <hr>
 
-## 🛑 v8.0 - Kesintisiz Mimari ve Bulut Güvenliği
+## 🛑 v8.1 - Gelişmiş Model Yönetimi ve Arayüz İyileştirmeleri 
 
-*   **🧠 Güvenli ve Kesintisiz Veri İşleme:** Yorum resimleri ve analiz dosyaları arka planda önce geçici bellekte (RAM) güvenle hazırlanır, ardından Google Drive ve Sheets'e adım adım yüklenir. Bu sayede internet yavaşlasa dahi eksik veya hatalı dosya yüklenmesinin önüne geçilir.
-*   **🔄 "Kaldığın Yerden Devam Et" (Akıllı İlerleme Kaydı):** Tarayıcı aniden kapansa, sayfa yanlışlıkla yenilense veya elektrik kesilse bile ilerleme kaybolmaz. Sistem kalınan yeri otomatik hatırlar; tekli ve toplu video analizlerinde önceden onaylanmış yorumlar baştan sorulmaz.
-*   **📦 Otomatik Bulut Temizliği ve İptal Güvenliği:** Bir analiz yarıda iptal edildiğinde veya sorun yaşandığında, bulutta (Drive/Sheets) çöp veya öksüz dosya bırakılmaz. Sistem yarım kalan verileri anında temizleyerek veritabanı kirliliğini önler.
-*   **🛡️ Eklenti ve Engelleyici Teşhis Kalkanı:** Reklam engelleyici veya gizlilik eklentilerinin görüntü modülünü bozup bozmadığı, analiz başlamadan saniyeler önce gizli bir testle tespit edilir. Veri kaybı yaşanmadan işlem güvene alınır.
-*   **♻️ Anlık Ağ Kopmalarına Karşı Otomatik Yeniden Deneme:** Yorum görselleri yüklenirken internet koparsa sistem pes etmez; 5'er saniye bekleyerek 3 kez tekrar dener. Geçici bağlantı sorunları tolere edilir.
-*   **🕒 Doğru ve Hilesiz Günlük Kota (RPD) Takibi:** Kota sayacı, yerel bilgisayar saatinden bağımsızlaştırılarak doğrudan resmi Pasifik Saati'ne (PT) ve Firestore sunucu saatine (`serverTimestamp`) kilitlendi. Manipülasyon ve hatalar engellendi.
-*   **🏷️ Anlık Rozet Güncellemeleri ve Canlı Durum Listesi:** Videoların yanındaki *"Daha Önce Analiz Edildi"* rozetleri analiz bitiminde sayfayı yenilemeden anında yansır. Toplu işlemlerde detaylı ve kaydırılabilir durum takip listesi arayüze entegre edildi.
+*   **🎨 Yenilenen İnceleme Ekranı:** Yapay zekanın süzdüğü yorumları onayladığınız veya reddettiğiniz inceleme penceresinin tasarımı tamamen yenilendi. Sonuçları okumak ve kontrol etmek çok daha ferah, kolay ve göz yormayan bir yapıya kavuştu.
+*   **⚙️ Akıllı Model Yönetimi ve Temiz Liste:** Kullanıcıların kafasını karıştıran, çalışmayan veya yorum analiziyle ilgisi olmayan gereksiz yapay zeka modelleri listeden tamamen temizlendi. Yöneticiler artık yeni çıkan modelleri yönetim paneli üzerinden tek tıkla sisteme çekip günlük limitlerini anında ayarlayabilecek.
+*   **📊 Log Kayıtlarında Model Takibi:** Yöneticiler için log tablosu detaylandırıldı. Hangi videonun hangi yapay zeka sürümüyle (örneğin Gemini 3.5 Flash-Lite) analiz edildiği artık sistem loglarına otomatik olarak kaydediliyor.
 
 <details>
-<summary><b>Geçmiş Sürüm Notları (v5.0 - v7.2) Göster / Gizle</b></summary>
+<summary><b>Geçmiş Sürüm Notları (v5.0 - v8.0) Göster / Gizle</b></summary>
 
+*   **(v8.0) Kesintisiz Mimari ve Bulut Güvenliği:** Yorum resimleri ve analiz dosyaları arka planda önce RAM'de hazırlanır, ardından Google'a adım adım yüklenir. "Kaldığın Yerden Devam Et" (Akıllı İlerleme Kaydı) özelliği ile tarayıcı kapansa bile ilerleme kaybolmaz. Otomatik bulut temizliği, eklenti (adblock) kalkanı, anlık ağ kopmalarına karşı 3 kez tekrar deneme zırhı ve Firestore sunucu saatine kilitlenmiş manipülasyon korumalı RPD takibi eklendi. 
 *   **(v7.2) Ekran Görselleri Optimizasyonu:** Ekran görselleri oluşturulurken karşılaşılan bir hata çözüldü ve sistem optimize edildi.
 *   **(v7.1) Kayıt Otomasyonu:** Entegre kayıt talebi formu, uluslararası telefon numarası (wa.me) uyumluluğu, kurşun geçirmez yaş doğrulama motoru ve kalıcı üst yönetim yetkisi (localStorage).
 *   **(v7.0) Rol Bazlı Otonomi:** RBAC ile dinamik ekip yetkilendirmesi, otonom tarih çakışması (Senaryo A & B) tespiti ve ikincil şifre doğrulama kalkanı (Re-Authentication).
@@ -95,11 +94,11 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 ## 🛠️ Kullanılan Teknolojiler
 
-*   **Arayüz (UI):** HTML5, CSS3 (Modern Flexbox)
+*   **Arayüz (UI):** HTML5, CSS3 (Modern Flexbox ve Grid)
 *   **Mantık & Veri İşleme:** Vanilla JavaScript (ES6 Modules, Asenkron Fetch API)
 *   **Backend & Kimlik Doğrulama:** Firebase Firestore, Firebase Authentication
 *   **Yapay Zeka & API'ler:** Google Generative AI API (Gemini), Google Translate API (gtx), YouTube Data API v3
-*   **Veri Formatlama:** SheetJS (Excel .xlsx dışa aktarımı için)
+*   **Veri Formatlama:** SheetJS (Excel .xlsx dışa aktarımı için), html2canvas
 
 ## 👨‍💻 Geliştirici
 
