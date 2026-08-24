@@ -5953,10 +5953,13 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     const gecmisDurum = await gecmisAnalizKontroluYap(videoId);
 
                     if (gecmisDurum.exists) {
-                        // GÜVENLİ TEMİZLİK: Başarısız (0 sonuçlu) loglar çöplük yaratmaması için temizlenir ama zaman çizelgesi ASLA sıfırlanmaz.
-                        if (gecmisDurum.bosLogIdleri && gecmisDurum.bosLogIdleri.length > 0) {
-                            for (let id of gecmisDurum.bosLogIdleri) await deleteDoc(doc(db, "log_kayitlari", id));
-                        }
+                        // KARAR (Faruk): Boş (0 yorumlu) log kayıtları ARTIK OTOMATİK SİLİNMİYOR.
+                        // Sebep: 1) Bu kayıtlar log tablosunda görünür kalmalı (denetim/izlenebilirlik).
+                        // 2) Firestore kuralında silme yetkisi sadece yöneticiye ait ("yoneticiMi()"),
+                        //    normal kullanıcının silme denemesi permission-denied ile TÜM analiz
+                        //    akışını (özellikle toplu analizde kuyruğun geri kalanını) çökertiyordu.
+                        // "bosLogIdleri" listesi artık sadece aşağıdaki zaman çizelgesi hesaplamasında
+                        // kullanılıyor, herhangi bir silme işlemi tetiklemiyor.
 
                         // En son BAŞARILI (sonuç dönen) Otomatik analizi bul
                         const basariliLoglar = (gecmisDurum.tamData || []).filter(l => (parseInt(l.indirilen_yorum_sayisi) || 0) > 0);
@@ -7803,9 +7806,9 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                                     const gecmisDurum = await gecmisAnalizKontroluYap(videoId);
 
                                     if (gecmisDurum.exists) {
-                                        if (gecmisDurum.bosLogIdleri && gecmisDurum.bosLogIdleri.length > 0) {
-                                            for (let id of gecmisDurum.bosLogIdleri) await deleteDoc(doc(db, "log_kayitlari", id));
-                                        }
+                                        // KARAR (Faruk): Boş log kayıtları artık silinmiyor (bkz. yapayZekaMotorunuCalistir
+                                        // içindeki aynı düzeltme). Toplu analizde tek bir izin hatası yüzünden
+                                        // kuyruğun geri kalanının işlenmeden çökmesi kalıcı olarak engellendi.
 
                                         const basariliLoglar = (gecmisDurum.tamData || []).filter(l => (parseInt(l.indirilen_yorum_sayisi) || 0) > 0);
 
@@ -8320,6 +8323,34 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             if (days > 0) return `${days} gün önce`;
             return "Bugün";
         }
+
+        // =========================================================================
+        // GEÇİCİ TEŞHİS ARACI — Rozet görünürlük sorunu için (sorun çözülünce silinecek)
+        // Konsoldan "debugRozetKontrolEt()" yazılarak çalıştırılır.
+        // =========================================================================
+        window.debugRozetKontrolEt = async () => {
+            const rapor = {
+                auth_uid: auth.currentUser ? auth.currentUser.uid : "YOK (oturum kapalı)",
+                auth_email_HAM: auth.currentUser ? auth.currentUser.email : "YOK",
+                js_currentUserEmail: currentUserEmail,
+                js_currentUserEkip: currentUserEkip,
+                hedefDokumanId_hesaplanan: currentUserEkip ? currentUserEkip.trim() : (currentUserEmail ? currentUserEmail.trim() : null)
+            };
+
+            try {
+                const testRef = doc(db, "video_rozetleri", rapor.hedefDokumanId_hesaplanan);
+                const testSnap = await getDoc(testRef);
+                rapor.firestore_okuma_sonucu = testSnap.exists()
+                    ? `BAŞARILI — Doküman bulundu, içinde ${Object.keys(testSnap.data()).length} video kaydı var.`
+                    : "BAŞARILI ama doküman BOŞ/YOK (exists=false).";
+            } catch (e) {
+                rapor.firestore_okuma_sonucu = `HATA: ${e.code || ''} ${e.message}`;
+            }
+
+            console.log("=== ROZET TEŞHİS RAPORU ===", rapor);
+            alert("Teşhis tamamlandı. Lütfen konsol (F12 > Console) ekranındaki 'ROZET TEŞHİS RAPORU' çıktısının ekran görüntüsünü Faruk'a gönderin.");
+            return rapor;
+        };
 
         // =========================================================================
         // Ana İşletici: Yorumları bulur, HTML Stüdyosunda çizer, resme çevirir 
