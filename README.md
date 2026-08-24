@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v9.0)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.0)</strong>
 </h2>
 
 <h2 align="center">
@@ -41,9 +41,6 @@ Sistem, kendi içindeki **Gemini AI** motorunu kullanarak yorumları okur, sın�
 *   **⏱️ Akıllı Kota (RPD) Yöneticisi:** Google'ın günlük ücretsiz istek limitlerine takılmamak için seçtiğiniz modelin kotasını anlık hesaplar. Tüketim özetleri Günlük ve Toplam bazda Admin panelinden takip edilebilir.
 *   **🌍 Otomatik Çeviri & Dil Desteği:** Hangi dilde yazılmış olursa olsun (Arapça, Rusça, İngilizce vb.) yorumlara Google Translate (gtx) üzerinden anlık %100 Türkçe çeviri eklenir.
 
-<br>
-<hr>
-
 ## 🚀 Kurulum ve Kullanım
 
 Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Python vb.) kurmanıza gerek yoktur.
@@ -61,26 +58,31 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 <br>
 <hr>
 
-## 🌟 v9.0 - Yorumlar Veritabanı ve Akıllı Çeviri (En Yeni Sürüm)
+## 🎉 Liva AI - Güncelleme Notları (v10.0)
 
-*   **🗂️ Yorumlar Veritabanı Merkezi:** Yönetim paneline eklenen "Yorumlar Veritabanını Aç" butonu ile yepyeni bir merkeze kavuştuk! Gerçekleştirilen tüm yapay zeka analiz işlemlerini tek bir tabloda inceleyebilir, geçmiş verileri detaylıca filtreleyebilir ve hatta bu eski verileri kendi içerisinde yapay zeka ile **tekrar analiz ederek** dilediğiniz spesifik içeriklere anında ulaşabilirsiniz.
-*   **✨ Yapay Zeka ile Hassas Türkçe Çeviri:** Bazen Google Translate'in otomatik çevirilerinin kültürel veya teolojik anlamda yetersiz kalabildiğini fark ettik. Artık inceleme ekranında, yorumun hemen üstünde "✨ Yapay Zeka ile Türkçe'ye Çevir" butonu bulunuyor. Çeviriyi yetersiz bulduğunuzda bu butona basarak, metni yapay zekanın gücüyle kusursuz bir Türkçe'ye çevirtebilir ve tek tuşla eski çevirinin üzerine yazarak onaylayabilirsiniz.
-*   **✏️ Hızlı Kategori Düzenleme:** Eğer incelediğiniz yorum değerliyse fakat atandığı kategori doğru değilse (veya daha uygun bir kategori varsa), artık "Düzenle" butonuna basarak o yorumun kategorisini işlem esnasında anında değiştirebilirsiniz.
-*   **🔍 Gelişmiş Log Filtreleri ve Modern Arayüz:** Log kayıtları filtreleme paneli modern bir görünüme kavuşturuldu. Filtre seçenekleri artırılarak çok daha esnek bir arama altyapısı sunuldu. Ayrıca tablo ve menü başlıkları ekranın üstüne sabitlenerek kaydırma esnasında kaybolması engellendi.
-*   **📊 Log Tablosunda Akıllı Sayfalama:** Binlerce log kaydının sistemi yormasını engellemek için tabloya "Sayfalama (Pagination)" özelliği eklendi. Artık kayıtlar çok daha hızlı ve sayfalar halinde düzenli yükleniyor. Ayrıca "Kullanılan Prompt" sütununa tıklanabilir bir **(👁️)** ikonu eklenerek, uzun komutların tamamını ekranı bozmadan tek tıkla okuyabilmeniz sağlandı.
+- **⚡ Yerel Yorumlar Veritabanı (Anında Erişim):** "Yorumlar Veritabanı" artık tarayıcınıza indirilip yerel olarak saklanabiliyor. Onay verdiğinizde ilk girişte tüm kayıtlar bir kere indirilir; sonraki girişlerde sistem sadece **yeni eklenen farkı** çeker. Sonuç: binlerce kayıtlık tablo, sunucudan tekrar tekrar beklemeden, göz açıp kapayana kadar önünüzde.
+- **📊 Kullanıcı Bazlı Yapay Zeka Analiz Özeti:** Yönetici panelinde artık her ekip üyesinin bugün, son 1 hafta, son 1 ay, son 1 yıl ve toplamda kaç analiz yaptığını gösteren yepyeni bir özet tablo bulunuyor.
+- **🧠 3 Kademeli Akıllı Otomatik Sıralama:** Kanal tarama ekranına "Sıralama: Akıllı Otomatik" seçeneği eklendi. Sistem videoları önce hiç analiz edilmemişlere, sonra kısmen tamamlananlara, en son da tamamlanmışlara göre önceliklendirerek sizi doğrudan iş yapılması gereken videoya yönlendiriyor.
+- **➕ Son Analizden Beri Gelen Yorum Rozeti:** Daha önce analiz edilmiş bir videoya yeni yorumlar geldiyse, video kartında artık "kaç gün önce, kaç yeni yorum geldi" bilgisini gösteren bir rozet beliriyor. Hangi videonun güncellenmeyi beklediğini tek bakışta görün.
+- **🙈 "Daha Önce Analiz Edilenleri Gizle" Modu:** Kanal listesinde tek tıkla, zaten analiz ettiğiniz videoları gizleyip sadece bekleyen içeriklere odaklanabilirsiniz.
+- **🗑️ Toplu ve Tekli Log Silme:** Log kayıtları tablosuna, seçtiğiniz kayıtları topluca silebileceğiniz yeni bir mod ile her satırın yanına tek tıkla silme butonu eklendi.
+- **🔍 Genişletilmiş Log Filtreleri:** Log kayıtları artık "Tarih Ayarı" (Akıllı Otomatik / Manuel) ve "İşlem Açıklaması" (Analiz Yapıldı, Manuel, Sonuç Yok, İndirildi, Durduruldu vb.) kriterlerine göre de filtrelenebiliyor; aktif filtre sayısı ekranda ayrıca gösteriliyor.
+- **⌨️ Enter Tuşuyla Arama:** Yorumlar Veritabanında arama yaparken artık "Filtrele" butonuna basmaya gerek yok, sadece Enter'a basmanız yeterli.
+- **🛡️ Yarım Kalan İşlem Uyarısı:** Bekleyen (yarıda kalmış) bir analiziniz varken sistem, üzerine yeni bir işlem başlatıp verilerinizin ezilmesini artık otomatik olarak engelliyor ve sizi doğru akışa yönlendiriyor.
+- **🏷️ Video Kartlarında Zenginleştirilmiş Etiketler:** Videolarınızın yükleme sırası (#) ve yayın tarihi bilgisi artık kart üzerinde doğrudan görünüyor.
+- **📥 İndirme Durumu Bildirimleri:** "Yorumlar Veritabanı" arka planda indirilirken üst çubukta ilerlemeyi takip edebilir, işlem bitince net bir onay mesajı görebilirsiniz.
+- **🧹 Yorumlar Veritabanı Yönetim Kontrolleri:** Senkronizasyonu tamamen kapatıp yerel verileri temizleme, tabloyu manuel yenileme ve filtre alanlarını işlem sürerken geçici olarak kilitleme gibi ince ayar kontrolleri eklendi.
+- **🚀 Daha Akıcı Arayüz Performansı:** Tekrar eden görsel testler ve gereksiz yeniden çizimler önbelleğe alınarak arayüzün takılmadan çalışması sağlandı.
 
-<br>
-<hr>
+---
 
-## 🛑 v8.1 - Gelişmiş Model Yönetimi ve Arayüz İyileştirmeleri 
-
-*   **🎨 Yenilenen İnceleme Ekranı:** Yapay zekanın süzdüğü yorumları onayladığınız veya reddettiğiniz inceleme penceresinin tasarımı tamamen yenilendi. Sonuçları okumak ve kontrol etmek çok daha ferah, kolay ve göz yormayan bir yapıya kavuştu.
-*   **⚙️ Akıllı Model Yönetimi ve Temiz Liste:** Kullanıcıların kafasını karıştıran, çalışmayan veya yorum analiziyle ilgisi olmayan gereksiz yapay zeka modelleri listeden tamamen temizlendi. Yöneticiler artık yeni çıkan modelleri yönetim paneli üzerinden tek tıkla sisteme çekip günlük limitlerini anında ayarlayabilecek.
-*   **📊 Log Kayıtlarında Model Takibi:** Yöneticiler için log tablosu detaylandırıldı. Hangi videonun hangi yapay zeka sürümüyle (örneğin Gemini 3.5 Flash-Lite) analiz edildiği artık sistem loglarına otomatik olarak kaydediliyor.
+## 🕘 Geçmiş Sürüm Notları
 
 <details>
-<summary><b>Geçmiş Sürüm Notları (v5.0 - v8.0) Göster / Gizle</b></summary>
+<summary><b>Geçmiş Sürüm Notları (v5.0 - v9.0) Göster / Gizle</b></summary>
 
+*   **(v9.0) Yorumlar Veritabanı ve Akıllı Çeviri:** Yönetim paneline eklenen "Yorumlar Veritabanını Aç" butonu ile tüm analiz işlemlerinin tek tabloda incelenmesi. Yapay zeka ile hassas Türkçe çeviri, hızlı kategori düzenleme, gelişmiş log filtreleri ve akıllı sayfalama.
+*   **(v8.1) Gelişmiş Model Yönetimi ve Arayüz İyileştirmeleri:** Yenilenen inceleme ekranı, akıllı model yönetimi ve log kayıtlarında model takibi.
 *   **(v8.0) Kesintisiz Mimari ve Bulut Güvenliği:** Yorum resimleri ve analiz dosyaları arka planda önce RAM'de hazırlanır, ardından Google'a adım adım yüklenir. "Kaldığın Yerden Devam Et" (Akıllı İlerleme Kaydı) özelliği ile tarayıcı kapansa bile ilerleme kaybolmaz. Otomatik bulut temizliği, eklenti (adblock) kalkanı, anlık ağ kopmalarına karşı 3 kez tekrar deneme zırhı ve Firestore sunucu saatine kilitlenmiş manipülasyon korumalı RPD takibi eklendi. 
 *   **(v7.2) Ekran Görselleri Optimizasyonu:** Ekran görselleri oluşturulurken karşılaşılan bir hata çözüldü ve sistem optimize edildi.
 *   **(v7.1) Kayıt Otomasyonu:** Entegre kayıt talebi formu, uluslararası telefon numarası (wa.me) uyumluluğu, kurşun geçirmez yaş doğrulama motoru ve kalıcı üst yönetim yetkisi (localStorage).
@@ -95,7 +97,7 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 ## 🛠️ Kullanılan Teknolojiler
 
 *   **Arayüz (UI):** HTML5, CSS3 (Modern Flexbox ve Grid)
-*   **Mantık & Veri İşleme:** Vanilla JavaScript (ES6 Modules, Asenkron Fetch API)
+*   **Mantık & Veri İşleme:** Vanilla JavaScript (ES6 Modules, Asenkron Fetch API), IndexedDB (Yerel Veri Önbelleği)
 *   **Backend & Kimlik Doğrulama:** Firebase Firestore, Firebase Authentication
 *   **Yapay Zeka & API'ler:** Google Generative AI API (Gemini), Google Translate API (gtx), YouTube Data API v3
 *   **Veri Formatlama:** SheetJS (Excel .xlsx dışa aktarımı için), html2canvas
