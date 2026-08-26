@@ -8325,31 +8325,88 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         }
 
         // =========================================================================
-        // GEÇİCİ TEŞHİS ARACI — Rozet görünürlük sorunu için (sorun çözülünce silinecek)
-        // Konsoldan "debugRozetKontrolEt()" yazılarak çalıştırılır.
+        // TEK SEFERLİK MİGRASYON ARACI — v9.0 log_kayitlari -> video_rozetleri
+        // Kullanım:
+        //   1) rozetMigrasyonuCalistir("Sözler Köşkü")          -> KURU ÇALIŞMA, hiçbir şey yazmaz
+        //   2) rozetMigrasyonuCalistir("Sözler Köşkü", false)   -> GERÇEK YAZIM
         // =========================================================================
-        window.debugRozetKontrolEt = async () => {
-            const rapor = {
-                auth_uid: auth.currentUser ? auth.currentUser.uid : "YOK (oturum kapalı)",
-                auth_email_HAM: auth.currentUser ? auth.currentUser.email : "YOK",
-                js_currentUserEmail: currentUserEmail,
-                js_currentUserEkip: currentUserEkip,
-                hedefDokumanId_hesaplanan: currentUserEkip ? currentUserEkip.trim() : (currentUserEmail ? currentUserEmail.trim() : null)
-            };
+        window.rozetMigrasyonuCalistir = async (ekipAdi, dryRun = true) => {
+            if (!ekipAdi) { console.error("Ekip adı belirtilmedi."); return; }
+            console.log(`[Migrasyon] '${ekipAdi}' ekibi için log_kayitlari taranıyor...`);
 
-            try {
-                const testRef = doc(db, "video_rozetleri", rapor.hedefDokumanId_hesaplanan);
-                const testSnap = await getDoc(testRef);
-                rapor.firestore_okuma_sonucu = testSnap.exists()
-                    ? `BAŞARILI — Doküman bulundu, içinde ${Object.keys(testSnap.data()).length} video kaydı var.`
-                    : "BAŞARILI ama doküman BOŞ/YOK (exists=false).";
-            } catch (e) {
-                rapor.firestore_okuma_sonucu = `HATA: ${e.code || ''} ${e.message}`;
+            // 1. ADIM: Mevcut video_rozetleri dokümanını oku (mükerrer yazımı engellemek için ZORUNLU)
+            const rozetRef = doc(db, "video_rozetleri", ekipAdi);
+            const rozetSnap = await getDoc(rozetRef);
+            const mevcutRozetler = rozetSnap.exists() ? rozetSnap.data() : {};
+            const mevcutVideoIdSeti = new Set(Object.keys(mevcutRozetler));
+            console.log(`[Migrasyon] Dokümanda zaten ${mevcutVideoIdSeti.size} video kayıtlı, bunlar ATLANACAK.`);
+
+            // 2. ADIM: Bu ekibe ait TÜM log_kayitlari kayıtlarını çek (tek where şartı, index gerektirmez)
+            const q = query(collection(db, "log_kayitlari"), where("ekip", "==", ekipAdi));
+            const logSnap = await getDocs(q);
+            console.log(`[Migrasyon] log_kayitlari'nda ${logSnap.size} toplam kayıt bulundu, filtreleniyor...`);
+
+            // 3. ADIM: Sadece AI analiz kayıtlarını al, video_id bazında grupla
+            const gruplar = new Map(); // video_id -> [logVerisi, logVerisi, ...]
+            logSnap.forEach(d => {
+                const lData = d.data();
+                if (lData.detay !== "AI Analizi Yapıldı" && lData.detay !== "AI Analizi (Sonuç Yok)") return;
+                const vid = String(lData.video_id || "").trim();
+                if (!vid || vid === "-") return;
+                if (!gruplar.has(vid)) gruplar.set(vid, []);
+                gruplar.get(vid).push(lData);
+            });
+
+            // 4. ADIM: Her video için "dolu öncelikli, en güncel" kaydı seç
+            const yeniYazilacaklar = {};
+            let eklenecekSayisi = 0;
+
+            for (const [vid, kayitlar] of gruplar.entries()) {
+                if (mevcutVideoIdSeti.has(vid)) continue; // ZATEN VAR — mükerrer engeli
+
+                let enIyiDurum = 'bos';
+                let enGuncelTarih = 0;
+                let enIyiHam = 0;
+
+                kayitlar.forEach(lData => {
+                    const indSayi = parseInt(lData.indirilen_yorum_sayisi, 10) || 0;
+                    const durum = indSayi > 0 ? 'dolu' : 'bos';
+                    const zZaman = lData.zaman_damgasi ? new Date(lData.zaman_damgasi).getTime() : 0;
+                    const ham = parseInt(lData.cekilen_yorum_adedi_ham, 10) || 0;
+
+                    // KURAL: 'dolu' her zaman 'bos'tan üstün (downgrade koruması, guncelleVideoRozeti ile tutarlı)
+                    if (durum === 'dolu') {
+                        if (enIyiDurum !== 'dolu' || zZaman > enGuncelTarih) {
+                            enIyiDurum = 'dolu'; enGuncelTarih = zZaman; enIyiHam = ham;
+                        }
+                    } else if (enIyiDurum !== 'dolu' && zZaman > enGuncelTarih) {
+                        enGuncelTarih = zZaman; enIyiHam = ham;
+                    }
+                });
+
+                yeniYazilacaklar[vid] = {
+                    durum: enIyiDurum,
+                    totalHam: enIyiHam,
+                    sonAnalizTarihi: enGuncelTarih || Date.now()
+                };
+                eklenecekSayisi++;
             }
 
-            console.log("=== ROZET TEŞHİS RAPORU ===", rapor);
-            alert("Teşhis tamamlandı. Lütfen konsol (F12 > Console) ekranındaki 'ROZET TEŞHİS RAPORU' çıktısının ekran görüntüsünü Faruk'a gönderin.");
-            return rapor;
+            console.log(`[Migrasyon] ${eklenecekSayisi} YENİ video rozeti tespit edildi:`, yeniYazilacaklar);
+
+            if (dryRun) {
+                console.log(`%c[KURU ÇALIŞMA] Hiçbir şey yazılmadı. Gerçekten yazmak için: rozetMigrasyonuCalistir("${ekipAdi}", false)`, "color:orange;font-weight:bold;");
+                return yeniYazilacaklar;
+            }
+
+            if (eklenecekSayisi === 0) {
+                console.log("[Migrasyon] Eklenecek yeni kayıt yok.");
+                return {};
+            }
+
+            await setDoc(rozetRef, yeniYazilacaklar, { merge: true });
+            console.log(`%c[TAMAMLANDI] ${eklenecekSayisi} video rozeti "${ekipAdi}" dokümanına eklendi.`, "color:green;font-weight:bold;");
+            return yeniYazilacaklar;
         };
 
         // =========================================================================
