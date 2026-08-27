@@ -173,8 +173,10 @@
             padding: 0 10px;
         }
 
+        /* Tüm ana uygulama ekranları başlangıçta gizlenir, kontrol sonrası dinamik açılır */
         #loginScreen,
-        #mainApp {
+        #mainApp,
+        #maintenanceScreen {
             display: none;
         }
 
@@ -184,6 +186,108 @@
             font-weight: bold;
             color: #1e40af;
             margin-top: 50px;
+        }
+
+        /* =========================================================
+           BAKIM MODU (MAINTENANCE MODE) GELİŞMİŞ TASARIMI
+           ========================================================= */
+        #maintenanceScreen {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .maintenance-card {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* İki katmanlı, yumuşak gölgeli ve parlayan ikon yuvası */
+        .maintenance-icon-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 84px;
+            height: 84px;
+            background: #fffbeb;
+            border: 2px solid #fde68a;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.15);
+        }
+
+        /* Nabız (Pulse) Animasyonu */
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.35);
+            }
+
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 0 14px rgba(217, 119, 6, 0);
+            }
+        }
+
+        .pulse-icon {
+            animation: pulseGlow 2.5s infinite ease-in-out;
+            font-size: 38px;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        /* Durum Rozeti */
+        .maintenance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px dashed #fca5a5;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .maintenance-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 12px 0;
+        }
+
+        .maintenance-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Bilgilendirme ve Uyarı Çerçevesi */
+        .maintenance-info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: left;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .maintenance-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
         }
 
         /* =========================================================
@@ -801,6 +905,62 @@
     <div class="container" id="loadingScreen">
         <h2>Güvenli Bağlantı Kuruluyor...</h2>
         <p>Lütfen bekleyin.</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- BAKIM MODU (MAINTENANCE MODE) CONTAINER                                   -->
+    <!-- ========================================================================= -->
+    <div class="container" id="maintenanceScreen">
+        <div class="maintenance-card">
+            <div class="maintenance-icon-wrapper">
+                <span class="pulse-icon">🚧</span>
+            </div>
+
+            <div>
+                <span class="maintenance-badge">
+                    🔒 Planlı Sistem Bakımı
+                </span>
+            </div>
+
+            <h2 class="maintenance-title">Sistem Geçici Olarak Bakımdadır</h2>
+
+            <p class="maintenance-description">
+                <strong>Liva AI</strong> Uygulaması, kesintisiz hizmet sunabilmek adına kısa süreliğine erişime kapatılmıştır.
+            </p>
+
+            <div class="maintenance-info-box">
+                <div class="maintenance-info-item">
+                    <span style="font-size: 16px;">🛠️</span>
+                    <span><strong>İşlem Kapsamı:</strong> Yeni geliştirilen özellikler ve iyileştirmeler test edilmektedir.</span>
+                </div>
+                <div class="maintenance-info-item">
+                    <span style="font-size: 16px;">⏳</span>
+                    <span><strong>Erişim Durumu:</strong> Bakım tamamlandığında sistem tüm kullanıcılara otomatik olarak açılacaktır.</span>
+                </div>
+                <div class="maintenance-info-item">
+                    <span style="font-size: 16px;">📞</span>
+                    <span><strong>Destek & İletişim:</strong> Acil operasyonel talepleriniz için lütfen sistem yöneticinizle irtibata geçiniz.</span>
+                </div>
+            </div>
+
+            <!-- Aktif Oturum Bilgisi (Kullanıcı giriş yapmışsa görünür) -->
+            <div id="maintenanceUserInfo" style="display: none; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; margin-bottom: 16px; font-size: 13px; color: #92400e; font-weight: 600;">
+                👤 Giriş Yapılan Hesap: <span id="maintenanceUserEmail" style="font-weight: 700; color: #b45309;">-</span>
+            </div>
+
+            <!-- Aksiyon Butonları -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="location.reload()" class="btn-success" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; width: 100%;">
+                    <span style="font-size: 16px;">🔄</span>
+                    <span>Sistem Durumunu Kontrol Et (Sayfayı Yenile)</span>
+                </button>
+
+                <button id="btnMaintenanceLogout" onclick="bakimModundanCikisYap()" class="btn-danger" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; width: 100%;">
+                    <span style="font-size: 16px;">🚪</span>
+                    <span id="maintenanceLogoutBtnText">Güvenli Çıkış Yap / Yönetici Girişi</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- ESKİ KODUNU BUNUNLA DEĞİŞTİR -->
@@ -3092,16 +3252,81 @@
             if (window.globalDeltaCache) window.globalDeltaCache.clear();
         }
 
+        // =========================================================================
+        // MERKEZİ EKRAN DURUM YÖNETİCİSİ (FOUC & CONFLICT GUARD)
+        // Görevi: Uygulama pencereleri arasındaki geçişi tek merkezden yöneterek
+        // ekranların üst üste binmesini veya yetkisiz içerik parlamasını engeller.
+        // =========================================================================
+        // Yönetici girişi yapmak isteyen oturumsuz kullanıcılar için geçiş bayrağı
+        let yoneticiGirisTalebiVar = false;
+
+        function arayuzEkraniniAyarla(aktifEkranId) {
+            const tumEkranlar = ['loadingScreen', 'loginScreen', 'mainApp', 'maintenanceScreen'];
+            tumEkranlar.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.display = (id === aktifEkranId) ? 'block' : 'none';
+                }
+            });
+        }
+
+        // =========================================================================
+        // BAKIM MODUNDAN ÇIKIŞ VE YÖNETİCİ GİRİŞİNE GEÇİŞ MOTORU
+        // =========================================================================
+        window.bakimModundanCikisYap = async () => {
+            try {
+                // Giriş ekranının bakım kalkanına takılmadan açılması için bayrağı aktif et
+                yoneticiGirisTalebiVar = true;
+                isCancelled = true;
+                systemEvents.dispatchEvent(new Event('islemIptalEdildi'));
+
+                // Bellek ve yerel yetkileri temizle
+                localStorage.removeItem('ustYonetimYetkisi');
+                tumGlobalHafizayiSifirla();
+
+                // Firebase oturumunu kapat
+                await signOut(auth);
+            } catch (err) {
+                console.error("[Bakım Çıkış Hatası]:", err);
+            } finally {
+                // Doğrudan giriş ekranına yönlendir
+                arayuzEkraniniAyarla('loginScreen');
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             const buOturumId = ++aktifOturumKimligi;
 
             if (!user) {
-                // Kullanıcı çıkış yaptığında tüm önbelleği atomik olarak temizle
+                // Kullanıcı oturumu kapalıysa belleği sıfırla
                 tumGlobalHafizayiSifirla();
 
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'block';
+                // Kullanıcı bilinçli olarak "Yönetici Girişi" butonuna bastıysa login ekranını aç
+                if (yoneticiGirisTalebiVar) {
+                    yoneticiGirisTalebiVar = false;
+                    arayuzEkraniniAyarla('loginScreen');
+                    return;
+                }
+
+                try {
+                    // Oturum açmamış ziyaretçiler için Bakım Modu denetimi
+                    const adminPanelSnap = await getDoc(doc(db, "sistem_ayarlari", "admin_panel"));
+                    if (adminPanelSnap.exists() && adminPanelSnap.data().bakimModu === true) {
+                        // Ziyaretçi durumunda kullanıcı bilgisini gizle
+                        const userInfoEl = document.getElementById('maintenanceUserInfo');
+                        const logoutBtnText = document.getElementById('maintenanceLogoutBtnText');
+                        if (userInfoEl) userInfoEl.style.display = 'none';
+                        if (logoutBtnText) logoutBtnText.innerText = "Yönetici Girişi Yap";
+
+                        arayuzEkraniniAyarla('maintenanceScreen');
+                        return;
+                    }
+                } catch (bakimKontrolErr) {
+                    console.warn("[Bakım Modu Ziyaretçi Denetimi]:", bakimKontrolErr);
+                }
+
+                // Bakım modu aktif değilse doğrudan giriş ekranına aktar
+                arayuzEkraniniAyarla('loginScreen');
                 return;
             }
 
@@ -3110,15 +3335,16 @@
             if (activeUserEl) activeUserEl.innerText = currentUserEmail;
 
             try {
-                // 1. ADIM: Rol ve Sistem Anahtarlarını PARALEL olarak aynı anda sorgula (Performans Artışı)
-                const [rolSnap, docSnap, kisiselSnap, rpdSnap] = await Promise.all([
+                // 1. ADIM: Rol, Sistem Anahtarları ve Bakım Modu durumunu PARALEL olarak sorgula
+                const [rolSnap, docSnap, kisiselSnap, rpdSnap, adminPanelSnap] = await Promise.all([
                     getDoc(doc(db, "roller", currentUserEmail)),
                     getDoc(doc(db, "sistem_ayarlari", "api_kasa")),
                     getDoc(doc(db, "kullanici_ayarlari", currentUserEmail)),
-                    getDoc(doc(db, "sistem_ayarlari", "rpd_ayarlari"))
+                    getDoc(doc(db, "sistem_ayarlari", "rpd_ayarlari")),
+                    getDoc(doc(db, "sistem_ayarlari", "admin_panel"))
                 ]);
 
-                // Yarış Durumu (Race Condition) Kontrolü: Bu istek dönerken kullanıcı çıkış yaptıysa durdur!
+                // Yarış Durumu (Race Condition) Kontrolü
                 if (buOturumId !== aktifOturumKimligi) {
                     console.warn("[Auth Guard] Eski oturum işlemi iptal edildi.");
                     return;
@@ -3132,8 +3358,26 @@
                 }
 
                 const rolData = rolSnap.data();
+                const kullaniciRolu = rolData.rol || "kullanici";
                 currentUserEkip = rolData.ekip ? rolData.ekip.trim() : "";
                 currentUserAdSoyad = rolData.adSoyad ? rolData.adSoyad.trim() : currentUserEmail;
+
+                // 3. ADIM: Bakım Modu ve RBAC (Yönetici Baypas) Doğrulaması
+                const isBakimda = adminPanelSnap.exists() && adminPanelSnap.data().bakimModu === true;
+                if (isBakimda && kullaniciRolu !== "yonetici") {
+                    // Bakım ekranında oturumu açık olan standart kullanıcının e-postasını göster
+                    const userInfoEl = document.getElementById('maintenanceUserInfo');
+                    const userEmailEl = document.getElementById('maintenanceUserEmail');
+                    const logoutBtnText = document.getElementById('maintenanceLogoutBtnText');
+
+                    if (userInfoEl) userInfoEl.style.display = 'block';
+                    if (userEmailEl) userEmailEl.innerText = currentUserEmail;
+                    if (logoutBtnText) logoutBtnText.innerText = "Hesaptan Çıkış Yap";
+
+                    // Yönetici olmayan tüm oturumları engelle ve bakım ekranını kilitle
+                    arayuzEkraniniAyarla('maintenanceScreen');
+                    return;
+                }
 
                 // DÜZELTME: Sunucu-istemci saat farkını GERÇEKTEN hesaplıyoruz.
                 // Zaten mevcut olan "roller" belgesine bir yazma + okuma yaparak (ekstra istek
@@ -3191,10 +3435,8 @@
                     BASE_RPD = rpdSnap.data();
                 }
 
-                // 5. ADIM: Arayüzü Güvenle Kullanıma Aç
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
+                // 5. ADIM: Arayüzü Güvenle Kullanıma Aç (Bakım ve Giriş ekranları otomatik kapatılır)
+                arayuzEkraniniAyarla('mainApp');
 
                 if (typeof window.kontrolEtVeGosterKalanIslem === "function") {
                     window.kontrolEtVeGosterKalanIslem();
