@@ -7,7 +7,7 @@
     <!-- GÜNCELLENMİŞ GÜVENLİK KALKANI: Google Sheets (Apps Script) bağlantılarına izin verildi -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.0</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1</title>
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
 
@@ -971,7 +971,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.0
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1
             </span>
             <span style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
                 🔒 GÜVENLİ YETKİLİ GİRİŞİ
@@ -1012,7 +1012,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.0
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1
                 </span>
             </h2>
 
@@ -1866,11 +1866,33 @@
         <div class="ss-modal-content" style="max-width: 95%; width: 100%; max-height: 95vh; display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
                 <h3 style="margin: 0; color:#2c3e50;">🗂️ Yorumlar Veritabanı (Salt Okunur)</h3>
-                <div style="display:flex; gap:10px;">
-                    <button id="btnDbSilVeKapat" onclick="window.dbSenkronKapatVeTemizle()" title="Bu tarayıcıdaki yerel veritabanı kopyasını siler ve otomatik senkronizasyonu kapatır" style="width:auto; padding:6px 12px; background-color:#7f1d1d; color:white; border:none; border-radius:4px; margin:0; font-size:13px; font-weight:bold; cursor:pointer;">🗑️
-                        Tüm Verileri Sil ve Senkronizasyonu Kapat!</button>
-                    <button onclick="window.dbModalKapat()" style="width:auto; padding:6px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; margin: 0; font-size: 14px; cursor: pointer;">✕
-                        Kapat</button>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <!-- 1. Buton: Firestore JSON Yedekleme (Yükleme bitene kadar tam kilitli) -->
+                    <button id="btnFirestoreYedekle" onclick="window.firestoreVerileriniYedekleJSON()" disabled style="display: none; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; padding: 0 12px; margin: 0; background-color: #0d9488; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: not-allowed; opacity: 0.5; pointer-events: none; box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2); transition: all 0.2s ease;">
+                        <span style="font-size: 14px; line-height: 1;">💾</span>
+                        <span id="btnFirestoreYedekleMetin">Veritabanı Verilerini Yedekle (JSON)</span>
+                    </button>
+
+                    <!-- Gizli JSON Dosya Seçici -->
+                    <input type="file" id="firestoreYedekDosyaInput" accept=".json" style="display: none;" onchange="window.firestoreYedekDosyasiSecildi(event)">
+
+                    <!-- 2. Buton: Firestore JSON Geri Yükleme (Yükleme bitene kadar tam kilitli) -->
+                    <button id="btnFirestoreGeriYukle" onclick="document.getElementById('firestoreYedekDosyaInput').click()" disabled style="display: none; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; padding: 0 12px; margin: 0; background-color: #0284c7; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: not-allowed; opacity: 0.5; pointer-events: none; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2); transition: all 0.2s ease;">
+                        <span style="font-size: 14px; line-height: 1;">📥</span>
+                        <span id="btnFirestoreGeriYukleMetin">Yedeği Geri Yükle (JSON)</span>
+                    </button>
+
+                    <!-- 3. Buton: Senkronizasyonu Kapat ve Sil (Yükleme bitene kadar tam kilitli) -->
+                    <button id="btnDbSilVeKapat" onclick="window.dbSenkronKapatVeTemizle()" disabled title="Bu tarayıcıdaki yerel veritabanı kopyasını siler ve otomatik senkronizasyonu kapatır" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; padding: 0 12px; margin: 0; background-color: #7f1d1d; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: not-allowed; opacity: 0.5; pointer-events: none; box-shadow: 0 2px 4px rgba(127, 29, 29, 0.2); transition: all 0.2s ease;">
+                        <span style="font-size: 14px; line-height: 1;">🗑️</span>
+                        <span>Tüm Verileri Sil ve Senkronizasyonu Kapat!</span>
+                    </button>
+
+                    <!-- 4. Buton: Pencereyi Kapat (Daima aktif) -->
+                    <button onclick="window.dbModalKapat()" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; height: 32px; padding: 0 12px; margin: 0; background-color: #e74c3c; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2); transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#c0392b'" onmouseout="this.style.backgroundColor='#e74c3c'">
+                        <span style="font-size: 13px; line-height: 1;">✕</span>
+                        <span>Kapat</span>
+                    </button>
                 </div>
             </div>
 
@@ -2024,7 +2046,8 @@
         // Firebase kütüphanelerini içe aktarıyoruz (Veritabanı ve Kimlik Doğrulama için)
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, deleteDoc, serverTimestamp, orderBy, limit, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // YENİ: Alt koleksiyonları (Subcollections) derinlemesine tarayabilmek için 'collectionGroup' eklendi
+        import { getFirestore, doc, getDoc, setDoc, collection, collectionGroup, addDoc, query, where, getDocs, deleteDoc, serverTimestamp, orderBy, limit, writeBatch, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // Projeye ait Firebase bağlantı anahtarları
         const firebaseConfig = {
@@ -2068,6 +2091,7 @@
         // delete_video_data / delete_all_data gibi yıkıcı aksiyonlar için ZORUNLUDUR.
         let GAS_ADMIN_TOKEN = "";
         let currentUserEmail = ""; // Giriş yapan kullanıcının maili
+        let currentUserRole = "";  // YENİ: Giriş yapan kullanıcının Firestore sistem rolü ('yonetici' / 'kullanici')
         let currentUserEkip = "";    // YENİ: İzolasyon için ekip bilgisi (Boş ise email izolasyonu)
         let sunucuSaatFarkiMs = 0; // Saat senkronizasyonu için global fark değişkeni (giriş sonrası hesaplanır)
         let currentUserAdSoyad = ""; // YENİ: Geçmiş data modalında gösterilecek isim
@@ -2259,11 +2283,20 @@
                     };
                 });
 
-                // Gruplanan haritaları Firestore'daki 'video_rozetleri' koleksiyonuna tek tek yazıyoruz
+                // : Artık her video kendi alt koleksiyon dokümanına, 500'lük writeBatch parçalarıyla yazılıyor
                 for (const [hedefId, rozetHaritasi] of Object.entries(grupRozetleri)) {
-                    const docRef = doc(db, "video_rozetleri", hedefId);
-                    await setDoc(docRef, rozetHaritasi, { merge: true });
-                    console.log(`✅ [Migration] '${hedefId}' için ${Object.keys(rozetHaritasi).length} video rozeti kaydedildi.`);
+                    const videoIdleri = Object.keys(rozetHaritasi);
+                    const PARCA_BOYUTU = 500;
+                    for (let i = 0; i < videoIdleri.length; i += PARCA_BOYUTU) {
+                        const parca = videoIdleri.slice(i, i + PARCA_BOYUTU);
+                        const batch = writeBatch(db);
+                        parca.forEach(vid => {
+                            const hedefRef = doc(db, "video_rozetleri", hedefId, "videolar", vid);
+                            batch.set(hedefRef, rozetHaritasi[vid], { merge: true });
+                        });
+                        await batch.commit();
+                    }
+                    console.log(`✅ [Migration] '${hedefId}' için ${videoIdleri.length} video rozeti alt koleksiyona kaydedildi.`);
                 }
 
                 alert(`🎉 Migration Başarılı! Toplam ${Object.keys(grupRozetleri).length} grup/ekip için özet rozet indeksleri oluşturuldu.`);
@@ -2271,6 +2304,85 @@
                 console.error("❌ [Migration Hatası]:", err);
                 alert("Migration sırasında hata oluştu: " + err.message);
             }
+        };
+
+        // =========================================================================
+        // YORUMLAR VERİTABANI MODALI BUTON VE FİLTRE KİLİT YÖNETİCİSİ
+        // Veriler yüklenirken/senkronize edilirken tüm butonları kilitler, bitince açar.
+        // =========================================================================
+        // =========================================================================
+        // YORUMLAR VERİTABANI MODALI BUTON VE FİLTRE KİLİT YÖNETİCİSİ (KESİN KİLİT)
+        // =========================================================================
+        window.isDbVerileriTamYuklendi = false; // Verilerin hazır olup olmadığını tutan global durum
+
+        window.dbModalButonlariniAyarla = (aktifMi) => {
+            const genelButonIdleri = [
+                'btnDbSilVeKapat',
+                'btnDbFiltrele',
+                'btnDbFiltreTemizle',
+                'btnDbYenile',
+                'btnDbAiOlustur'
+            ];
+
+            // 1. Standart işlem butonlarını kilitle / aç
+            genelButonIdleri.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.disabled = !aktifMi;
+                    btn.style.cursor = aktifMi ? 'pointer' : 'not-allowed';
+                    btn.style.opacity = aktifMi ? '1' : '0.5';
+                    btn.style.pointerEvents = aktifMi ? 'auto' : 'none';
+                }
+            });
+
+            // 2. Yöneticiye özel yedekleme butonları
+            const yoneticiButonIdleri = ['btnFirestoreYedekle', 'btnFirestoreGeriYukle'];
+            const yoneticiYetkisiVar = (currentUserRole === 'yonetici');
+
+            yoneticiButonIdleri.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.style.display = yoneticiYetkisiVar ? 'inline-flex' : 'none';
+                    btn.disabled = !aktifMi || !yoneticiYetkisiVar;
+                    btn.style.cursor = (aktifMi && yoneticiYetkisiVar) ? 'pointer' : 'not-allowed';
+                    btn.style.opacity = (aktifMi && yoneticiYetkisiVar) ? '1' : '0.5';
+                    btn.style.pointerEvents = (aktifMi && yoneticiYetkisiVar) ? 'auto' : 'none';
+                }
+            });
+
+            // 3. Filtre giriş kutuları ve sayfalama seçicisi
+            const filtreElemanlari = document.querySelectorAll('#dbFiltreGrid input, #dbFiltreGrid select, #dbSayfaBoyutu');
+            filtreElemanlari.forEach(el => {
+                el.disabled = !aktifMi;
+                el.style.cursor = aktifMi ? 'auto' : 'not-allowed';
+                el.style.opacity = aktifMi ? '1' : '0.6';
+            });
+        };
+
+        // Yorumlar veritabanı modalını güvenle açan fonksiyon
+        window.adminYorumlarVeritabaniniAc = () => {
+            const modal = document.getElementById('dbModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            const loadingEl = document.getElementById('dbLoading');
+
+            // Eğer veriler henüz hazır değilse butonları kilitli tut ve yükleniyor ibaresini aç
+            if (!window.isDbVerileriTamYuklendi) {
+                window.dbModalButonlariniAyarla(false);
+                if (loadingEl) loadingEl.style.display = 'block';
+            } else {
+                window.dbModalButonlariniAyarla(true);
+                if (loadingEl) loadingEl.style.display = 'none';
+            }
+        };
+
+        window.dbModalKapat = () => {
+            const modal = document.getElementById('dbModal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
         };
 
         // =========================================================================
@@ -2791,7 +2903,19 @@
                     }
                 }
 
-                await setDoc(doc(db, "kullanici_ayarlari", currentUserEmail), veriler, { merge: true });
+                // 1. ADIM: Dokümanı oluştur/güncelle (api_key ve sablonlar için normal merge yeterli ve doğru)
+                const kisiselAyarRef = doc(db, "kullanici_ayarlari", currentUserEmail);
+                await setDoc(kisiselAyarRef, {
+                    api_key: veriler.api_key,
+                    sablonlar: veriler.sablonlar
+                }, { merge: true });
+
+                // 2. ADIM: rpd_kayitlari İÇİN updateDoc KULLAN (setDoc+merge nested objede ESKİYİ SİLMEZ,
+                // üstüne ekler — bu da dokümanın sonsuza kadar büyümesine sebep olur. updateDoc ise
+                // belirtilen alanın TAMAMINI yeni değerle değiştirir, eski tarihli kayıtlar gerçekten silinir.)
+                await updateDoc(kisiselAyarRef, {
+                    rpd_kayitlari: veriler.rpd_kayitlari
+                });
             } catch (error) { console.error("Firebase senk. hatası:", error); }
         }
 
@@ -3222,6 +3346,7 @@
         // Oturum kapandığında veya kullanıcı değiştiğinde tüm RAM ve geçici önbelleği sıfırlar
         function tumGlobalHafizayiSifirla() {
             currentUserEmail = "";
+            currentUserRole = ""; // YENİ: Rol oturum sıfırlandığında temizlenir
             currentUserEkip = "";
             currentUserAdSoyad = "";
             API_KEY = "";
@@ -3246,6 +3371,18 @@
             logsFetched = false;
             sonYuklenenLoglar = [];
             logGuncelVeri = [];
+
+            // YENİ: Oturum kapandığında yedekleme ve geri yükleme butonlarını güvenle gizle ve kilitle
+            const btnFirestoreYedekleEl = document.getElementById('btnFirestoreYedekle');
+            if (btnFirestoreYedekleEl) btnFirestoreYedekleEl.style.display = 'none';
+
+            const btnFirestoreGeriYukleEl = document.getElementById('btnFirestoreGeriYukle');
+            if (btnFirestoreGeriYukleEl) btnFirestoreGeriYukleEl.style.display = 'none';
+
+            // Veritabanı modalındaki butonları başlangıçta kilitli tut
+            if (typeof window.dbModalButonlariniAyarla === "function") {
+                window.dbModalButonlariniAyarla(false);
+            }
 
             if (window.globalViewCache) window.globalViewCache = {};
             if (window.globalCommentCountCache) window.globalCommentCountCache = {};
@@ -3359,8 +3496,20 @@
 
                 const rolData = rolSnap.data();
                 const kullaniciRolu = rolData.rol || "kullanici";
+                currentUserRole = kullaniciRolu; // YENİ: Kullanıcı rolü belleğe aktarılır
                 currentUserEkip = rolData.ekip ? rolData.ekip.trim() : "";
                 currentUserAdSoyad = rolData.adSoyad ? rolData.adSoyad.trim() : currentUserEmail;
+
+                // YENİ: Yedekleme ve Geri Yükleme butonları yalnızca 'yonetici' rolü doğrulandığında görünür yapılır
+                const btnFirestoreYedekleEl = document.getElementById('btnFirestoreYedekle');
+                if (btnFirestoreYedekleEl) {
+                    btnFirestoreYedekleEl.style.display = (currentUserRole === 'yonetici') ? 'inline-flex' : 'none';
+                }
+
+                const btnFirestoreGeriYukleEl = document.getElementById('btnFirestoreGeriYukle');
+                if (btnFirestoreGeriYukleEl) {
+                    btnFirestoreGeriYukleEl.style.display = (currentUserRole === 'yonetici') ? 'inline-flex' : 'none';
+                }
 
                 // 3. ADIM: Bakım Modu ve RBAC (Yönetici Baypas) Doğrulaması
                 const isBakimda = adminPanelSnap.exists() && adminPanelSnap.data().bakimModu === true;
@@ -3379,19 +3528,18 @@
                     return;
                 }
 
-                // DÜZELTME: Sunucu-istemci saat farkını GERÇEKTEN hesaplıyoruz.
-                // Zaten mevcut olan "roller" belgesine bir yazma + okuma yaparak (ekstra istek
-                // maliyeti olmadan, giriş sırasında bir kez) Firestore sunucu saatini yakalıyoruz.
-                // Hata olursa (izin, ağ vb.) sessizce 0'da bırakılır — sistemin geri kalanı bozulmaz.
+                // DÜZELTME: Sunucu-istemci saat farkı, zaten yetkili olduğumuz "kullanici_ayarlari"
+                // ana dokümanı üzerinden hesaplanıyor. Önceki sürüm var olmayan bir kural kapsamındaki
+                // alt koleksiyona (_meta/saatSenkron) yazmaya çalışıyordu, bu da permission-denied
+                // hatası veriyordu. Alt koleksiyona hiç gerek yok, tek bir alan yeterli.
                 try {
                     const saatIstegiBaslangic = Date.now();
-                    const saatRef = doc(db, "kullanici_ayarlari", currentUserEmail, "_meta", "saatSenkron");
-                    await setDoc(saatRef, { sunucuZamani: serverTimestamp() });
+                    const saatRef = doc(db, "kullanici_ayarlari", currentUserEmail);
+                    await setDoc(saatRef, { _saat_senkron: serverTimestamp() }, { merge: true });
                     const saatSnap = await getDoc(saatRef);
-                    if (saatSnap.exists() && saatSnap.data().sunucuZamani) {
-                        const sunucuMs = saatSnap.data().sunucuZamani.toMillis();
+                    if (saatSnap.exists() && saatSnap.data()._saat_senkron) {
+                        const sunucuMs = saatSnap.data()._saat_senkron.toMillis();
                         const saatIstegiBitis = Date.now();
-                        // Round-trip gecikmesinin yarısı kadar tolerans payı bırakılır (kaba ama yeterli)
                         const tahminiIstekAni = saatIstegiBaslangic + (saatIstegiBitis - saatIstegiBaslangic) / 2;
                         sunucuSaatFarkiMs = sunucuMs - tahminiIstekAni;
                     }
@@ -3442,6 +3590,13 @@
                     window.kontrolEtVeGosterKalanIslem();
                 }
 
+                // YENİ: Yönetici girişi yapıldığında arka planda 30 günden eski kayıtları sessizce temizle
+                if (kullaniciRolu === "yonetici") {
+                    setTimeout(() => {
+                        eskiDegisiklikKayitlariniTemizle();
+                    }, 3000); // Sayfa açılış hızını etkilememesi için 3 saniye gecikmeli çalışır
+                }
+
                 // =========================================================
                 // YORUMLAR VERİTABANI SENKRON GİRİŞ NOKTASI
                 // Sadece "Sözler Köşkü" ekibindeki kullanıcılar için: admin panelindeki
@@ -3450,6 +3605,11 @@
                 // otomatik olarak kaldığı yerden arka plan indirmesine devam eder.
                 // =========================================================
                 const btnYorumlarVeritabaniEl = document.getElementById('btnYorumlarVeritabani');
+                // Başlangıçta veritabanı butonlarını kesin olarak kilitli başlat
+                if (typeof window.dbModalButonlariniAyarla === "function") {
+                    window.dbModalButonlariniAyarla(false);
+                }
+
                 if (currentUserEkip === "Sözler Köşkü") {
                     if (btnYorumlarVeritabaniEl) btnYorumlarVeritabaniEl.style.display = 'inline-flex';
                     if (typeof window.dbSenkronArayuzunuHazirla === "function") {
@@ -3526,6 +3686,13 @@
                 loginBtn.disabled = false;
             }
         };
+
+        // Sayfa ilk açıldığında modal butonlarının pasif başladığından emin ol
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.dbModalButonlariniAyarla === "function") {
+                window.dbModalButonlariniAyarla(false);
+            }
+        });
 
         // Sayfa tamamen yüklendiğinde butonları ve tuşları dinlemeye başlıyoruz (Event Listeners)
         // Böylece HTML dosyasını JavaScript komutlarıyla kirletmemiş oluyoruz.
@@ -3636,17 +3803,15 @@
                 }
             }
 
-            // Özet dokümana tam şemayı güvenli anahtarla yaz
+            // : Her video artık kendi alt koleksiyon dokümanına yazılıyor (üst doküman DEĞİL)
             try {
                 const hedefDokumanId = currentUserEkip ? currentUserEkip.trim() : (currentUserEmail ? currentUserEmail.trim() : null);
                 if (hedefDokumanId && videoId && typeof videoId === 'string' && videoId.trim() !== "") {
                     const temizVideoId = videoId.trim();
-                    await setDoc(doc(db, "video_rozetleri", hedefDokumanId), {
-                        [temizVideoId]: {
-                            durum: String(yeniRozetObjesi.durum || 'bos'),
-                            totalHam: Number(yeniRozetObjesi.totalHam) || 0,
-                            sonAnalizTarihi: Number(yeniRozetObjesi.sonAnalizTarihi) || Date.now()
-                        }
+                    await setDoc(doc(db, "video_rozetleri", hedefDokumanId, "videolar", temizVideoId), {
+                        durum: String(yeniRozetObjesi.durum || 'bos'),
+                        totalHam: Number(yeniRozetObjesi.totalHam) || 0,
+                        sonAnalizTarihi: Number(yeniRozetObjesi.sonAnalizTarihi) || Date.now()
                     }, { merge: true });
                 }
             } catch (e) {
@@ -4857,6 +5022,401 @@
         };
 
         // =========================================================================
+        // ÜCRETSİZ SPARK PLANI İÇİN OTOMATİK ESKİ KAYIT TEMİZLEME (LAZY PRUNING)
+        // Billing gerektirmez; 30 günden eski değişiklik kayıtlarını arka planda siler.
+        // =========================================================================
+        async function eskiDegisiklikKayitlariniTemizle() {
+            try {
+                // Son 30 günün başlangıç zaman damgası
+                const otuzGunOnceMs = Date.now() - (30 * 24 * 60 * 60 * 1000);
+                const esikTarihi = new Date(otuzGunOnceMs);
+
+                // 30 günden eski olan en fazla 100 kaydı çek (Kota koruması)
+                const q = query(
+                    collection(db, "veritabani_degisiklik_kayitlari"),
+                    where("zaman", "<=", esikTarihi),
+                    limit(100)
+                );
+
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) return;
+
+                const batch = writeBatch(db);
+                snapshot.forEach((docSnap) => {
+                    batch.delete(docSnap.ref);
+                });
+
+                await batch.commit();
+                console.log(`[Otomatik Bakım] ${snapshot.size} adet süresi dolmuş değişiklik kaydı temizlendi.`);
+            } catch (err) {
+                // Temizlik arka plan operasyonu olduğu için sessizce loglanır, kullanıcı akışını kesmez
+                console.warn("[Otomatik Bakım Uyarısı] Eski kayıtlar temizlenirken hata:", err);
+            }
+        }
+
+        // =========================================================================
+        // TEK TIKLA FIRESTORE JSON YEDEKLEME MOTORU (ONE-CLICK BACKUP ENGINE)
+        // Yalnızca 'yonetici' rolüne sahip kullanıcılar tarafından tetiklenebilir.
+        // =========================================================================
+
+        /**
+         * Firestore Timestamp nesnelerini ve JavaScript Date objelerini 
+         * özyinelemeli (recursive) olarak standart ISO 8601 tarih dizgisine dönüştürür.
+         */
+        function firestoreVerisiniJsonIcinDonustur(veri) {
+            if (veri === null || veri === undefined) return veri;
+
+            // Timestamp / Date tespiti ve ISO dönüşümü
+            if (typeof veri === 'object') {
+                if (typeof veri.toDate === 'function') {
+                    return veri.toDate().toISOString();
+                }
+                if (typeof veri.seconds === 'number' && typeof veri.nanoseconds === 'number') {
+                    return new Date(veri.seconds * 1000 + veri.nanoseconds / 1000000).toISOString();
+                }
+                if (veri instanceof Date) {
+                    return veri.toISOString();
+                }
+                if (Array.isArray(veri)) {
+                    return veri.map(item => firestoreVerisiniJsonIcinDonustur(item));
+                }
+
+                // İç içe geçmiş (nested) nesneleri tara
+                const normalizeNesne = {};
+                for (const [anahtar, deger] of Object.entries(veri)) {
+                    normalizeNesne[anahtar] = firestoreVerisiniJsonIcinDonustur(deger);
+                }
+                return normalizeNesne;
+            }
+
+            return veri;
+        }
+
+        /**
+         * Tüm temel Firestore koleksiyonlarını ve alt koleksiyonları tarar,
+         * JSON formatında paketler ve istemci taraflı otomatik indirme başlatır.
+         */
+        window.firestoreVerileriniYedekleJSON = async () => {
+            // 1. ADIM: İstemci Tarafı RBAC Güvenlik Doğrulaması
+            if (currentUserRole !== 'yonetici') {
+                alert("⛔ Yetki Hatası: Veritabanı yedeği alma işlemi yalnızca 'yonetici' rolündeki kullanıcılara açıktır.");
+                return;
+            }
+
+            const onay = confirm("📦 Firestore Veritabanı Yedeği:\n\nTüm sistem koleksiyonları (roller, ayarlar, loglar, rozetler, alt koleksiyonlar ve kullanıcı verileri) taranarak JSON formatında bilgisayarınıza indirilecektir.\n\nİşlemi başlatmak istiyor musunuz?");
+            if (!onay) return;
+
+            const yedekBtn = document.getElementById('btnFirestoreYedekle');
+            const yedekBtnMetin = document.getElementById('btnFirestoreYedekleMetin');
+            const orjinalMetin = yedekBtnMetin ? yedekBtnMetin.innerText : "Veritabanı Verilerini Yedekle (JSON)";
+
+            try {
+                // UI Kilitleme: Çoklu tıklama ve asenkron yarış durumunu (Race Condition) önle
+                if (yedekBtn) yedekBtn.disabled = true;
+
+                // Taranacak birincil Firestore koleksiyon listesi
+                const hedefKoleksiyonlar = [
+                    "roller",
+                    "sistem_ayarlari",
+                    "kullanici_ayarlari",
+                    "kullanici_sifreleri",
+                    "log_kayitlari",
+                    "kayit_talepleri",
+                    "veritabani_degisiklik_kayitlari"
+                ];
+
+                const yedekPaketi = {
+                    _metadata: {
+                        uygulama: "Liva AI",
+                        versiyon: "v10.1",
+                        yedeklemeZamani: new Date().toISOString(),
+                        yedekleyenEposta: currentUserEmail,
+                        yedekleyenIsim: currentUserAdSoyad,
+                        ekip: currentUserEkip,
+                        koleksiyonSayisi: hedefKoleksiyonlar.length + 1 // 'video_rozetleri' dahil
+                    },
+                    koleksiyonlar: {}
+                };
+
+                let toplamDokumanSayisi = 0;
+
+                // 2. ADIM: Standart Koleksiyonları Asenkron Olarak Çek ve Normalize Et
+                for (let i = 0; i < hedefKoleksiyonlar.length; i++) {
+                    const koleksiyonAdi = hedefKoleksiyonlar[i];
+                    if (yedekBtnMetin) {
+                        yedekBtnMetin.innerText = `Yedekleniyor (${i + 1}/${hedefKoleksiyonlar.length + 1}): ${koleksiyonAdi}...`;
+                    }
+
+                    const colRef = collection(db, koleksiyonAdi);
+                    const colSnapshot = await getDocs(colRef);
+
+                    yedekPaketi.koleksiyonlar[koleksiyonAdi] = {};
+
+                    for (const docSnap of colSnapshot.docs) {
+                        toplamDokumanSayisi++;
+                        const hamVeri = docSnap.data();
+                        const normalizeVeri = firestoreVerisiniJsonIcinDonustur(hamVeri);
+
+                        yedekPaketi.koleksiyonlar[koleksiyonAdi][docSnap.id] = {
+                            _id: docSnap.id,
+                            ...normalizeVeri
+                        };
+                    }
+                }
+
+                // =========================================================================
+                // 3. ADIM: 'video_rozetleri' VE ALT KOLEKSİYONLARINI (videolar) DERİNLEMESİNE YAKALAMA
+                // MİMARİ AÇIKLAMA: Üst dokümanlar 'phantom' (gölge) olsa dahi collectionGroup("videolar")
+                // sayesinde tüm alt dokümanlar ve grup kimlikleri (hedefId) kayıpsız olarak çekilir.
+                // =========================================================================
+                if (yedekBtnMetin) {
+                    yedekBtnMetin.innerText = `Yedekleniyor (${hedefKoleksiyonlar.length + 1}/${hedefKoleksiyonlar.length + 1}): video_rozetleri (Alt Koleksiyonlar)...`;
+                }
+
+                yedekPaketi.koleksiyonlar["video_rozetleri"] = {};
+
+                // 3.1: Fiziksel olarak var olan üst dokümanları tara (Varsa)
+                try {
+                    const rozetUstSnap = await getDocs(collection(db, "video_rozetleri"));
+                    rozetUstSnap.forEach(uDoc => {
+                        yedekPaketi.koleksiyonlar["video_rozetleri"][uDoc.id] = {
+                            _id: uDoc.id,
+                            ...firestoreVerisiniJsonIcinDonustur(uDoc.data()),
+                            _alt_koleksiyon_videolar: {}
+                        };
+                        toplamDokumanSayisi++;
+                    });
+                } catch (ustErr) {
+                    console.warn("[Yedekleme] video_rozetleri üst dokümanları okunamadı:", ustErr);
+                }
+
+                // 3.2: collectionGroup ile TÜM 'videolar' alt dokümanlarını üst dokümanlarına bağlayarak topla
+                try {
+                    const videolarGroupSnap = await getDocs(collectionGroup(db, "videolar"));
+
+                    videolarGroupSnap.forEach(vDoc => {
+                        // vDoc.ref.parent = CollectionReference ("videolar")
+                        // vDoc.ref.parent.parent = DocumentReference ("video_rozetleri/{hedefGrupId}")
+                        const parentDocRef = vDoc.ref.parent ? vDoc.ref.parent.parent : null;
+                        const parentId = parentDocRef ? parentDocRef.id : "BilinmeyenGrup";
+
+                        if (!yedekPaketi.koleksiyonlar["video_rozetleri"][parentId]) {
+                            yedekPaketi.koleksiyonlar["video_rozetleri"][parentId] = {
+                                _id: parentId,
+                                _alt_koleksiyon_videolar: {}
+                            };
+                        }
+
+                        if (!yedekPaketi.koleksiyonlar["video_rozetleri"][parentId]._alt_koleksiyon_videolar) {
+                            yedekPaketi.koleksiyonlar["video_rozetleri"][parentId]._alt_koleksiyon_videolar = {};
+                        }
+
+                        yedekPaketi.koleksiyonlar["video_rozetleri"][parentId]._alt_koleksiyon_videolar[vDoc.id] = firestoreVerisiniJsonIcinDonustur(vDoc.data());
+                        toplamDokumanSayisi++;
+                    });
+                } catch (groupErr) {
+                    console.warn("[Yedekleme Uyarısı] collectionGroup('videolar') başarısız oldu, Fallback yöntemine geçiliyor:", groupErr);
+
+                    // 3.3: FALLBACK: collectionGroup güvenlik veya indeks engeline takılırsa, 'roller' üzerinden tara
+                    try {
+                        const rollerSnap = await getDocs(collection(db, "roller"));
+                        const taranacakGruplar = new Set(["Genel", "Sözler Köşkü", "Livaulhamd"]);
+
+                        rollerSnap.forEach(rDoc => {
+                            taranacakGruplar.add(rDoc.id); // e-postalar
+                            const rData = rDoc.data();
+                            if (rData && rData.ekip) taranacakGruplar.add(rData.ekip.trim());
+                        });
+
+                        for (const grupId of taranacakGruplar) {
+                            if (!grupId) continue;
+                            const altSnap = await getDocs(collection(db, "video_rozetleri", grupId, "videolar"));
+                            if (!altSnap.empty) {
+                                if (!yedekPaketi.koleksiyonlar["video_rozetleri"][grupId]) {
+                                    yedekPaketi.koleksiyonlar["video_rozetleri"][grupId] = {
+                                        _id: grupId,
+                                        _alt_koleksiyon_videolar: {}
+                                    };
+                                }
+                                altSnap.forEach(altDoc => {
+                                    yedekPaketi.koleksiyonlar["video_rozetleri"][grupId]._alt_koleksiyon_videolar[altDoc.id] = firestoreVerisiniJsonIcinDonustur(altDoc.data());
+                                    toplamDokumanSayisi++;
+                                });
+                            }
+                        }
+                    } catch (fallbackErr) {
+                        console.error("[Yedekleme Kritik Hata] Fallback alt koleksiyon taraması da başarısız oldu:", fallbackErr);
+                    }
+                }
+
+                yedekPaketi._metadata.toplamDokumanSayisi = toplamDokumanSayisi;
+
+                // 4. ADIM: JSON Blob Oluşturma ve İndirme Tetikleme
+                if (yedekBtnMetin) yedekBtnMetin.innerText = "JSON Dosyası Hazırlanıyor...";
+
+                const jsonDizgisi = JSON.stringify(yedekPaketi, null, 2);
+                const veriBlobu = new Blob([jsonDizgisi], { type: "application/json;charset=utf-8;" });
+                const indirmeUrl = URL.createObjectURL(veriBlobu);
+
+                // Dosya Adı: firestore_yedek_YYYY-MM-DD_HH-mm.json
+                const simdi = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const tarihDamgasi = `${simdi.getFullYear()}-${pad(simdi.getMonth() + 1)}-${pad(simdi.getDate())}_${pad(simdi.getHours())}-${pad(simdi.getMinutes())}`;
+                const dosyaAdi = `firestore_yedek_${tarihDamgasi}.json`;
+
+                const geciciLink = document.createElement('a');
+                geciciLink.href = indirmeUrl;
+                geciciLink.setAttribute('download', dosyaAdi);
+                document.body.appendChild(geciciLink);
+                geciciLink.click();
+                document.body.removeChild(geciciLink);
+
+                // Bellek Temizliği (Memory Leak Prevention)
+                setTimeout(() => URL.revokeObjectURL(indirmeUrl), 1000);
+
+                if (typeof setStatus === "function") {
+                    setStatus(`✅ Veritabanı yedeği başarıyla alındı (${toplamDokumanSayisi} doküman aktarıldı).`, "#27ae60");
+                }
+                alert(`✅ Yedekleme Tamamlandı!\n\nToplam ${toplamDokumanSayisi} adet doküman (video rozetleri ve alt koleksiyonlar dahil) başarıyla dışa aktarıldı.\nDosya: ${dosyaAdi}`);
+
+            } catch (hata) {
+                console.error("[Firestore Yedekleme Hatası]:", hata);
+                alert("❌ Yedekleme sırasında bir hata oluştu: " + (hata.message || hata));
+                if (typeof setStatus === "function") {
+                    setStatus(`⚠️ Yedekleme başarısız oldu: ${hata.message}`, "#e74c3c");
+                }
+            } finally {
+                // UI Durumunu Eski Haline Döndür
+                if (yedekBtn) yedekBtn.disabled = false;
+                if (yedekBtnMetin) yedekBtnMetin.innerText = orjinalMetin;
+            }
+        };
+
+        // =========================================================================
+        // TAHBİRATSIZ FIRESTORE JSON GERİ YÜKLEME MOTORU (NON-DESTRUCTIVE RESTORE)
+        // Mevcut sağlam kayıtları silmez veya bozmaz; eksik veya eski verileri birleştirir ({ merge: true }).
+        // =========================================================================
+        window.firestoreYedekDosyasiSecildi = async (event) => {
+            const dosya = event.target.files && event.target.files[0];
+            if (!dosya) return;
+
+            // 1. ADIM: RBAC Yetki Doğrulaması
+            if (currentUserRole !== 'yonetici') {
+                alert("⛔ Yetki Hatası: Veritabanı yedeği geri yükleme işlemi yalnızca 'yonetici' rolündeki kullanıcılara açıktır.");
+                event.target.value = '';
+                return;
+            }
+
+            const restoreBtn = document.getElementById('btnFirestoreGeriYukle');
+            const restoreBtnMetin = document.getElementById('btnFirestoreGeriYukleMetin');
+            const orjinalMetin = restoreBtnMetin ? restoreBtnMetin.innerText : "Yedeği Geri Yükle (JSON)";
+
+            try {
+                const dosyaMetni = await dosya.text();
+                let yedekVerisi = null;
+
+                try {
+                    yedekVerisi = JSON.parse(dosyaMetni);
+                } catch (parseHata) {
+                    throw new Error("Seçilen dosya geçerli bir JSON formatında değil.");
+                }
+
+                if (!yedekVerisi || !yedekVerisi.koleksiyonlar || typeof yedekVerisi.koleksiyonlar !== 'object') {
+                    throw new Error("Geçersiz yedek dosyası şeması! Dosyada 'koleksiyonlar' anahtarı bulunamadı.");
+                }
+
+                const metadata = yedekVerisi._metadata || {};
+                const yedekTarihi = metadata.yedeklemeZamani ? new Date(metadata.yedeklemeZamani).toLocaleString('tr-TR') : "Bilinmeyen Tarih";
+                const toplamYedekDokuman = metadata.toplamDokumanSayisi || "Belirtilmemiş";
+
+                const onay = confirm(
+                    `📥 FIRESTORE YEDEĞİ GERİ YÜKLEME / BİRLEŞTİRME ONAYI:\n\n` +
+                    `• Dosya: ${dosya.name}\n` +
+                    `• Yedek Tarihi: ${yedekTarihi}\n` +
+                    `• Tahmini Doküman Sayısı: ${toplamYedekDokuman}\n\n` +
+                    `⚠️ Mevcut yeni kayıtlar silinmez, yedektekilerle güvenle birleştirilir.\n\n` +
+                    `İşlemi başlatmak istiyor musunuz?`
+                );
+
+                if (!onay) {
+                    event.target.value = '';
+                    return;
+                }
+
+                if (restoreBtn) restoreBtn.disabled = true;
+
+                let islenenDokumanSayisi = 0;
+                const koleksiyonListesi = Object.keys(yedekVerisi.koleksiyonlar);
+
+                // Nokta atışı ve hata korumalı içe aktarma döngüsü
+                for (let k = 0; k < koleksiyonListesi.length; k++) {
+                    const koleksiyonAdi = koleksiyonListesi[k];
+                    const dokumanlar = yedekVerisi.koleksiyonlar[koleksiyonAdi];
+                    if (!dokumanlar || typeof dokumanlar !== 'object') continue;
+
+                    if (restoreBtnMetin) {
+                        restoreBtnMetin.innerText = `Aktarılıyor: ${koleksiyonAdi}... (${islenenDokumanSayisi})`;
+                    }
+
+                    for (const [docId, docPayload] of Object.entries(dokumanlar)) {
+                        if (!docPayload || typeof docPayload !== 'object') continue;
+
+                        const { _id, _alt_koleksiyon_videolar, ...temizDocVerisi } = docPayload;
+
+                        // 1. Ana Dokümanı Yaz
+                        if (Object.keys(temizDocVerisi).length > 0) {
+                            try {
+                                const docRef = doc(db, koleksiyonAdi, docId);
+                                await setDoc(docRef, temizDocVerisi, { merge: true });
+                                islenenDokumanSayisi++;
+                            } catch (docErr) {
+                                console.error(`[Yedek Hatası] Koleksiyon: ${koleksiyonAdi}, ID: ${docId}`, docErr);
+                                throw new Error(`[${koleksiyonAdi}/${docId}] dokümanı yazılırken yetki hatası oluştu: ${docErr.message}`);
+                            }
+                        }
+
+                        // 2. Alt Koleksiyonları (videolar) Yaz
+                        if (_alt_koleksiyon_videolar && typeof _alt_koleksiyon_videolar === 'object') {
+                            for (const [videoId, videoRozetVerisi] of Object.entries(_alt_koleksiyon_videolar)) {
+                                if (!videoRozetVerisi || typeof videoRozetVerisi !== 'object') continue;
+
+                                const { _id: vId, ...temizVideoVerisi } = videoRozetVerisi;
+                                try {
+                                    const altDocRef = doc(db, "video_rozetleri", docId, "videolar", videoId);
+                                    await setDoc(altDocRef, temizVideoVerisi, { merge: true });
+                                    islenenDokumanSayisi++;
+                                } catch (subErr) {
+                                    console.error(`[Alt Koleksiyon Hatası] video_rozetleri/${docId}/videolar/${videoId}`, subErr);
+                                    throw new Error(`[video_rozetleri/${docId}/videolar/${videoId}] alt dokümanı yazılırken yetki hatası oluştu: ${subErr.message}`);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (typeof setStatus === "function") {
+                    setStatus(`✅ Geri yükleme tamamlandı: Toplam ${islenenDokumanSayisi} doküman başarıyla birleştirildi.`, "#27ae60");
+                }
+
+                alert(`🎉 Geri Yükleme Başarıyla Tamamlandı!\n\nToplam ${islenenDokumanSayisi} adet doküman mevcut veriler bozulmadan veritabanına aktarıldı.`);
+
+                if (typeof adminEkibiYukle === "function") adminEkibiYukle();
+                if (typeof adminLoglariYukle === "function") adminLoglariYukle();
+
+            } catch (hata) {
+                console.error("[Firestore Geri Yükleme Hatası]:", hata);
+                alert("❌ Geri yükleme sırasında hata oluştu:\n\n" + (hata.message || hata));
+                if (typeof setStatus === "function") {
+                    setStatus(`⚠️ Geri yükleme başarısız: ${hata.message}`, "#e74c3c");
+                }
+            } finally {
+                if (restoreBtn) restoreBtn.disabled = false;
+                if (restoreBtnMetin) restoreBtnMetin.innerText = orjinalMetin;
+                event.target.value = '';
+            }
+        };
+
+        // =========================================================================
         // Arka Planda Google Drive Klasör ve Sheets Satır Silme
         // =========================================================================
         async function arkaPlandaGoogleVerileriniSil(videoId, isAll = false, tarihAraligi = null, logEkip = null, logIslemYapan = null, hedefler = { sheetsSil: true, driveSil: true }) {
@@ -4917,11 +5477,15 @@
                     // önbellekten kaldırır, geri kalan binlerce satıra dokunmaz.
                     if (hedefler.sheetsSil) {
                         try {
+                            // 30 gün sonra otomatik silinecek TTL zaman damgası
+                            const ttlZamani = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
                             await addDoc(collection(db, "veritabani_degisiklik_kayitlari"), {
                                 tip: isAll ? "tum_veritabani_silindi" : "video_silindi",
                                 video_id: isAll ? null : (videoId || null),
                                 tarih_araligi: isAll ? null : (tarihAraligi || null),
-                                zaman: serverTimestamp()
+                                zaman: serverTimestamp(),
+                                son_kullanma_tarihi: ttlZamani
                             });
                         } catch (degisimKaydiErr) {
                             // Bu kayıt düşürülemese bile silme işleminin kendisi zaten başarılı oldu;
@@ -4970,12 +5534,13 @@
                             const kalanSnap = await getDocs(qKalan);
 
                             const hedefDokumanId = (logEkip && logEkip.trim()) ? logEkip.trim() : (logIslemYapan ? logIslemYapan.trim() : currentUserEmail);
-                            const rozetDocRef = doc(db, "video_rozetleri", hedefDokumanId);
+                            // : Üst dokümanda alan değil, alt koleksiyonda kendi dokümanı var
+                            const rozetDocRef = doc(db, "video_rozetleri", hedefDokumanId, "videolar", videoId);
 
                             if (kalanSnap.empty) {
-                                // Bu video için geriye hiç log kalmadıysa rozeti tamamen kaldır
+                                // Bu video için geriye hiç log kalmadıysa rozet dokümanını tamamen sil
                                 globalAnalyzedVideosCache.delete(videoId);
-                                await setDoc(rozetDocRef, { [videoId]: deleteField() }, { merge: true });
+                                await deleteDoc(rozetDocRef);
                             } else {
                                 // Kalan loglar varsa şemayı bozmadan (nesne olarak) en güncel veriyi hesapla
                                 let enIyiDurum = 'bos';
@@ -5003,7 +5568,7 @@
                                 };
 
                                 globalAnalyzedVideosCache.set(videoId, guncelRozetObjesi);
-                                await setDoc(rozetDocRef, { [videoId]: guncelRozetObjesi }, { merge: true });
+                                await setDoc(rozetDocRef, guncelRozetObjesi, { merge: true });
                             }
                         } catch (rozetSilErr) {
                             console.warn(`Rozet indeksi güncellenemedi (${videoId}):`, rozetSilErr);
@@ -6047,29 +6612,28 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         window.arayuzuKilitle = () => {
             const elements = document.querySelectorAll('#mainApp input, #mainApp select, #mainApp button, #mainApp textarea');
             elements.forEach(el => {
-                // İptal butonu ve dinamik sayfalama butonları sürece dahil edilmez
-                if (el.id !== 'cancelBtn' && !el.closest('#paginationControls')) {
-                    // Kilitlemeden hemen önce elemanın orijinal durumu hafızaya alınır
+                // İptal butonu, sayfalama ve MODAL içi elemanlar genel kilitlemeden muaf tutulur
+                if (el.id !== 'cancelBtn' && !el.closest('#paginationControls') && !el.closest('#dbModal') && !el.closest('#adminPanelOverlay') && !el.closest('.ss-modal')) {
                     if (!el.hasAttribute('data-orj-disabled')) {
                         el.setAttribute('data-orj-disabled', el.disabled);
                     }
                     el.disabled = true;
                 }
             });
-            document.getElementById('cancelBtn').disabled = false;
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) cancelBtn.disabled = false;
         };
 
         window.arayuzuAktiflestir = () => {
             const elements = document.querySelectorAll('#mainApp input, #mainApp select, #mainApp button, #mainApp textarea');
             elements.forEach(el => {
-                if (el.id !== 'cancelBtn' && !el.closest('#paginationControls')) {
+                // Veritabanı modalı ve admin paneli kendi bağımsız durum yöneticilerine sahiptir, genel kilit açıcı bunları ezmez
+                if (el.id !== 'cancelBtn' && !el.closest('#paginationControls') && !el.closest('#dbModal') && !el.closest('#adminPanelOverlay') && !el.closest('.ss-modal')) {
                     if (el.hasAttribute('data-orj-disabled')) {
-                        // İşlem bittiğinde orijinal haline geri döner
                         const orj = el.getAttribute('data-orj-disabled');
                         el.disabled = (orj === 'true');
                         el.removeAttribute('data-orj-disabled');
                     } else {
-                        // Eğer kilitleme esnasında sayfaya yeni butonlar eklenmişse (liste butonları gibi) onları direkt açar
                         el.disabled = false;
                     }
                 }
@@ -7023,19 +7587,15 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const videoListDOM = document.getElementById('videoList');
             videoListDOM.innerHTML = "<p style='text-align:center; font-weight:bold; color:#2980b9;'>Sistem çalışıyor, lütfen bekleyin...</p>";
 
-            // MİMARİ DEVRİM: Binlerce log dokümanı yerine tek bir özet indeks dokümanı okunur (1 Read Maliyeti)
+            // : Tek özet doküman yerine alt koleksiyondaki her video kendi küçük dokümanında
+            // (1 MiB doküman limiti riski bitti; bedeli N adet Read olması — kabul edilen trade-off)
             if (!logsFetched && currentUserEmail) {
                 try {
                     const hedefDokumanId = currentUserEkip ? currentUserEkip.trim() : currentUserEmail.trim();
-                    const rozetDocRef = doc(db, "video_rozetleri", hedefDokumanId);
-                    const rozetSnap = await getDoc(rozetDocRef);
+                    const rozetKoleksiyonRef = collection(db, "video_rozetleri", hedefDokumanId, "videolar");
+                    const rozetSnap = await getDocs(rozetKoleksiyonRef);
 
-                    if (rozetSnap.exists()) {
-                        const rozetData = rozetSnap.data();
-                        globalAnalyzedVideosCache = new Map(Object.entries(rozetData));
-                    } else {
-                        globalAnalyzedVideosCache = new Map();
-                    }
+                    globalAnalyzedVideosCache = new Map(rozetSnap.docs.map(d => [d.id, d.data()]));
                     logsFetched = true;
                 } catch (e) {
                     console.error("Özet rozet indeksi yüklenemedi:", e);
@@ -8576,12 +9136,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             if (!ekipAdi) { console.error("Ekip adı belirtilmedi."); return; }
             console.log(`[Migrasyon] '${ekipAdi}' ekibi için log_kayitlari taranıyor...`);
 
-            // 1. ADIM: Mevcut video_rozetleri dokümanını oku (mükerrer yazımı engellemek için ZORUNLU)
-            const rozetRef = doc(db, "video_rozetleri", ekipAdi);
-            const rozetSnap = await getDoc(rozetRef);
-            const mevcutRozetler = rozetSnap.exists() ? rozetSnap.data() : {};
-            const mevcutVideoIdSeti = new Set(Object.keys(mevcutRozetler));
-            console.log(`[Migrasyon] Dokümanda zaten ${mevcutVideoIdSeti.size} video kayıtlı, bunlar ATLANACAK.`);
+            // : Mükerrer yazımı engellemek için artık alt koleksiyondaki mevcut videoları oku
+            const mevcutSnap = await getDocs(collection(db, "video_rozetleri", ekipAdi, "videolar"));
+            const mevcutVideoIdSeti = new Set(mevcutSnap.docs.map(d => d.id));
+            console.log(`[Migrasyon] Alt koleksiyonda zaten ${mevcutVideoIdSeti.size} video kayıtlı, bunlar ATLANACAK.`);
 
             // 2. ADIM: Bu ekibe ait TÜM log_kayitlari kayıtlarını çek (tek where şartı, index gerektirmez)
             const q = query(collection(db, "log_kayitlari"), where("ekip", "==", ekipAdi));
@@ -8646,9 +9204,82 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 return {};
             }
 
-            await setDoc(rozetRef, yeniYazilacaklar, { merge: true });
-            console.log(`%c[TAMAMLANDI] ${eklenecekSayisi} video rozeti "${ekipAdi}" dokümanına eklendi.`, "color:green;font-weight:bold;");
+            // : Alt koleksiyona 500'lük writeBatch parçalarıyla yaz
+            const yeniVideoIdleri = Object.keys(yeniYazilacaklar);
+            const PARCA_BOYUTU = 500;
+            for (let i = 0; i < yeniVideoIdleri.length; i += PARCA_BOYUTU) {
+                const parca = yeniVideoIdleri.slice(i, i + PARCA_BOYUTU);
+                const batch = writeBatch(db);
+                parca.forEach(vid => {
+                    const hedefRef = doc(db, "video_rozetleri", ekipAdi, "videolar", vid);
+                    batch.set(hedefRef, yeniYazilacaklar[vid], { merge: true });
+                });
+                await batch.commit();
+            }
+            console.log(`%c[TAMAMLANDI] ${eklenecekSayisi} video rozeti "${ekipAdi}" alt koleksiyonuna eklendi.`, "color:green;font-weight:bold;");
             return yeniYazilacaklar;
+        };
+
+        // =========================================================================
+        // TEK SEFERLİK MİGRASYON ARACI —  video_rozetleri (harita) -> video_rozetleri/{grup}/videolar (alt koleksiyon)
+        // Kullanım:
+        //   1) altKoleksiyonaTasi("Sözler Köşkü")          -> KURU ÇALIŞMA, hiçbir şey yazmaz
+        //   2) altKoleksiyonaTasi("Sözler Köşkü", false)   -> GERÇEK YAZIM (writeBatch, 500'lük parçalar)
+        // NOT: Eski üst doküman SİLİNMEZ/DEĞİŞTİRİLMEZ — rollback güvenlik ağı olarak kalır.
+        // NOT: firestore.rules güncellemesi sonrası bu SADECE admin hesabıyla çalışır (üst
+        // doküman artık yoneticiMi() ile korunuyor).
+        // =========================================================================
+        window.altKoleksiyonaTasi = async (ekipAdi, dryRun = true) => {
+            if (!ekipAdi) { console.error("Ekip/kullanıcı adı belirtilmedi."); return; }
+            console.log(`[Alt Koleksiyon Migrasyonu] '${ekipAdi}' için eski özet doküman okunuyor...`);
+
+            // 1. ADIM: Eski üst dokümanı oku (rollback güvenlik ağı — sadece OKUNUYOR, değiştirilmiyor)
+            const eskiRozetRef = doc(db, "video_rozetleri", ekipAdi);
+            const eskiRozetSnap = await getDoc(eskiRozetRef);
+            if (!eskiRozetSnap.exists()) {
+                console.warn(`[Alt Koleksiyon Migrasyonu] '${ekipAdi}' için eski özet doküman bulunamadı.`);
+                return {};
+            }
+            const eskiRozetler = eskiRozetSnap.data();
+            const tumVideoIdleri = Object.keys(eskiRozetler);
+            console.log(`[Alt Koleksiyon Migrasyonu] Eski dokümanda ${tumVideoIdleri.length} video kaydı bulundu.`);
+
+            // 2. ADIM: Alt koleksiyonda hâlihazırda var olanları tespit et (mükerrer yazım engeli)
+            const altKoleksiyonSnap = await getDocs(collection(db, "video_rozetleri", ekipAdi, "videolar"));
+            const zatenVarOlanSet = new Set(altKoleksiyonSnap.docs.map(d => d.id));
+            console.log(`[Alt Koleksiyon Migrasyonu] Alt koleksiyonda zaten ${zatenVarOlanSet.size} video kayıtlı, bunlar ATLANACAK.`);
+
+            // 3. ADIM: Eksik olanları belirle
+            const eksikVideoIdleri = tumVideoIdleri.filter(vid => !zatenVarOlanSet.has(vid));
+            console.log(`[Alt Koleksiyon Migrasyonu] ${eksikVideoIdleri.length} YENİ video taşınacak.`);
+
+            if (dryRun) {
+                console.log(`%c[KURU ÇALIŞMA] Hiçbir şey yazılmadı. Gerçekten yazmak için: altKoleksiyonaTasi("${ekipAdi}", false)`, "color:orange;font-weight:bold;");
+                return { mevcut: zatenVarOlanSet.size, yeniTasinacak: eksikVideoIdleri.length };
+            }
+
+            if (eksikVideoIdleri.length === 0) {
+                console.log("[Alt Koleksiyon Migrasyonu] Taşınacak yeni video yok.");
+                return { mevcut: zatenVarOlanSet.size, yeniTasinacak: 0 };
+            }
+
+            // 4. ADIM: writeBatch ile 500'lük parçalar halinde sırayla yaz (Firestore'un sert batch limiti)
+            const PARCA_BOYUTU = 500;
+            let toplamYazilan = 0;
+            for (let i = 0; i < eksikVideoIdleri.length; i += PARCA_BOYUTU) {
+                const parca = eksikVideoIdleri.slice(i, i + PARCA_BOYUTU);
+                const batch = writeBatch(db);
+                parca.forEach(vid => {
+                    const hedefRef = doc(db, "video_rozetleri", ekipAdi, "videolar", vid);
+                    batch.set(hedefRef, eskiRozetler[vid], { merge: true });
+                });
+                await batch.commit();
+                toplamYazilan += parca.length;
+                console.log(`%c[İLERLEME] ${toplamYazilan}/${eksikVideoIdleri.length} video alt koleksiyona yazıldı.`, "color:dodgerblue;");
+            }
+
+            console.log(`%c[TAMAMLANDI] ${toplamYazilan} video "${ekipAdi}" alt koleksiyonuna taşındı. Eski üst doküman DOKUNULMADAN korundu.`, "color:green;font-weight:bold;");
+            return { mevcut: zatenVarOlanSet.size, yeniTasinacak: toplamYazilan };
         };
 
         // =========================================================================
@@ -10160,45 +10791,68 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             return sheetConfigSnap.data().web_app_url;
         }
 
-        // Veritabanı modalındaki TÜM etkileşimli alanları (filtreler + butonlar) kilitler/açar.
-        // "Tablo Verilerini Yenile" gibi işlemler sürerken kullanıcının aynı anda başka bir işlem
-        // başlatmasını (çifte istek, tutarsız durum) engellemek için kullanılır.
-        const DB_MODAL_KILITLENECEK_ALANLAR = [
-            'dbFiltreAnalizBaslangic', 'dbFiltreAnalizBitis', 'dbFiltreIslemYapan',
-            'dbFiltreYorumBaslangic', 'dbFiltreYorumBitis', 'dbFiltreYorumSahibi',
-            'dbFiltreKategori', 'dbFiltreDil', 'dbFiltreIcerik', 'dbFiltreVideoBaslik',
-            'dbFiltreVideoLink', 'dbSayfaBoyutu',
-            'btnDbFiltrele', 'btnDbFiltreTemizle', 'btnDbYenile', 'btnDbAiOlustur', 'btnDbSilVeKapat'
-        ];
-        function dbModalAlanlariniKilitle(kilitliMi) {
-            DB_MODAL_KILITLENECEK_ALANLAR.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.disabled = kilitliMi;
-            });
-        }
+        // =========================================================================
+        // YORUMLAR VERİTABANI: MERKEZİ KİLİT VE DURUM YÖNETİCİSİ
+        // =========================================================================
+        window.isDbVerileriTamYuklendi = false;
 
-        // ENTER TUŞU DESTEĞİ: Filtre kutucuklarından herhangi birinde Enter'a basılınca,
-        // fareyle "Filtrele" butonuna tıklamaya gerek kalmadan filtreleme tetiklenir.
-        // Tek bir delegated listener ile tüm mevcut/gelecek input alanlarını kapsar.
+        window.dbModalButonlariniAyarla = (aktifMi) => {
+            const tumIslemButonlari = [
+                'btnDbFiltrele',
+                'btnDbFiltreTemizle',
+                'btnDbYenile',
+                'btnDbAiOlustur',
+                'btnDbSilVeKapat'
+            ];
+
+            // 1. Standart veritabanı butonlarını kilitle / aç
+            tumIslemButonlari.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.disabled = !aktifMi;
+                    btn.style.cursor = aktifMi ? 'pointer' : 'not-allowed';
+                    btn.style.opacity = aktifMi ? '1' : '0.5';
+                    btn.style.pointerEvents = aktifMi ? 'auto' : 'none';
+                }
+            });
+
+            // 2. Yöneticiye özel yedekleme butonları (Rol ve Yükleme kontrolü)
+            const yoneticiButonlari = ['btnFirestoreYedekle', 'btnFirestoreGeriYukle'];
+            const yoneticiYetkisiVar = (typeof currentUserRole !== 'undefined' && currentUserRole === 'yonetici');
+
+            yoneticiButonlari.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.style.display = yoneticiYetkisiVar ? 'inline-flex' : 'none';
+                    const erisilebilir = aktifMi && yoneticiYetkisiVar;
+                    btn.disabled = !erisilebilir;
+                    btn.style.cursor = erisilebilir ? 'pointer' : 'not-allowed';
+                    btn.style.opacity = erisilebilir ? '1' : '0.5';
+                    btn.style.pointerEvents = erisilebilir ? 'auto' : 'none';
+                }
+            });
+
+            // 3. Filtre giriş kutuları ve sayfalama seçicisi
+            const filtreElemanlari = document.querySelectorAll('#dbFiltreGrid input, #dbFiltreGrid select, #dbSayfaBoyutu');
+            filtreElemanlari.forEach(el => {
+                el.disabled = !aktifMi;
+                el.style.cursor = aktifMi ? 'auto' : 'not-allowed';
+                el.style.opacity = aktifMi ? '1' : '0.6';
+            });
+        };
+
+        // ENTER TUŞU DESTEĞİ
         const dbFiltreGridEl = document.getElementById('dbFiltreGrid');
         if (dbFiltreGridEl) {
             dbFiltreGridEl.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
                     e.preventDefault();
-                    if (!document.getElementById('btnDbFiltrele').disabled) {
+                    const filtreleBtn = document.getElementById('btnDbFiltrele');
+                    if (filtreleBtn && !filtreleBtn.disabled) {
                         window.dbTumFiltreleriUygula();
                     }
                 }
             });
-        }
-
-        // Veritabanı modalındaki filtre/yenile/AI butonlarını aktif eder (senkron tamamlandığında
-        // veya yerelden başarıyla veri yüklendiğinde tek bir noktadan çağrılır).
-        function dbButonlariAktifEt() {
-            if (document.getElementById('btnDbFiltrele')) document.getElementById('btnDbFiltrele').disabled = false;
-            if (document.getElementById('btnDbFiltreTemizle')) document.getElementById('btnDbFiltreTemizle').disabled = false;
-            if (document.getElementById('btnDbYenile')) document.getElementById('btnDbYenile').disabled = false;
-            if (document.getElementById('btnDbAiOlustur')) document.getElementById('btnDbAiOlustur').disabled = false;
         }
 
         // Üst çubuğun VE (açıksa) veritabanı modalının görsel durumunu birlikte günceller:
@@ -10226,18 +10880,22 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 bar.innerHTML = `<span>✅ YORUMLAR VERİTABANI İNDİRİLDİ</span>`;
             }
 
-            // Modal açıksa, aynı durumu modalın içinde de göster — kullanıcı "Senkronizasyonu
-            // Etkinleştir" ekranında donmuş gibi görmesin, gerçek zamanlı ilerlemeyi izlesin.
+            // Modal açıksa, aynı durumu modalın içinde de göster
             const modal = document.getElementById('dbModal');
             const dbLoadingEl = document.getElementById('dbLoading');
             if (modal && modal.style.display === 'flex' && dbLoadingEl) {
                 if (durum === 'devam') {
                     dbLoadingEl.style.display = 'block';
                     dbLoadingEl.innerHTML = `<div style="text-align:center; padding:24px; color:#d97706; font-weight:bold;">🔄 Yorumlar Veritabanı İndiriliyor %${yuzde}</div>`;
+                    window.dbModalButonlariniAyarla(false);
                 } else if (durum === 'tamam') {
-                    // Tamamlanınca yerelden yeniden yükle ve butonları aç — daha önce disabled kalıyordu
-                    dbYereldenYukleVeCiz().then(dbButonlariAktifEt);
+                    window.isDbVerileriTamYuklendi = true;
+                    dbYereldenYukleVeCiz().then(() => {
+                        window.dbModalButonlariniAyarla(true);
+                    });
                 }
+            } else if (durum === 'tamam') {
+                window.isDbVerileriTamYuklendi = true;
             }
         }
 
@@ -10498,12 +11156,21 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
         }
 
         window.adminYorumlarVeritabaniniAc = async () => {
-            document.getElementById('dbModal').style.display = 'flex';
-            document.getElementById('dbLoading').style.display = 'block';
-            document.getElementById('dbLoading').innerHTML = 'Yükleniyor...';
+            const modal = document.getElementById('dbModal');
+            if (modal) modal.style.display = 'flex';
+
+            const dbLoadingEl = document.getElementById('dbLoading');
+            if (dbLoadingEl) {
+                dbLoadingEl.style.display = 'block';
+                dbLoadingEl.innerHTML = 'Yükleniyor...';
+            }
+
             document.getElementById('dbTableHeader').innerHTML = '';
             document.getElementById('dbTableBody').innerHTML = '';
             document.getElementById('dbKayitSayisi').innerText = 'Yükleniyor...';
+
+            // Modal açılır açılmaz tüm butonları kesin olarak kilitli başlat
+            window.dbModalButonlariniAyarla(false);
 
             // Sayfalama sıfırlaması
             dbCurrentPage = 1;
@@ -10511,47 +11178,41 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const sizeSelect = document.getElementById('dbSayfaBoyutu');
             if (sizeSelect) sizeSelect.value = "25";
 
-            // Senkron hiç etkinleştirilmemişse, veri çekmeye çalışmadan doğrudan davet ekranını göster
             const senkronAktif = localStorage.getItem(DB_SENKRON_BAYRAK) === "true";
             if (!senkronAktif) {
-                document.getElementById('dbLoading').innerHTML =
-                    `<div style="text-align:center; padding:24px;">
-                        <p style="margin-bottom:16px; color:#475569;">Bu tarayıcıda Yorumlar Veritabanı senkronizasyonu henüz etkin değil.</p>
-                        <button onclick="window.dbSenkronOnayIste()" style="width:auto; background:#8e44ad; color:#fff; border:none; border-radius:8px; padding:16px 16px; font-weight:bold; cursor:pointer;">
-                            🗂️ Senkronizasyonu Etkinleştir
-                        </button>
-                    </div>`;
+                if (dbLoadingEl) {
+                    dbLoadingEl.innerHTML =
+                        `<div style="text-align:center; padding:24px;">
+                            <p style="margin-bottom:16px; color:#475569;">Bu tarayıcıda Yorumlar Veritabanı senkronizasyonu henüz etkin değil.</p>
+                            <button onclick="window.dbSenkronOnayIste()" style="width:auto; background:#8e44ad; color:#fff; border:none; border-radius:8px; padding:16px 16px; font-weight:bold; cursor:pointer;">
+                                🗂️ Senkronizasyonu Etkinleştir
+                            </button>
+                        </div>`;
+                }
                 return;
             }
 
-            // İstek atılırken veya yenilenirken butonları pasife alıyoruz (Güvenlik ve UX)
-            if (document.getElementById('btnDbFiltrele')) document.getElementById('btnDbFiltrele').disabled = true;
-            if (document.getElementById('btnDbFiltreTemizle')) document.getElementById('btnDbFiltreTemizle').disabled = true;
-            if (document.getElementById('btnDbYenile')) document.getElementById('btnDbYenile').disabled = true;
-            if (document.getElementById('btnDbAiOlustur')) document.getElementById('btnDbAiOlustur').disabled = true;
-
             try {
-                // ARTIK GAS'a tek seferlik tam-tablo isteği ATILMIYOR: veri zaten arka planda
-                // IndexedDB'ye senkronize edilmiş durumda, sadece yerelden okunuyor.
                 await dbYereldenYukleVeCiz();
 
-                if (document.getElementById('btnDbFiltrele')) document.getElementById('btnDbFiltrele').disabled = false;
-                if (document.getElementById('btnDbFiltreTemizle')) document.getElementById('btnDbFiltreTemizle').disabled = false;
-                if (document.getElementById('btnDbYenile')) document.getElementById('btnDbYenile').disabled = false;
-                if (document.getElementById('btnDbAiOlustur')) document.getElementById('btnDbAiOlustur').disabled = false;
-
-                // İlk senkron hâlâ arka planda sürüyorsa, kullanıcıyı bilgilendir (veri kısmi olabilir)
-                if (dbSenkronCalisiyorMu) {
+                // Arka plan senkronizasyonu devam ediyorsa butonları kilitli tut, bittiyse aç
+                if (dbSenkronCalisiyorMu || !window.isDbVerileriTamYuklendi) {
+                    window.dbModalButonlariniAyarla(false);
                     const kayitSayisiEl = document.getElementById('dbKayitSayisi');
                     if (kayitSayisiEl) {
-                        kayitSayisiEl.innerHTML += ` <span style="color:#f39c12;">(⏳ Arka planda indirme devam ediyor, üst çubuktan takip edebilirsiniz)</span>`;
+                        kayitSayisiEl.innerHTML += ` <span style="color:#f39c12;">(⏳ Arka planda indirme devam ediyor...)</span>`;
                     }
+                } else {
+                    window.dbModalButonlariniAyarla(true);
                 }
             } catch (error) {
-                document.getElementById('dbLoading').style.display = 'block';
-                document.getElementById('dbLoading').innerHTML = `<span style="color:red;">Kritik Hata: ${error.message}</span>`;
-                // Hata durumunda en azından yenileme butonunu tekrar aktif edelim ki kullanıcı tekrar deneyebilsin
-                if (document.getElementById('btnDbYenile')) document.getElementById('btnDbYenile').disabled = false;
+                if (dbLoadingEl) {
+                    dbLoadingEl.style.display = 'block';
+                    dbLoadingEl.innerHTML = `<span style="color:red;">Kritik Hata: ${error.message}</span>`;
+                }
+                window.dbModalButonlariniAyarla(false);
+                const btnYenile = document.getElementById('btnDbYenile');
+                if (btnYenile) btnYenile.disabled = false;
             }
         };
 
@@ -10588,6 +11249,9 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
         window.dbTabloyuCiz = () => {
             document.getElementById('dbLoading').style.display = 'none';
+            // Butonları sadece veriler tamamen indiyse ve arka plan senkronu bittiyse aktif et
+            const butonlarAktiflesebilir = window.isDbVerileriTamYuklendi && !dbSenkronCalisiyorMu;
+            window.dbModalButonlariniAyarla(butonlarAktiflesebilir);
             const thead = document.getElementById('dbTableHeader');
             const tbody = document.getElementById('dbTableBody');
             const paginationContainer = document.getElementById('dbPaginationBtns');
@@ -10873,16 +11537,17 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const btn = document.getElementById('btnDbYenile');
             if (btn && btn.disabled) return; // Zaten çalışıyor, art arda tıklamayı sessizce yok say
 
-            // ANINDA GERİ BİLDİRİM: Tüm modal alanları kilitlenir, buton görsel olarak "basılmış/pasif" görünür
-            dbModalAlanlariniKilitle(true);
+            // ANINDA GERİ BİLDİRİM: Tüm modal alanları ve butonlar kilitlenir
+            window.isDbVerileriTamYuklendi = false;
+            window.dbModalButonlariniAyarla(false);
 
             const dbLoadingEl = document.getElementById('dbLoading');
-            dbLoadingEl.style.display = 'block';
-            dbLoadingEl.innerHTML = `<div id="dbYenileGosterge" style="text-align:center; padding:16px; color:#00ac11; font-weight:bold;">🔄 Tablo Verileri Güncelleniyor %0</div>`;
+            if (dbLoadingEl) {
+                dbLoadingEl.style.display = 'block';
+                dbLoadingEl.innerHTML = `<div id="dbYenileGosterge" style="text-align:center; padding:16px; color:#00ac11; font-weight:bold;">🔄 Tablo Verileri Güncelleniyor %0</div>`;
+            }
 
-            // SAHTE İLERLEME: Delta-senkron çoğu zaman "yeni satır yok" diye anında biter ve gerçek
-            // bir yüzde hesaplamak anlamsız kalır — bu yüzden burada tamamen görsel, %90'da bekleyen
-            // (gerçek işlem bitene kadar) kademeli bir animasyon kullanılıyor.
+            // SAHTE İLERLEME: Delta-senkron sürerken görsel ilerleme gösterimi
             let sahteYuzde = 0;
             const sahteTimer = setInterval(() => {
                 if (sahteYuzde < 90) {
@@ -10894,19 +11559,18 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             }, 150);
 
             try {
-                // Sadece son senkrondan bu yana eklenen/silinen farkı çeken hafif bir delta-senkron
-                // tetikler (tüm tabloyu yeniden indirmez), sonra yerelden yeniden çizer.
                 const senkronAktif = localStorage.getItem(DB_SENKRON_BAYRAK) === "true";
                 if (senkronAktif) {
                     await dbArkaPlanSenkronCalistir();
                 }
+                window.isDbVerileriTamYuklendi = true;
                 await dbYereldenYukleVeCiz();
-                // Hızlı arama veya detaylı arama filtreleri varsa, yeni gelen veri üzerinde ikisini de tekrar uygular
                 window.dbTumFiltreleriUygula();
             } finally {
                 clearInterval(sahteTimer);
-                dbLoadingEl.style.display = 'none';
-                dbModalAlanlariniKilitle(false);
+                if (dbLoadingEl) dbLoadingEl.style.display = 'none';
+                window.isDbVerileriTamYuklendi = true;
+                window.dbModalButonlariniAyarla(true);
             }
         };
 
