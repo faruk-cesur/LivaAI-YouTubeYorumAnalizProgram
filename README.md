@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.0)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.1)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,13 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## 🛡️ Liva AI - Güncelleme Notları (v10.1)
+
+- **Tek Tıkla Tam Sistem Yedeği:** Yöneticilerin sistemdeki tüm ekip listesini, ayarları, geçmiş analiz loglarını ve video rozetlerini tek bir tıkla bilgisayarına dosya (JSON) olarak indirebilmesi sağlandı.
+- **Mevcut Veriyi Bozmayan Geri Yükleme:** Daha önce alınmış bir yedek dosyasının sisteme tek tıkla geri yüklenmesi sağlandı. Bu işlem mevcut yeni kayıtları silmez; eski veya eksik verileri güncel sistemle güvenle birleştirir.
+- **Kayıpsız Alt Veri Desteği:** Video rozetlerinin ("Daha Önce Analiz Edildi" durumlarının) yedek alırken veya geri yüklerken boş görünmesine yol açan aksaklık giderildi; tüm detaylar eksiksiz korunuyor.
+- **Yöneticiye Özel Güvenlik Kalkanı:** Yedek alma ve geri yükleme butonları yalnızca yetkili yöneticilere görünür; standart kullanıcıların bu butonları görmesi ve tıklaması tamamen engellendi.
 
 ## 🎉 Liva AI - Güncelleme Notları (v10.0)
 
