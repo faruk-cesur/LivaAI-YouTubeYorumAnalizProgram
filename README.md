@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.1)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.2)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,12 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## 🌍 Liva AI - Güncelleme Notları (v10.2)
+
+- **Türkçe Çeviri Kontrolü:** Yapay zeka paneline "Yorumları Türkçe'ye Çevir" seçeneği eklendi. Kapalıyken "Türkçe Çeviri" alanına orijinal yorum aynen yazılır.
+- **Yapay Zeka ile Çeviri:** "Türkçe Çeviri İçin Yapay Zeka Kullan" seçeneği ve ayrı çeviri modeli seçici eklendi. Böylece analiz ve çeviri için farklı modeller kullanılıp kota tasarrufu yapılabilir. Çeviri paket başına tek istekle yapılır. Hata veya kota bitişinde Google Translate devreye girer.
+- **Çeviri Penceresi Düzeltmesi:** "Yapay Zeka ile Türkçe'ye Çevir" penceresindeki yeşil buton artık yorumu onaylamaz, yalnızca çeviri metnini değiştirir. Kırmızı buton mevcut çeviriyi korur. Yorum geçişi sadece ana penceredeki Onayla/Reddet ile yapılır.
 
 ## 🛡️ Liva AI - Güncelleme Notları (v10.1)
 

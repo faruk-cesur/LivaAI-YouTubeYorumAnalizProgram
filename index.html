@@ -7,7 +7,7 @@
     <!-- GÜNCELLENMİŞ GÜVENLİK KALKANI: Google Sheets (Apps Script) bağlantılarına izin verildi -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2</title>
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
 
@@ -971,7 +971,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2
             </span>
             <span style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
                 🔒 GÜVENLİ YETKİLİ GİRİŞİ
@@ -1012,7 +1012,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.1
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2
                 </span>
             </h2>
 
@@ -1163,6 +1163,43 @@
                 <!-- Kalan Günlük İstek (RPD) Sayacı -->
                 <div id="rpdContainer" style="display:none; text-align:right; font-size: 13px; color: #2065AB; font-weight: 700; margin-top: 12px; margin-bottom: 16px;">
                     Kalan Günlük İstek (RPD): <span id="rpdValue" style="font-size: 15px; background: #fff700; padding: 2px 6px; border-radius: 4px;">...</span>
+                </div>
+
+                <!-- v10.2: TÜRKÇE ÇEVİRİ AYARLARI (API doğrulanınca görünür) -->
+                <div id="ceviriAyarKutusu" style="display:none; border-top: 1px dashed #cbd5e1; padding-top: 16px; margin-bottom: 16px;">
+
+                    <!-- Toggle 1: Yorumları Türkçe'ye Çevir (varsayılan: İŞARETLİ) -->
+                    <div class="panel-row">
+                        <label for="ceviriTurkceToggle" class="row-label" style="cursor:pointer;">
+                            <span class="row-icon">🌍</span>
+                            <span style="color:#2065AB; font-size:15px; font-weight:bold;">Yorumları Türkçe'ye Çevir:</span>
+                        </label>
+                        <input type="checkbox" id="ceviriTurkceToggle" class="modern-toggle" checked onchange="ceviriTurkceDegisti()">
+                    </div>
+
+                    <!-- Toggle 1 işaretliyse görünen alan -->
+                    <div id="ceviriYzSatiri">
+                        <!-- Toggle 2: Türkçe Çeviri İçin Yapay Zeka Kullan (varsayılan: İŞARETSİZ) -->
+                        <div class="panel-row">
+                            <label for="ceviriYzToggle" class="row-label" style="cursor:pointer;">
+                                <span class="row-icon">✨</span>
+                                <span style="color:#2065AB; font-size:15px; font-weight:bold;">Türkçe Çeviri İçin Yapay Zeka Kullan:</span>
+                            </label>
+                            <input type="checkbox" id="ceviriYzToggle" class="modern-toggle" onchange="ceviriYzDegisti()">
+                        </div>
+
+                        <!-- Toggle 2 işaretliyse görünen model seçici (aiModelSelect'in kopyası) -->
+                        <div id="ceviriModelSatiri" class="panel-row" style="display:none;">
+                            <div class="row-label">
+                                <span class="row-icon">🧠</span>
+                                <label for="ceviriModelSelect" style="color: #2065AB; font-size: 15px; font-weight: bold; margin: 0;">Çeviri Modeli:</label>
+                            </div>
+                            <select id="ceviriModelSelect" onchange="ceviriModelSecildi()" class="modern-input" style="max-width: 250px;"></select>
+                        </div>
+                        <div id="ceviriRpdKutusu" style="display:none; text-align:right; font-size: 13px; color: #2065AB; font-weight: 700;">
+                            Çeviri Modeli Kalan RPD: <span id="ceviriRpdValue" style="font-size: 15px; background: #fff700; padding: 2px 6px; border-radius: 4px;">...</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Prompt Kriter Alanı ve Şablonlar -->
@@ -2990,10 +3027,17 @@
             const yeniDeger = _decreaseRPDCore(modelName);
             if (yeniDeger === null) return;
 
-            // DOM Elemanı Güvenlik Kontrolü: Element mevcut değilse çökmeyi önle
+            // v10.2: Sayıyı sadece o modelin kutusuna yaz (iki farklı model olabilir)
             const rpdEl = document.getElementById('rpdValue');
-            if (rpdEl) {
+            const anaModelEl = document.getElementById('aiModelSelect');
+            if (rpdEl && anaModelEl && anaModelEl.value === modelName) {
                 rpdEl.innerText = yeniDeger;
+            }
+
+            const ceviriRpdEl = document.getElementById('ceviriRpdValue');
+            const ceviriModelEl = document.getElementById('ceviriModelSelect');
+            if (ceviriRpdEl && ceviriModelEl && ceviriModelEl.value === modelName) {
+                ceviriRpdEl.innerText = yeniDeger;
             }
 
             const aiTranslateRpdEl = document.getElementById('aiTranslateRpdValue');
@@ -3023,6 +3067,49 @@
             document.getElementById('rpdValue').innerText = currentRPD;
             document.getElementById('rpdContainer').style.display = 'block';
         };
+
+        // =========================================================================
+        // v10.2: TÜRKÇE ÇEVİRİ AYARLARI KONTROLLERİ
+        // =========================================================================
+
+        // Toggle 1 değişince: kapalıysa alt seçenekleri gizle ve sıfırla
+        window.ceviriTurkceDegisti = () => {
+            const aktif = document.getElementById('ceviriTurkceToggle').checked;
+            document.getElementById('ceviriYzSatiri').style.display = aktif ? 'block' : 'none';
+
+            if (!aktif) {
+                // Üst seçenek kapandıysa YZ çevirisi de kapanmalı (tutarlılık)
+                document.getElementById('ceviriYzToggle').checked = false;
+                window.ceviriYzDegisti();
+            }
+        };
+
+        // Toggle 2 değişince: model seçiciyi göster / gizle
+        window.ceviriYzDegisti = () => {
+            const yzAktif = document.getElementById('ceviriYzToggle').checked;
+            document.getElementById('ceviriModelSatiri').style.display = yzAktif ? 'flex' : 'none';
+            document.getElementById('ceviriRpdKutusu').style.display = yzAktif ? 'block' : 'none';
+            if (yzAktif) window.ceviriModelSecildi();
+        };
+
+        // Çeviri modeli değişince kalan RPD'yi göster
+        window.ceviriModelSecildi = () => {
+            const model = document.getElementById('ceviriModelSelect').value;
+            if (model) document.getElementById('ceviriRpdValue').innerText = getDailyRPD(model);
+        };
+
+        // Analiz sırasında çeviri ayarlarını tek yerden okuyan yardımcı
+        function ceviriAyarlariniOku() {
+            const turkceEl = document.getElementById('ceviriTurkceToggle');
+            const yzEl = document.getElementById('ceviriYzToggle');
+            const modelEl = document.getElementById('ceviriModelSelect');
+
+            const cevirAktif = turkceEl ? turkceEl.checked : true; // Bulunamazsa eski davranış (çevir)
+            const yzAktif = cevirAktif && yzEl ? yzEl.checked : false;
+            // Model boşsa YZ çevirisi yapılamaz, Google'a düşer
+            const model = modelEl ? modelEl.value : "";
+            return { cevirAktif, yzAktif: yzAktif && !!model, model };
+        }
 
         // "Yapay Zeka Yorum Analizi (Gemini)" onay kutusu işaretlendiğinde çalışan fonksiyon
         // Yapay zekanın sağlıklı çalışması için alt yanıt ayarlarını otomatik tikler ve Excel'e kilitler.
@@ -3129,6 +3216,13 @@
                     aiModelSelect.appendChild(option);
                 });
 
+                // v10.2: Çeviri model listesini ana model listesinin kopyasıyla doldur
+                const ceviriSelectEl = document.getElementById('ceviriModelSelect');
+                if (ceviriSelectEl) {
+                    ceviriSelectEl.innerHTML = aiModelSelect.innerHTML;
+                    ceviriSelectEl.value = aiModelSelect.value; // innerHTML seçili durumu taşımaz, elle eşitliyoruz
+                }
+
                 // Başarılı anahtarı tarayıcı hafızasına ve buluta yedekliyoruz
                 localStorage.setItem('gemini_api_key', apiKey);
                 firebaseVerileriniGuncelle();
@@ -3149,6 +3243,7 @@
 
                 // Model seçici satırını görünür yapıp aktif modeli tetikliyoruz
                 modelSelectRow.style.display = "flex";
+                document.getElementById('ceviriAyarKutusu').style.display = 'block'; // v10.2: çeviri ayarlarını göster
                 window.modelSecildi();
 
                 // Kilit açıldıktan sonra, bekleyen bir resume işlemi varsa modalı otomatik tekrar göster
@@ -3163,6 +3258,7 @@
                 promptArea.style.pointerEvents = "none";
                 modelSelectRow.style.display = "none";
                 document.getElementById('rpdContainer').style.display = "none";
+                document.getElementById('ceviriAyarKutusu').style.display = 'none'; // v10.2: hata olursa gizle
                 localStorage.removeItem('gemini_api_key');
 
                 // Hata durumunda girdi kutusunun görünür olduğundan emin oluyoruz
@@ -5128,7 +5224,7 @@
                 const yedekPaketi = {
                     _metadata: {
                         uygulama: "Liva AI",
-                        versiyon: "v10.1",
+                        versiyon: "v10.2",
                         yedeklemeZamani: new Date().toISOString(),
                         yedekleyenEposta: currentUserEmail,
                         yedekleyenIsim: currentUserAdSoyad,
@@ -6062,6 +6158,83 @@ EXAMPLE OUTPUT: [0, 2, 5, 12]`;
         }
 
         // =========================================================================
+        // v10.2: YAPAY ZEKA İLE TOPLU TÜRKÇE ÇEVİRİ
+        // Bir paketteki TÜM yorumları TEK istekle çevirir (1 RPD). Başarısız olursa
+        // boş harita döner; çağıran taraf o yorumları Google Translate'e bırakır.
+        // =========================================================================
+        async function yzTopluCeviriYap(parsedArray, batchData, apiKey, modelName) {
+            const harita = new Map(); // id -> Türkçe metin
+            try {
+                // Kota bittiyse hiç denemeden Google'a bırak
+                if (getDailyRPD(modelName) <= 0) {
+                    console.warn("[YZ Çeviri] Çeviri modelinin RPD'si bitti, Google Translate kullanılacak.");
+                    return harita;
+                }
+
+                // Sadece id + metin gönder (token tasarrufu)
+                const girdi = [];
+                parsedArray.forEach(item => {
+                    const orj = batchData[item.id];
+                    if (orj && orj["Yorum Metni"]) girdi.push({ id: Number(item.id), text: orj["Yorum Metni"] });
+                });
+                if (girdi.length === 0) return harita;
+
+                const systemPrompt = `You are a professional translator. Translate each item's "text" into flawless, natural TURKISH, regardless of the source language.
+RULES:
+1. Target language is STRICTLY Turkish. Never output any other language.
+2. Preserve the exact emotional tone and theological meaning.
+3. If the text is already Turkish, only fix grammar and spelling.
+4. INPUT: JSON array of {"id": number, "text": string}.
+5. OUTPUT: ONLY a valid JSON array of {"id": number, "translation": string}. Keep the same ids. No markdown, no explanations.`;
+
+                const requestBody = {
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    contents: [{ role: "user", parts: [{ text: JSON.stringify(girdi) }] }],
+                    generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                    ]
+                };
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                const data = await guvenliFetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                }, 3, true);
+
+                const aday = data && data.candidates && data.candidates[0];
+                if (!aday || aday.finishReason === "SAFETY" || !aday.content || !aday.content.parts || !aday.content.parts.length) {
+                    return harita; // Boş/engelli yanıt: Google'a düş
+                }
+
+                let ham = (aday.content.parts[0].text || "").replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+                const bas = ham.indexOf('[');
+                const son = ham.lastIndexOf(']');
+                if (bas === -1 || son === -1 || son < bas) return harita;
+
+                const dizi = JSON.parse(ham.substring(bas, son + 1));
+                if (!Array.isArray(dizi)) return harita;
+
+                // Yanıt doğrulandı: kotayı şimdi düş (log'daki "Harcanan RPD"ye de eklenir)
+                decreaseRPD(modelName);
+
+                dizi.forEach(o => {
+                    if (o && typeof o.translation === "string" && o.translation.trim() !== "") {
+                        harita.set(Number(o.id), o.translation.trim());
+                    }
+                });
+            } catch (hata) {
+                // Hata olursa analiz durmaz; eksik yorumlar Google Translate ile çevrilir
+                console.warn("[YZ Çeviri] Başarısız, Google Translate'e düşülecek:", hata.message);
+            }
+            return harita;
+        }
+
+        // =========================================================================
         // YAPAY ZEKA AŞAMA 2: CERRAH (DERİN ANALİZ VE EXCEL FORMATLAMA YAPAN FONKSİYON)
         // Görevi: Radarın seçtiği o az sayıdaki değerli yorumu alıp 11 kritere göre özetlemek.
         // Çözüm: Modele tarih ve yazar bilgisi sorulmaz (Ayrıca Token tasarrufu sağlar). Sadece "id" numarası gönderilir ve JavaScript hafızasındaki orijinal, hatasız verilerle eşleştirilir.
@@ -6218,6 +6391,12 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 // Mimari Düzeltme: Google Translate gibi rate-limit'i sert olan ücretsiz API'lerde 
                 // Promise.all (paralel istek) kullanmak "Thundering Herd" (çarpışma) yaratarak IP ban riskini artırır.
                 // Bunun yerine for...of ile güvenli ve kararlı sıralı (sequential) çeviri yapısı kuruldu.
+                // v10.2: Çeviri ayarlarını oku. YZ açıksa tüm paketi TEK istekle çevir.
+                const ceviriAyar = ceviriAyarlariniOku();
+                const yzCeviriHaritasi = ceviriAyar.yzAktif
+                    ? await yzTopluCeviriYap(parsedArray, batchData, apiKey, ceviriAyar.model)
+                    : new Map();
+
                 let mappedArray = [];
                 for (let i = 0; i < parsedArray.length; i++) {
                     // KRİTİK DÜZELTME: Kullanıcı "İptal Et" dediğinde bu sıralı çeviri döngüsü
@@ -6237,9 +6416,20 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     // Çeviriler arasına sistem dostu nefes alma payı (anti-ban)
                     // DÜZELTME: bekle()'nin dönüş değeri artık kontrol ediliyor; false dönmesi
                     // iptal anlamına gelir ve bir sonraki (gereksiz) çeviri isteği hiç atılmaz.
-                    const beklemeTamamlandi = await bekle(250);
-                    if (!beklemeTamamlandi || isCancelled) break;
-                    const cevirilmisMetin = await googleCeviriYap(orjMetin);
+                    // v10.2: Üç çeviri modu
+                    let cevirilmisMetin;
+                    if (!ceviriAyar.cevirAktif) {
+                        // Mod 1: Çeviri kapalı -> orijinal yorum aynen yazılır
+                        cevirilmisMetin = orjMetin;
+                    } else if (yzCeviriHaritasi.has(Number(item.id))) {
+                        // Mod 3: Yapay zeka çevirisi başarılı
+                        cevirilmisMetin = yzCeviriHaritasi.get(Number(item.id));
+                    } else {
+                        // Mod 2: Google Translate (hem varsayılan hem YZ başarısız olursa yedek)
+                        const beklemeTamamlandi = await bekle(250);
+                        if (!beklemeTamamlandi || isCancelled) break;
+                        cevirilmisMetin = await googleCeviriYap(orjMetin);
+                    }
 
                     // Excel sütunlarını hazırlıyoruz
                     // GÜVENLİK: Tüm serbest metin alanları Sheets'e gitmeden önce formül enjeksiyonuna karşı temizlenir.
@@ -11594,6 +11784,8 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             // ana uygulamadan miras gelen "Şablon Seçici" bloğunu geçici olarak gizliyoruz.
             const promptArea = document.getElementById('promptArea');
             if (promptArea) promptArea.style.display = 'none';
+            const ceviriKutusuGizle = document.getElementById('ceviriAyarKutusu');
+            if (ceviriKutusuGizle) ceviriKutusuGizle.style.display = 'none'; // v10.2
 
             document.getElementById('dbAiModal').style.display = 'flex';
         };
@@ -11606,6 +11798,12 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const promptArea = document.getElementById('promptArea');
 
             if (promptArea) promptArea.style.display = 'block';
+            // v10.2: Panel ana sayfaya dönünce, API doğrulanmışsa çeviri ayarlarını geri göster
+            const ceviriKutusuGoster = document.getElementById('ceviriAyarKutusu');
+            const verifyBtnEl = document.getElementById('verifyApiBtn');
+            if (ceviriKutusuGoster && verifyBtnEl && verifyBtnEl.innerText === "DOĞRULANDI ✅") {
+                ceviriKutusuGoster.style.display = 'block';
+            }
 
             // Eğer paneller şu an ana sayfadaki yer tutucunun ebeveyninde değilse (yani modal içindeyse) geri taşı
             if (yerTutucu && aktivasyonBlok && aiPaneli) {
@@ -11971,26 +12169,26 @@ CRITICAL RULES:
             }
         };
 
+        // v10.2: Yeşil buton SADECE çeviri metnini değiştirir, yorumu onaylamaz/geçmez.
         window.aiCeviriOnayla = () => {
             const yeniCeviri = document.getElementById('aiTranslateResult').value.trim();
             if (!yeniCeviri) return alert("Çeviri sonucu boş olamaz.");
 
-            // 1. Array içindeki asıl veriyi eziyoruz (Veritabanına yazılacak olan yer)
+            // 1. RAM'deki asıl veriyi güncelle (aiVerisi ile aynı nesne; sonraki Onayla/Reddet
+            //    tıklamasında checkpoint'e de otomatik kaydedilir)
             window.aktifCeviriObjesi["Orijinal Yorum - Türkçe Çeviri"] = yeniCeviri;
 
-            // 2. Ekrandaki yazıyı güncelliyoruz (Görsel feedback)
+            // 2. Ekrandaki "Türkçe Çeviri" kutusunu güncelle
             const commentTurkishTranslate = document.getElementById('revCommentTurkishTranslate');
             if (commentTurkishTranslate) commentTurkishTranslate.innerText = yeniCeviri;
 
-            // 3. Pencereyi kapatıp ana modüldeki 'Onayla ve Geç' butonuna tıklama komutu yolluyoruz
+            // 3. Sadece çeviri penceresini kapat. Ana penceredeki Onayla/Reddet'e DOKUNMA.
             document.getElementById('aiTranslateModal').style.display = 'none';
-            document.getElementById('btn-onayla').click();
         };
 
+        // Kırmızı buton: çeviriyi at, Google Translate metni olduğu gibi kalsın.
         window.aiCeviriReddet = () => {
-            // Pencereyi kapatıp ana modüldeki 'Reddet ve Çöpe At' butonuna tıklama komutu yolluyoruz
             document.getElementById('aiTranslateModal').style.display = 'none';
-            document.getElementById('btn-reddet').click();
         };
 
     </script>
@@ -12277,10 +12475,9 @@ CRITICAL RULES:
             <textarea id="aiTranslateResult" class="modern-input" readonly style="height: 180px; resize: vertical; margin-bottom: 15px; display:none; background-color:#f0fdf4; border-color:#bbf7d0; font-size:14px; line-height: 1.5;" placeholder="Çeviri sonucu buraya gelecek..."></textarea>
 
             <div id="aiTranslateActions" class="btn-group" style="display:none; margin-bottom: 15px;">
-                <button onclick="aiCeviriOnayla()" style="background-color: #16a34a; flex: 1;">✅ Yeni Çeviriyle
-                    Onayla</button>
-                <button onclick="aiCeviriReddet()" style="background-color: #dc2626; flex: 1;">🗑️ Yorumu Tamamen
-                    Reddet</button>
+                <button onclick="aiCeviriOnayla()" style="background-color: #16a34a; flex: 1;">✅ Bu Çeviriyi Kullan</button>
+                <button onclick="aiCeviriReddet()" style="background-color: #dc2626; flex: 1;">✕ Çeviriyi Reddet
+                    (Eskisi Kalsın)</button>
             </div>
 
             <div style="text-align: right;">
