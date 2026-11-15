@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.2)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.3)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,14 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## ⚡ Liva AI - Güncelleme Notları (v10.3)
+
+- **Log Senkronizasyonu:** Yönetici Paneli logları artık tarayıcıya bir kere indirilir. Sonraki girişlerde arka planda sadece yeni loglar çekilir. Panel hızlı açılır ve Firestore okuma kotası çok daha az harcanır.
+- **Sınırsız Log Görüntüleme:** Eski 1500 kayıt sınırı kalktı. Tüm loglar filtrelenebilir.
+- **Özet Tablosu:** Kullanıcı bazlı yapay zeka özeti artık Firestore'a gitmeden, senkronlanmış loglardan hesaplanır.
+- **Güvenlik Ağı:** Sunucudaki log sayısı ile yerel depo karşılaştırılır. Sayı tutmazsa "Baştan Yükle" önerilir.
+- **Depo Güvenliği:** Depo yöneticinin e-postasına bağlıdır. Başka biri veya yönetici olmayan biri girerse silinir.
 
 ## 🌍 Liva AI - Güncelleme Notları (v10.2)
 

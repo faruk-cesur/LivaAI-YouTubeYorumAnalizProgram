@@ -7,7 +7,7 @@
     <!-- GÜNCELLENMİŞ GÜVENLİK KALKANI: Google Sheets (Apps Script) bağlantılarına izin verildi -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.3</title>
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
 
@@ -971,7 +971,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.3
             </span>
             <span style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
                 🔒 GÜVENLİ YETKİLİ GİRİŞİ
@@ -1012,7 +1012,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.2
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.3
                 </span>
             </h2>
 
@@ -1524,6 +1524,8 @@
                     </div>
                     <!-- Bu div'in bitiş (kapanış) etiketi, sayfanın en altındaki adminLogTablosu'nun div'inden hemen sonra olmalıdır. -->
                     <div id="adminLogBolumu">
+                        <!-- v10.3: LOG SENKRON ÇUBUĞU (içini JS doldurur) -->
+                        <div id="logSenkronBar" style="display:none; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px 16px; border-radius:10px; margin-bottom:16px; color:#fff; font-weight:bold; font-size:14px;"></div>
                         <!-- ========================================================================= -->
                         <!-- YAPAY ZEKA MODEL VE RPD YÖNETİMİ -->
                         <!-- ========================================================================= -->
@@ -2084,7 +2086,7 @@
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         // YENİ: Alt koleksiyonları (Subcollections) derinlemesine tarayabilmek için 'collectionGroup' eklendi
-        import { getFirestore, doc, getDoc, setDoc, collection, collectionGroup, addDoc, query, where, getDocs, deleteDoc, serverTimestamp, orderBy, limit, writeBatch, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, collectionGroup, addDoc, query, where, getDocs, deleteDoc, serverTimestamp, orderBy, limit, writeBatch, updateDoc, startAfter, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // Projeye ait Firebase bağlantı anahtarları
         const firebaseConfig = {
@@ -3691,6 +3693,12 @@
                     setTimeout(() => {
                         eskiDegisiklikKayitlariniTemizle();
                     }, 3000); // Sayfa açılış hızını etkilememesi için 3 saniye gecikmeli çalışır
+
+                    // v10.3: Daha önce onay verildiyse loglar arka planda sessizce senkronlanır
+                    window.logSenkronArayuzunuHazirla().catch(e => console.warn("[Log Senkron] Başlatılamadı:", e));
+                } else if (localStorage.getItem(LOG_SENKRON_BAYRAK)) {
+                    // v10.3: Yönetici olmayan biri girdi, bu tarayıcıdaki log kopyası silinir
+                    window.logSenkronVerisiniSessizceTemizle();
                 }
 
                 // =========================================================
@@ -4094,32 +4102,295 @@
         let logCurrentPage = 1;   // Şu an görüntülenen sayfa numarası
         let logRowsPerPage = 50;  // Sayfa başına gösterilecek kayıt sayısı (varsayılan)
 
+        // =========================================================================
+        // v10.3: GEÇİCİ OKUMA SAYACI
+        // Her Firestore okumasından sonra çağrılır, konsola kaç okuma harcandığını yazar.
+        // Kotanın nereye gittiğini ölçmek için. İşimiz bitince çağrıları silebiliriz.
+        // =========================================================================
+        function okumaSayaciKaydet(etiket, adet) {
+            window.__okumaToplam = (window.__okumaToplam || 0) + adet;
+            console.log(`%c[OKUMA] ${etiket}: +${adet} (bu oturumda toplam: ${window.__okumaToplam})`, "color:#d35400;font-weight:bold;");
+        }
+
+        // =========================================================================
+        // v10.3: LOG DEPOSU (IndexedDB) VE ARTIMLI SENKRON
+        // Mantık: Loglar bir kere tarayıcıya iner. Sonra sadece YENİ loglar çekilir.
+        // Depo, Yorumlar Veritabanı deposundan AYRI bir veritabanıdır (birbirine karışmaz).
+        // =========================================================================
+        const LOG_IDB_ADI = "livaAiLogCache";
+        const LOG_IDB_LOG_STORE = "loglar";
+        const LOG_IDB_META_STORE = "meta";
+        const LOG_SENKRON_BAYRAK = "logSenkronSahibi"; // localStorage: değer = onay veren yöneticinin e-postası
+        const LOG_SENKRON_PAKET = 1000;                // Bir seferde çekilecek log sayısı
+        const LOG_SENKRON_BINDIRME_MS = 5 * 60 * 1000; // Son 5 dakikayı tekrar tara (kaçan log olmasın)
+
+        let logSenkronCalisiyorMu = false;
+        let logSenkronBitinceYenile = false; // Senkron bitince tabloyu yenile
+        let logIdbBaglanti = null;
+
+        function logIdbAc() {
+            if (!logIdbBaglanti) {
+                logIdbBaglanti = new Promise((resolve, reject) => {
+                    const istek = indexedDB.open(LOG_IDB_ADI, 1);
+                    istek.onupgradeneeded = (e) => {
+                        const v = e.target.result;
+                        if (!v.objectStoreNames.contains(LOG_IDB_LOG_STORE)) v.createObjectStore(LOG_IDB_LOG_STORE, { keyPath: "firebase_doc_id" });
+                        if (!v.objectStoreNames.contains(LOG_IDB_META_STORE)) v.createObjectStore(LOG_IDB_META_STORE, { keyPath: "anahtar" });
+                    };
+                    istek.onsuccess = (e) => resolve(e.target.result);
+                    istek.onerror = (e) => { logIdbBaglanti = null; reject(e.target.error); };
+                });
+            }
+            return logIdbBaglanti;
+        }
+
+        // Tek yerden çalışan genel işlem yardımcısı (DRY)
+        async function logIdbIslem(storeAdlari, mod, islem) {
+            const v = await logIdbAc();
+            return new Promise((resolve, reject) => {
+                const tx = v.transaction(storeAdlari, mod);
+                let istek;
+                try { istek = islem(tx); } catch (e) { reject(e); return; }
+                tx.oncomplete = () => resolve(istek ? istek.result : undefined);
+                tx.onerror = (e) => reject(e.target.error);
+                tx.onabort = (e) => reject(e.target.error);
+            });
+        }
+
+        const logIdbPaketYaz = (paket) => logIdbIslem(LOG_IDB_LOG_STORE, "readwrite", (tx) => {
+            const s = tx.objectStore(LOG_IDB_LOG_STORE);
+            paket.forEach(x => s.put(x)); // put = varsa üzerine yazar, yoksa ekler (aynı log iki kez gelse de sorun olmaz)
+        });
+        const logIdbTumunuOku = () => logIdbIslem(LOG_IDB_LOG_STORE, "readonly", (tx) => tx.objectStore(LOG_IDB_LOG_STORE).getAll());
+        const logIdbSil = (id) => logIdbIslem(LOG_IDB_LOG_STORE, "readwrite", (tx) => { tx.objectStore(LOG_IDB_LOG_STORE).delete(id); });
+        const logIdbSay = () => logIdbIslem(LOG_IDB_LOG_STORE, "readonly", (tx) => tx.objectStore(LOG_IDB_LOG_STORE).count());
+        const logIdbTemizle = () => logIdbIslem([LOG_IDB_LOG_STORE, LOG_IDB_META_STORE], "readwrite", (tx) => {
+            tx.objectStore(LOG_IDB_LOG_STORE).clear();
+            tx.objectStore(LOG_IDB_META_STORE).clear();
+        });
+        const logIdbMetaYaz = (anahtar, deger) => logIdbIslem(LOG_IDB_META_STORE, "readwrite", (tx) => { tx.objectStore(LOG_IDB_META_STORE).put({ anahtar, deger }); });
+        async function logIdbMetaOku(anahtar) {
+            const kayit = await logIdbIslem(LOG_IDB_META_STORE, "readonly", (tx) => tx.objectStore(LOG_IDB_META_STORE).get(anahtar));
+            return kayit ? kayit.deger : null;
+        }
+
+        // Senkron açık mı? Sadece yönetici + bayrakta kendi e-postası yazıyorsa.
+        function logSenkronAktifMi() {
+            return currentUserRole === 'yonetici' && !!currentUserEmail && localStorage.getItem(LOG_SENKRON_BAYRAK) === currentUserEmail;
+        }
+
+        // Çubuğun görünümünü günceller. durum: teklif | devam | tamam | uyari | hata
+        function logSenkronGostergesiGuncelle(durum, deger) {
+            const bar = document.getElementById('logSenkronBar');
+            if (!bar) return;
+            const btn = "width:auto; margin:0; padding:6px 14px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:bold; background:rgba(255,255,255,0.25); color:#fff;";
+            bar.style.display = 'flex';
+
+            if (durum === 'teklif') {
+                bar.style.background = '#8e44ad';
+                bar.innerHTML = `<span>🗂️ Loglar bu tarayıcıya henüz senkronize edilmedi.</span><button onclick="logSenkronOnayIste()" style="${btn}">Logları Senkronize Et</button>`;
+            } else if (durum === 'devam') {
+                bar.style.background = '#f39c12';
+                bar.innerHTML = `<span>🔄 Loglar senkronize ediliyor: ${escapeHTML(String(deger))}</span>`;
+            } else if (durum === 'tamam') {
+                bar.style.background = '#27ae60';
+                bar.innerHTML = `<span>✅ Loglar senkronize (${escapeHTML(String(deger))} kayıt)</span><span style="display:flex; gap:8px;"><button onclick="logSenkronBastanYukle()" style="${btn}">Baştan Yükle</button><button onclick="logSenkronKapatVeSil()" style="${btn}">Senkronu Kapat</button></span>`;
+            } else if (durum === 'uyari') {
+                bar.style.background = '#c0392b';
+                bar.innerHTML = `<span>⚠️ Sayı tutmuyor: sunucuda ${deger.sunucu}, depoda ${deger.depo}. Başka biri log silmiş olabilir. Baştan yüklemeniz önerilir.</span><button onclick="logSenkronBastanYukle()" style="${btn}">Baştan Yükle</button>`;
+            } else if (durum === 'hata') {
+                bar.style.background = '#c0392b';
+                bar.innerHTML = `<span>❌ Senkron durdu: ${escapeHTML(String(deger))}. İlerleme kayıtlı, tekrar deneyince kaldığı yerden devam eder.</span><button onclick="logSenkronBitinceYenile=true; logSenkronCalistirDisari()" style="${btn}">Tekrar Dene</button>`;
+            }
+        }
+
+        // ANA SENKRON MOTORU
+        async function logSenkronCalistir() {
+            if (!logSenkronAktifMi()) return 'pasif';
+            if (logSenkronCalisiyorMu) return 'calisiyor';
+            logSenkronCalisiyorMu = true;
+
+            try {
+                // 1. Depo başka birine aitse sil
+                const depoSahibi = await logIdbMetaOku("sahip");
+                if (depoSahibi && depoSahibi !== currentUserEmail) await logIdbTemizle();
+                await logIdbMetaYaz("sahip", currentUserEmail);
+
+                let sonMs = (await logIdbMetaOku("sonSunucuMs")) || 0;
+                const ilkSenkronBittiMi = !!(await logIdbMetaOku("ilkSenkronTamam"));
+                // Kaldığı yerin 5 dakika öncesinden başla (ilk senkronda 1970'ten = hepsi)
+                const baslangic = new Date(Math.max(0, sonMs - LOG_SENKRON_BINDIRME_MS));
+
+                // 2. İlk indirmede yüzde gösterebilmek için toplam sayıyı öğren (count: çok ucuz)
+                let toplamSunucu = 0;
+                if (!ilkSenkronBittiMi) {
+                    logSenkronGostergesiGuncelle('devam', '%0');
+                    try {
+                        toplamSunucu = (await getCountFromServer(collection(db, "log_kayitlari"))).data().count;
+                        okumaSayaciKaydet("Log sayımı (count)", Math.max(1, Math.ceil(toplamSunucu / 1000)));
+                    } catch (e) { console.warn("[Log Senkron] Toplam sayı alınamadı:", e); }
+                } else {
+                    logSenkronGostergesiGuncelle('devam', 'yeni loglar aranıyor...');
+                }
+
+                // 3. Paket paket indir
+                let sonDoc = null;
+                while (true) {
+                    const kisitlar = [
+                        where("sunucu_zaman_damgasi", ">=", baslangic),
+                        orderBy("sunucu_zaman_damgasi", "asc"),
+                        limit(LOG_SENKRON_PAKET)
+                    ];
+                    if (sonDoc) kisitlar.push(startAfter(sonDoc));
+
+                    const snap = await getDocs(query(collection(db, "log_kayitlari"), ...kisitlar));
+                    okumaSayaciKaydet("Log senkron paketi", snap.size);
+                    if (snap.empty) break;
+
+                    const paket = snap.docs.map(d => {
+                        const ham = d.data();
+                        const ms = (ham.sunucu_zaman_damgasi && typeof ham.sunucu_zaman_damgasi.toMillis === 'function') ? ham.sunucu_zaman_damgasi.toMillis() : 0;
+                        const temiz = firestoreVerisiniJsonIcinDonustur(ham); // Timestamp'leri düz yazıya çevirir
+                        temiz.firebase_doc_id = d.id;
+                        temiz._sunucuMs = ms;
+                        return temiz;
+                    });
+
+                    await logIdbPaketYaz(paket);
+                    sonDoc = snap.docs[snap.docs.length - 1];
+                    sonMs = Math.max(sonMs, ...paket.map(p => p._sunucuMs));
+                    await logIdbMetaYaz("sonSunucuMs", sonMs); // Her pakette kaydet: yarıda kalırsa buradan devam eder
+
+                    if (!ilkSenkronBittiMi && toplamSunucu > 0) {
+                        const depoSayisi = await logIdbSay();
+                        logSenkronGostergesiGuncelle('devam', `%${Math.min(99, Math.round((depoSayisi / toplamSunucu) * 100))}`);
+                    }
+
+                    if (snap.size < LOG_SENKRON_PAKET) break;
+                }
+
+                await logIdbMetaYaz("ilkSenkronTamam", true);
+
+                // 4. GÜVENLİK AĞI: sunucudaki sayı ile depodaki sayıyı karşılaştır
+                const depoSayisi = await logIdbSay();
+                let sunucuSayisi = null;
+                try {
+                    sunucuSayisi = (await getCountFromServer(collection(db, "log_kayitlari"))).data().count;
+                    okumaSayaciKaydet("Doğrulama sayımı (count)", Math.max(1, Math.ceil(sunucuSayisi / 1000)));
+                } catch (e) { console.warn("[Log Senkron] Doğrulama sayımı yapılamadı:", e); }
+
+                if (sunucuSayisi !== null && sunucuSayisi !== depoSayisi) {
+                    logSenkronGostergesiGuncelle('uyari', { sunucu: sunucuSayisi, depo: depoSayisi });
+                } else {
+                    logSenkronGostergesiGuncelle('tamam', depoSayisi);
+                }
+                return 'bitti';
+            } catch (hata) {
+                console.error("[Log Senkron] Hata:", hata);
+                logSenkronGostergesiGuncelle('hata', hata.message || "bilinmeyen hata");
+                return 'hata';
+            } finally {
+                logSenkronCalisiyorMu = false;
+                // Panel bekliyorsa tabloyu depodan yenile
+                if (logSenkronBitinceYenile) {
+                    logSenkronBitinceYenile = false;
+                    try { await logDepodanTabloyuYenile(); } catch (e) { console.warn(e); }
+                }
+            }
+        }
+        window.logSenkronCalistirDisari = () => logSenkronCalistir(); // Çubuktaki "Tekrar Dene" butonu için
+
+        // Tabloyu ve özeti depodan çizer (0 okuma)
+        async function logDepodanTabloyuYenile() {
+            const kayitlar = await logIdbTumunuOku();
+            kayitlar.sort((a, b) => String(b.zaman_damgasi || "").localeCompare(String(a.zaman_damgasi || ""))); // yeniden eskiye
+            sonYuklenenLoglar = kayitlar;
+            adminKullaniciFiltreDropdownDoldur(kayitlar);
+            adminLogTablosunuCiz(kayitlar);
+            adminGercekRpdOzetiCekVeCiz();
+        }
+
+        // Panel açılınca ve "Yenile" tuşuna basınca çalışır
         window.adminLoglariYukle = async () => {
             const durum = document.getElementById('adminLogDurum');
-            if (durum) durum.innerText = "Loglar yükleniyor...";
+
+            // Senkron kapalıysa: tablo boş, kullanıcıya ne yapacağını söyle
+            if (!logSenkronAktifMi()) {
+                sonYuklenenLoglar = [];
+                adminLogTablosunuCiz([]);
+                if (durum) durum.innerText = "Loglar senkronize edilmedi. Yukarıdaki 'Logları Senkronize Et' butonuna basın.";
+                const ozet = document.getElementById('adminRpdOzetTablosu');
+                if (ozet) ozet.innerHTML = `<tr><td colspan="6" style="padding:5px; color:#7f8c8d;">Özet için önce logları senkronize edin.</td></tr>`;
+                return;
+            }
+
+            if (durum) durum.innerText = "Loglar depodan okunuyor...";
             try {
-                // SUNUCU SEVİYESİNDE DOĞRU SIRALAMA: Daima en son eklenen 1500 kaydı garanti eder
-                const logSorgusu = query(
-                    collection(db, "log_kayitlari"),
-                    orderBy("zaman_damgasi", "desc"),
-                    limit(1500)
-                );
-
-                const querySnapshot = await getDocs(logSorgusu);
-                let kayitlar = [];
-                querySnapshot.forEach((docSnap) => {
-                    let d = docSnap.data();
-                    d.firebase_doc_id = docSnap.id;
-                    kayitlar.push(d);
-                });
-
-                sonYuklenenLoglar = kayitlar;
-
-                adminKullaniciFiltreDropdownDoldur(kayitlar);
-                adminLogTablosunuCiz(kayitlar);
-                adminGercekRpdOzetiCekVeCiz(); // RPD Özeti artık filtreden tamamen bağımsızdır
+                // Önce sadece YENİ logları çek (genelde 0-50 okuma), sonra depodan çiz
+                const sonuc = await logSenkronCalistir();
+                if (sonuc === 'calisiyor') {
+                    // Arka planda indirme sürüyor: bitince tablo kendiliğinden yenilenir
+                    logSenkronBitinceYenile = true;
+                    if (durum) durum.innerText = "Loglar arka planda indiriliyor, bitince tablo otomatik yenilenecek...";
+                    return;
+                }
+                await logDepodanTabloyuYenile();
             } catch (e) {
-                durum.innerText = "Loglar yüklenemedi: " + e.message;
+                if (durum) durum.innerText = "Loglar yüklenemedi: " + e.message;
+            }
+        };
+
+        // ---- Çubuk butonları ----
+        window.logSenkronOnayIste = async () => {
+            if (currentUserRole !== 'yonetici') return;
+            const onay = confirm(
+                "Loglar bu tarayıcıya indirilecek.\n\n" +
+                "• İlk indirme bir kere yapılır (tüm log sayısı kadar okuma harcar).\n" +
+                "• Sonra siteye girdiğinizde arka planda SADECE yeni loglar indirilir.\n" +
+                "• Yönetici Paneli çok daha hızlı açılır.\n\n" +
+                "Başlatalım mı?"
+            );
+            if (!onay) return;
+            localStorage.setItem(LOG_SENKRON_BAYRAK, currentUserEmail);
+            logSenkronBitinceYenile = true;
+            await logSenkronCalistir();
+        };
+
+        window.logSenkronBastanYukle = async () => {
+            if (logSenkronCalisiyorMu) return alert("Senkron şu an çalışıyor, bitmesini bekleyin.");
+            const onay = confirm("Depodaki tüm loglar silinip baştan indirilecek. Bu işlem tüm log sayısı kadar okuma harcar. Devam edilsin mi?");
+            if (!onay) return;
+            await logIdbTemizle();
+            logSenkronBitinceYenile = true;
+            await logSenkronCalistir();
+        };
+
+        window.logSenkronKapatVeSil = async () => {
+            if (logSenkronCalisiyorMu) return alert("Senkron şu an çalışıyor, bitmesini bekleyin.");
+            const onay = confirm("Bu tarayıcıdaki log kopyası silinecek ve senkron kapanacak. Firestore'daki asıl loglara dokunulmaz. Devam edilsin mi?");
+            if (!onay) return;
+            await logIdbTemizle();
+            localStorage.removeItem(LOG_SENKRON_BAYRAK);
+            await window.adminLoglariYukle(); // Tabloyu boşaltır ve mesaj yazar
+            logSenkronGostergesiGuncelle('teklif');
+        };
+
+        // Sahibi olmayan / yönetici olmayan biri girince depoyu sessizce siler
+        window.logSenkronVerisiniSessizceTemizle = async () => {
+            try { await logIdbTemizle(); } catch (e) { console.warn("[Log Senkron] Sessiz temizlik hatası:", e); }
+            localStorage.removeItem(LOG_SENKRON_BAYRAK);
+        };
+
+        // Girişte çağrılır: izin varsa arka planda sessizce senkron başlatır
+        window.logSenkronArayuzunuHazirla = async () => {
+            const bayrak = localStorage.getItem(LOG_SENKRON_BAYRAK);
+            if (bayrak && bayrak !== currentUserEmail) {
+                await window.logSenkronVerisiniSessizceTemizle(); // Depo başkasına aitti
+            }
+            if (logSenkronAktifMi()) {
+                await logSenkronCalistir();
+            } else {
+                logSenkronGostergesiGuncelle('teklif');
             }
         };
         // =========================================================================
@@ -4492,18 +4763,14 @@
                 // DAĞITIM NOTU: Bu sorgu (eşitlik + aralık filtresi farklı alanlarda) bir Firestore
                 // KOMPOZİT İNDEKS gerektirir. İlk çalıştırmada konsolda çıkan hata mesajındaki link'e
                 // tıklayarak (veya firestore.indexes.json'a ekleyerek) indeksi bir kez oluşturman yeterli.
-                const rpdSorgusu = query(
-                    collection(db, "log_kayitlari"),
-                    where("yapay_zeka_kullanildi", "==", true),
-                    where("zaman_damgasi", ">=", ucYuzAltmişBesGunOnce.toISOString())
+                // v10.3: Firestore'a gitmek yerine depodaki loglardan hesapla (0 okuma)
+                const sinirIso = ucYuzAltmişBesGunOnce.toISOString();
+                const querySnapshotVerileri = (await logIdbTumunuOku()).filter(v =>
+                    v.yapay_zeka_kullanildi === true && String(v.zaman_damgasi || "") >= sinirIso
                 );
-                const rpdSnapshot = await getDocs(rpdSorgusu);
 
                 const adSoyadMap = {};
-                const querySnapshotVerileri = [];
-                rpdSnapshot.forEach((docSnap) => {
-                    const veri = docSnap.data();
-                    querySnapshotVerileri.push(veri);
+                querySnapshotVerileri.forEach((veri) => {
                     if (veri.kullanici && veri.islem_yapan_isim) {
                         adSoyadMap[veri.kullanici] = veri.islem_yapan_isim;
                     }
@@ -4657,6 +4924,7 @@
             tablo.innerHTML = `<tr><td colspan="6">Yükleniyor...</td></tr>`;
             try {
                 const querySnapshot = await getDocs(collection(db, "roller"));
+                okumaSayaciKaydet("Ekip tablosu (roller)", querySnapshot.size); // v10.3
                 let uyeler = [];
                 querySnapshot.forEach(docSnap => uyeler.push({
                     email: docSnap.id,
@@ -5224,7 +5492,7 @@
                 const yedekPaketi = {
                     _metadata: {
                         uygulama: "Liva AI",
-                        versiyon: "v10.2",
+                        versiyon: "v10.3",
                         yedeklemeZamani: new Date().toISOString(),
                         yedekleyenEposta: currentUserEmail,
                         yedekleyenIsim: currentUserAdSoyad,
@@ -5622,6 +5890,7 @@
             try {
                 if (docId && docId !== 'undefined') {
                     await deleteDoc(doc(db, "log_kayitlari", docId));
+                    try { await logIdbSil(docId); } catch (e) { console.warn("[Log Depo] Yerel silme hatası:", e); } // v10.3
 
                     // MİMARİ KORUMA: Silinen log AI ise ve başka başarılı log kalmadıysa rozet özetinden kaldır
                     if (isAI && videoId && videoId !== 'undefined' && videoId !== '-') {
@@ -7784,6 +8053,7 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     const hedefDokumanId = currentUserEkip ? currentUserEkip.trim() : currentUserEmail.trim();
                     const rozetKoleksiyonRef = collection(db, "video_rozetleri", hedefDokumanId, "videolar");
                     const rozetSnap = await getDocs(rozetKoleksiyonRef);
+                    okumaSayaciKaydet("Kanal rozetleri", rozetSnap.size); // v10.3
 
                     globalAnalyzedVideosCache = new Map(rozetSnap.docs.map(d => [d.id, d.data()]));
                     logsFetched = true;
@@ -8126,73 +8396,6 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     setStatus("Tarama tamamlandı ancak bu sayfada kritere uyan video bulunamadı.", "#e74c3c");
                     videoListDOM.innerHTML = "<p style='text-align:center; color:#e74c3c; font-weight:bold; margin-top: 20px;'>Seçtiğiniz kriterlere (Uzun/Shorts veya Min Yorum) uyan bir video bu sayfada bulunamadı.<br><br>Kanalın devamını taramak için diğer sayfalara geçebilirsiniz.</p>";
                     return;
-                }
-
-                // YENİ: Feature 4 - Delta Badge (Son Analizden Beri Gelen Yorum Sayısı) için geçmiş logları Firestore'dan çekme
-                if (!window.globalDeltaCache) window.globalDeltaCache = new Map();
-                const idsToFetch = filteredResults
-                    .map(d => d.videoId)
-                    .filter(vid => globalAnalyzedVideosCache.get(vid) === 'dolu' && !window.globalDeltaCache.has(vid));
-
-                console.log("[Delta Badge Diagnostic] idsToFetch:", idsToFetch);
-
-                if (idsToFetch.length > 0) {
-                    const chunkSize = 30; // Firestore 'in' sorguları için 30 elemanlık güvenli paketler
-                    for (let i = 0; i < idsToFetch.length; i += chunkSize) {
-                        const chunk = idsToFetch.slice(i, i + chunkSize);
-                        try {
-                            const q = query(collection(db, "log_kayitlari"), where("video_id", "in", chunk));
-                            const snap = await getDocs(q);
-
-                            console.log("[Delta Badge Diagnostic] Firestore sorgusu tamamlandı. Gelen doküman sayısı (snap.size):", snap.size);
-
-                            const logsByVideo = {};
-                            chunk.forEach(vid => logsByVideo[vid] = []);
-                            snap.forEach(docSnap => {
-                                const data = docSnap.data();
-                                if (data.video_id) logsByVideo[data.video_id].push(data);
-                            });
-
-                            chunk.forEach(vid => {
-                                const logs = logsByVideo[vid];
-
-                                // KESİN KURAL: Delta ve Time-Lapse rozetleri SADECE tam teşekküllü (Otomatik + Yanıtlar Dahil) loglardan beslenmelidir.
-                                let validLogs = logs.filter(l => l.alt_yanitlar_dahil === true && l.tarih_ayari === 'otomatik');
-
-                                let totalHam = 0;
-                                validLogs.forEach(l => {
-                                    totalHam += (parseInt(l.cekilen_yorum_adedi_ham) || 0);
-                                });
-
-                                let gecenGunSayisi = null;
-                                if (validLogs.length > 0) {
-                                    validLogs.forEach(l => {
-                                        let parsedEndDate = 0;
-                                        if (l.yorumlarin_tarih_araligi && l.yorumlarin_tarih_araligi.includes(" - ")) {
-                                            const endStr = l.yorumlarin_tarih_araligi.split(" - ")[1].trim();
-                                            parsedEndDate = livaTarihCozumle(endStr) || 0;
-                                        }
-                                        l.parsedEndDate = parsedEndDate;
-                                    });
-                                    // Tarihe göre azalan sıralama (En güncel log en üstte)
-                                    validLogs.sort((a, b) => {
-                                        if (b.parsedEndDate !== a.parsedEndDate) return b.parsedEndDate - a.parsedEndDate;
-                                        return new Date(b.zaman_damgasi).getTime() - new Date(a.zaman_damgasi).getTime();
-                                    });
-
-                                    const sonAkilliLog = validLogs[0];
-                                    if (sonAkilliLog.parsedEndDate) {
-                                        gecenGunSayisi = Math.floor((Date.now() - sonAkilliLog.parsedEndDate) / (1000 * 60 * 60 * 24));
-                                    }
-                                }
-
-                                window.globalDeltaCache.set(vid, { totalHam: totalHam, gecenGun: gecenGunSayisi });
-                            });
-                        } catch (e) {
-                            console.error("[Delta Badge Diagnostic] Delta badge için log çekilemedi. Tam hata objesi:", e);
-                            chunk.forEach(vid => window.globalDeltaCache.set(vid, 0)); // Hatayı engellemek için 0 yaz ve devam et
-                        }
-                    }
                 }
 
                 videoListDOM.innerHTML = "";
