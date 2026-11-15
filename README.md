@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.3)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.4)</strong>
 </h2>
 
 <h2 align="center">
