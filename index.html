@@ -1568,7 +1568,28 @@
                     <!-- v10.5: Buradan sonrası loglara bağlı bölümler. Sadece yöneticiye görünür. -->
                     <div id="adminLogBolumu">
 
-                        <!-- PARÇA 3 NOTU: "Kanal Bazlı Yapay Zeka Video Analizi Durum Tablosu" buraya gelecek -->
+                        <!-- v10.5: KANAL BAZLI YAPAY ZEKA VIDEO ANALIZI DURUM TABLOSU -->
+                        <h3 style="color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:6px; margin-top:20px;">📺 Kanal Bazlı Yapay Zeka Video Analizi Durum Tablosu</h3>
+                        <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">
+                            Sadece "11 Kriterli Teolojik Analiz" şablonu sayılır. Aynı video birden fazla kez analiz edilse de 1 sayılır.
+                            Sayı "analiz edilen / kanaldaki toplam video" biçimindedir.
+                        </p>
+                        <div style="overflow-x:auto; margin-bottom:30px;">
+                            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                <thead>
+                                    <tr style="background:#f1f5f9; color:#475569; border-bottom: 2px solid #cbd5e1;">
+                                        <th style="padding:6px; text-align:left;">Kanal ID</th>
+                                        <th style="padding:6px; text-align:center;">Analiz Edilen Video Sayısı:</th>
+                                        <th style="padding:6px; text-align:center;">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kanalDurumTablosu">
+                                    <tr>
+                                        <td colspan="3" style="padding:6px; color:#7f8c8d;">Loglar yüklenince burada görünecek.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <!-- YENİ BÖLÜM: YAPAY ZEKA ANALİZ ÖZETİ (Fix 1 & 2) -->
                         <!-- ========================================================================= -->
@@ -4777,6 +4798,8 @@
             adminKullaniciFiltreDropdownDoldur(kayitlar);
             adminLogTablosunuCiz(kayitlar);
             adminGercekRpdOzetiCekVeCiz();
+            // v10.5: Kanal tablosu. await YOK: YouTube'dan sayı bekler, log tablosunu geciktirmesin.
+            adminKanalDurumTablosuCiz();
         }
 
         // Panel açılınca ve "Yenile" tuşuna basınca çalışır
@@ -4790,6 +4813,9 @@
                 if (durum) durum.innerText = "Loglar senkronize edilmedi. Yukarıdaki 'Logları Senkronize Et' butonuna basın.";
                 const ozet = document.getElementById('adminRpdOzetTablosu');
                 if (ozet) ozet.innerHTML = `<tr><td colspan="6" style="padding:5px; color:#7f8c8d;">Özet için önce logları senkronize edin.</td></tr>`;
+                // v10.5: Kanal tablosu da loglara bağlı
+                const kanalTabloEl = document.getElementById('kanalDurumTablosu');
+                if (kanalTabloEl) kanalTabloEl.innerHTML = `<tr><td colspan="3" style="padding:6px; color:#7f8c8d;">Kanal tablosu için önce logları senkronize edin.</td></tr>`;
                 return;
             }
 
@@ -5286,6 +5312,223 @@
                 }
             } catch (e) {
                 tablo.innerHTML = `<tr><td colspan="6" style="padding:5px; color:red;">RPD özeti yüklenirken hata oluştu: ${e.message}</td></tr>`;
+            }
+        }
+
+        // =========================================================================
+        // v10.5: KANAL BAZLI YAPAY ZEKA VİDEO ANALİZİ DURUM TABLOSU
+        // Mantık:
+        //   1) Senkronlanmış loglardan şartlara uyanları süz.
+        //   2) Kanal ID'ye göre grupla. Her kanal için BENZERSİZ video ID kümesi tut.
+        //   3) YouTube'dan her kanalın toplam video sayısını çek (kanal başına 2 istek).
+        //   4) "analiz edilen / toplam" yaz.
+        // =========================================================================
+        const KANAL_TABLO_SABLONU = "criteria-based-theological-analysis";
+        // "Sonuç Yok" da analiz sayılır. "Manuel" ve "Durduruldu" sayılmaz.
+        const KANAL_SAYILAN_ISLEMLER = ["AI Analizi Yapıldı", "AI Analizi (Sonuç Yok)"];
+
+        const kanalYuklemeListesiOnbellek = new Map(); // @kanal (küçük harf) -> yükleme listesi ID'si (oturum boyunca saklanır)
+        let kanalSatirlari = new Map();                // @kanal (küçük harf) -> { gosterim, videolar:Set, uploadsId, toplam }
+        let kanalTumAnalizliVideolar = new Set();      // Şartlara uyan TÜM loglardaki video ID'ler (kanaldan bağımsız)
+        let kanalTabloSayaci = 0;                      // Panel hızlı açılıp kapanırsa eski işlem yeni tabloyu bozmasın
+        let kanalModalSayaci = 0;                      // Pencere kapanırsa arkadaki yükleme dursun
+
+        // Şartlara uyan logları süzer
+        function kanalAnalizLoglariniSuz(kayitlar) {
+            return kayitlar.filter(k =>
+                k.yapay_zeka_kullanildi === true &&
+                k.kullanilan_sablon === KANAL_TABLO_SABLONU &&
+                KANAL_SAYILAN_ISLEMLER.includes(k.detay) &&
+                k.tarih_ayari !== 'manuel' // Manuel analiz sayılmaz (bazı manuel loglar "Sonuç Yok" yazabiliyor)
+            );
+        }
+
+        // Kanalın toplam video sayısını ve yükleme listesi ID'sini YouTube'dan alır
+        async function kanalToplamVideoSayisiGetir(gosterim) {
+            // Kanal ID "@" ile başlamıyorsa (eski loglarda kanal adı yazmış olabilir) sorgulanamaz
+            if (!gosterim.startsWith('@')) throw new Error("Kanal @kullaniciadi biçiminde değil");
+            const handle = gosterim.slice(1);
+            const onbellekAnahtari = handle.toLowerCase();
+
+            let uploadsId = kanalYuklemeListesiOnbellek.get(onbellekAnahtari);
+            if (!uploadsId) {
+                const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=${encodeURIComponent(handle)}&key=${encodeURIComponent(API_KEY)}`;
+                const ch = await guvenliFetch(chUrl, { method: "GET" }, 2, false); // false: iptal butonu bu isteği kesmesin
+                uploadsId = ch && ch.items && ch.items[0] && ch.items[0].contentDetails && ch.items[0].contentDetails.relatedPlaylists
+                    ? ch.items[0].contentDetails.relatedPlaylists.uploads
+                    : null;
+                if (!uploadsId) throw new Error("Kanal bulunamadı");
+                kanalYuklemeListesiOnbellek.set(onbellekAnahtari, uploadsId);
+            }
+
+            // maxResults=1: sadece "toplam kaç video var" bilgisi lazım (pageInfo.totalResults)
+            const plUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=id&maxResults=1&playlistId=${encodeURIComponent(uploadsId)}&key=${encodeURIComponent(API_KEY)}`;
+            const pl = await guvenliFetch(plUrl, { method: "GET" }, 2, false);
+            const toplam = pl && pl.pageInfo ? pl.pageInfo.totalResults : undefined;
+            if (typeof toplam !== 'number') throw new Error("Toplam video sayısı okunamadı");
+            return { toplam, uploadsId };
+        }
+
+        async function adminKanalDurumTablosuCiz() {
+            const tablo = document.getElementById('kanalDurumTablosu');
+            if (!tablo) return;
+            const benimSayacim = ++kanalTabloSayaci;
+
+            // 1) Logları depodan oku ve süz
+            let loglar = [];
+            try {
+                loglar = kanalAnalizLoglariniSuz(await logIdbTumunuOku());
+            } catch (e) {
+                tablo.innerHTML = `<tr><td colspan="3" style="padding:6px; color:red;">Loglar okunamadı: ${escapeHTML(e.message)}</td></tr>`;
+                return;
+            }
+
+            // 2) Kanala göre grupla (benzersiz video ID kümesiyle)
+            const gruplar = new Map();
+            const tumVideolar = new Set();
+            loglar.forEach(k => {
+                const vid = String(k.video_id || "").trim();
+                if (!vid || vid === "-") return;
+                tumVideolar.add(vid); // Pencere için: kanal ID'si bozuk olsa bile video "analiz edildi" sayılır
+
+                const ham = String(k.youtube_kanal_id || "-").trim().replace(/^@+/, '@');
+                if (!ham || ham === "-") return; // Kanalı bilinmeyen loglar tabloya girmez
+                const anahtar = ham.toLowerCase(); // Büyük/küçük harf farkı tek satırda birleşir
+                if (!gruplar.has(anahtar)) gruplar.set(anahtar, { gosterim: ham, videolar: new Set(), uploadsId: null, toplam: null });
+                gruplar.get(anahtar).videolar.add(vid);
+            });
+
+            kanalSatirlari = gruplar;
+            kanalTumAnalizliVideolar = tumVideolar;
+
+            if (gruplar.size === 0) {
+                tablo.innerHTML = `<tr><td colspan="3" style="padding:6px; color:#7f8c8d;">Şartlara uyan log kaydı bulunamadı.</td></tr>`;
+                return;
+            }
+
+            // 3) Satırları önce "hesaplanıyor" olarak çiz (en çok analiz edilen kanal en üstte)
+            const sirali = Array.from(gruplar.entries()).sort((a, b) => b[1].videolar.size - a[1].videolar.size);
+            tablo.innerHTML = sirali.map(([anahtar, k], i) => `
+                <tr style="background:#f1f5f9; color:#475569; border-bottom: 2px solid #cbd5e1;">
+                    <td style="padding:6px; font-weight:bold; color:#2980B9;">
+                        <a href="https://www.youtube.com/${escapeHTML(k.gosterim)}" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline;">${escapeHTML(k.gosterim)}</a>
+                    </td>
+                    <td style="padding:6px; text-align:center; font-weight:bold;">
+                        <span id="kanalSayi_${i}">${k.videolar.size}/<span style="color:#94a3b8;">...</span></span>
+                    </td>
+                    <td style="padding:6px; text-align:center;">
+                        <button data-kanal="${escapeHTML(anahtar)}" onclick="kanalAnalizsizVideolariAc(this.dataset.kanal)" style="width:auto; padding:6px 12px; margin:0; font-size:12px; background:#8e44ad;">🔍 Analiz edilmemiş videoları gör</button>
+                    </td>
+                </tr>`).join("");
+
+            // 4) Toplam video sayılarını sırayla çek ve satırları doldur
+            for (let i = 0; i < sirali.length; i++) {
+                if (benimSayacim !== kanalTabloSayaci) return; // Tablo yenilendi, bu eski işlem durur
+                const [, k] = sirali[i];
+                const sayiEl = document.getElementById(`kanalSayi_${i}`);
+                try {
+                    const sonuc = await kanalToplamVideoSayisiGetir(k.gosterim);
+                    k.toplam = sonuc.toplam;
+                    k.uploadsId = sonuc.uploadsId;
+                    if (sayiEl) {
+                        // Analiz sayısı toplamdan büyükse: silinmiş video olabilir. Turuncu uyar.
+                        const renk = k.videolar.size > sonuc.toplam ? "#d35400" : "inherit";
+                        const ipucu = k.videolar.size > sonuc.toplam ? "Analiz sayısı toplamdan fazla: silinmiş veya gizlenmiş videolar olabilir." : "";
+                        sayiEl.innerHTML = `<span style="color:${renk};" title="${escapeHTML(ipucu)}">${k.videolar.size}/${sonuc.toplam}</span>`;
+                    }
+                } catch (hata) {
+                    if (sayiEl) sayiEl.innerHTML = `<span title="${escapeHTML(hata.message)}" style="color:#c0392b;">${k.videolar.size}/?</span>`;
+                }
+            }
+        }
+
+        // ---- "Analiz edilmemiş videoları gör" penceresi ----
+        window.kanalAnalizsizKapat = () => {
+            kanalModalSayaci++; // Arkada süren yükleme varsa durur
+            document.getElementById('kanalAnalizsizModal').style.display = 'none';
+        };
+
+        window.kanalAnalizsizVideolariAc = async (anahtar) => {
+            const k = kanalSatirlari.get(anahtar);
+            if (!k) return;
+
+            const sayac = ++kanalModalSayaci;
+            const baslikEl = document.getElementById('kanalAnalizsizBaslik');
+            const notEl = document.getElementById('kanalAnalizsizNot');
+            const listeEl = document.getElementById('kanalAnalizsizListe');
+
+            baslikEl.innerText = `📺 ${k.gosterim} - Analiz Edilmemiş Videolar`;
+            notEl.innerText = "Yükleniyor...";
+            listeEl.innerHTML = "";
+            document.getElementById('kanalAnalizsizModal').style.display = 'flex';
+
+            try {
+                // 1) Yükleme listesi ID'sini bul (tablo çizerken zaten bulunmuş olabilir)
+                let uploadsId = k.uploadsId;
+                if (!uploadsId) uploadsId = (await kanalToplamVideoSayisiGetir(k.gosterim)).uploadsId;
+
+                // 2) Kanalın TÜM videolarını sayfa sayfa çek (50'şer)
+                const tumVideolar = [];
+                let token = "";
+                do {
+                    if (sayac !== kanalModalSayaci) return; // Pencere kapandı
+                    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${encodeURIComponent(uploadsId)}&key=${encodeURIComponent(API_KEY)}${token ? `&pageToken=${encodeURIComponent(token)}` : ''}`;
+                    const r = await guvenliFetch(url, { method: "GET" }, 3, false);
+                    (r.items || []).forEach(it => {
+                        const id = it.snippet && it.snippet.resourceId ? it.snippet.resourceId.videoId : null;
+                        if (id) tumVideolar.push({ id, baslik: it.snippet.title || id, tarih: it.snippet.publishedAt || "" });
+                    });
+                    token = r.nextPageToken || "";
+                    notEl.innerText = `Kanal videoları taranıyor: ${tumVideolar.length} video bulundu...`;
+                } while (token);
+
+                // 3) Analiz edilmiş olanları çıkar
+                const analizsiz = tumVideolar.filter(v => !kanalTumAnalizliVideolar.has(v.id));
+
+                // 4) Yorum sayılarını 50'şer sorgula. Yorumsuz / yorumu kapalı olanlar gizlenecek.
+                const yorumSayilari = new Map();
+                for (let i = 0; i < analizsiz.length; i += 50) {
+                    if (sayac !== kanalModalSayaci) return;
+                    notEl.innerText = `Yorum sayıları kontrol ediliyor: ${i} / ${analizsiz.length}`;
+                    const grup = analizsiz.slice(i, i + 50).map(v => v.id);
+                    const stUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${encodeURIComponent(grup.join(','))}&key=${encodeURIComponent(API_KEY)}`;
+                    const st = await guvenliFetch(stUrl, { method: "GET" }, 3, false);
+                    (st.items || []).forEach(it => {
+                        // commentCount alanı yoksa: yorumlar kapalı demektir
+                        const sayi = it.statistics && it.statistics.commentCount !== undefined ? parseInt(it.statistics.commentCount, 10) || 0 : 0;
+                        yorumSayilari.set(it.id, sayi);
+                    });
+                }
+                if (sayac !== kanalModalSayaci) return;
+
+                // Sonuçta yorum sayısı bulunamayan (özel/silinmiş) videolar da 0 yorum sayılır
+                const gosterilecek = analizsiz.filter(v => (yorumSayilari.get(v.id) || 0) > 0);
+                const gizlenen = analizsiz.length - gosterilecek.length;
+
+                notEl.innerHTML = `Toplam <b>${analizsiz.length}</b> video analiz edilmemiş. ` +
+                    `<b>${gizlenen}</b> tanesi yorumsuz veya yorumları kapalı olduğu için gizlendi. ` +
+                    `Aşağıda <b>${gosterilecek.length}</b> video listeleniyor.`;
+
+                if (gosterilecek.length === 0) {
+                    listeEl.innerHTML = `<p style="text-align:center; color:#27ae60; font-weight:bold; padding:16px;">Analiz edilecek video kalmadı 🎉</p>`;
+                    return;
+                }
+
+                // 5) Listeyi çiz (yeni videolar üstte). Sadece sıra no + başlık + tarih + yorum + YouTube linki.
+                listeEl.innerHTML = gosterilecek.map((v, i) => {
+                    const tarih = v.tarih ? new Date(v.tarih).toLocaleDateString('tr-TR') : "-";
+                    return `
+                    <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; margin-bottom:6px; background:#fff; border:1px solid #e2e8f0; border-radius:6px;">
+                        <span style="color:#94a3b8; font-weight:bold; min-width:34px;">${i + 1}.</span>
+                        <a href="https://www.youtube.com/watch?v=${encodeURIComponent(v.id)}" target="_blank" rel="noopener noreferrer" style="flex:1; color:#2980b9; font-weight:600; text-decoration:underline; word-break:break-word;">${escapeHTML(v.baslik)}</a>
+                        <span style="font-size:12px; color:#64748b; white-space:nowrap;">📅 ${escapeHTML(tarih)}</span>
+                        <span style="font-size:12px; color:#e67e22; font-weight:bold; white-space:nowrap;">💬 ${yorumSayilari.get(v.id) || 0}</span>
+                    </div>`;
+                }).join("");
+
+            } catch (hata) {
+                if (sayac !== kanalModalSayaci) return;
+                notEl.innerHTML = `<span style="color:#c0392b;">Hata: ${escapeHTML(hata.message)}</span>`;
             }
         }
 
@@ -12916,6 +13159,18 @@ CRITICAL RULES:
         };
 
     </script>
+
+    <!-- v10.5: KANALIN ANALİZ EDİLMEMİŞ VİDEOLARI PENCERESİ (sadece liste + YouTube linki) -->
+    <div id="kanalAnalizsizModal" class="ss-modal" style="z-index: 10020;">
+        <div class="ss-modal-content" style="max-width: 780px; max-height: 88vh; display: flex; flex-direction: column;">
+            <h3 id="kanalAnalizsizBaslik" style="color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px; margin-top:0;">Analiz Edilmemiş Videolar</h3>
+            <p id="kanalAnalizsizNot" style="font-size:13px; color:#475569; line-height:1.5; margin:0 0 10px 0;"></p>
+            <div id="kanalAnalizsizListe" style="overflow-y:auto; flex:1; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; padding:8px;"></div>
+            <div style="text-align:right; margin-top:12px;">
+                <button onclick="kanalAnalizsizKapat()" style="width:auto; padding:8px 20px; margin:0; background-color:#7f8c8d;">Kapat</button>
+            </div>
+        </div>
+    </div>
 
     <!-- v10.4: ROZET SENKRON UYARI PENCERESİ -->
     <div id="rozetUyariModal" class="ss-modal" style="z-index: 10010;">
