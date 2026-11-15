@@ -58,6 +58,13 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 <br>
 <hr>
 
+## 🔖 Liva AI - Güncelleme Notları (v10.4)
+
+- **Video Rozeti Senkronizasyonu:** Ekibin video rozetleri tarayıcıya bir kere indirilir. Sonra her girişte arka planda sadece değişenler çekilir. Kanal listesi artık Firestore'dan toplu okuma yapmaz.
+- **Senkron Uyarısı:** Senkron kapalıyken kanal videoları her listelendiğinde uyarı penceresi çıkar. Senkron açıldıktan sonra çıkmaz. İstenirse çubuktan kapatılabilir.
+- **Rozet Ezme Koruması:** Hafızada olmayan bir videonun rozeti, analizden önce Firestore'dan tek okumayla kontrol edilir. Eski "dolu" rozet yeni "boş" sonuçla ezilmez.
+- **Daha Az Okuma:** Log doğrulama sayımı ve ekip tablosu oturumda bir kere okunur.
+
 ## ⚡ Liva AI - Güncelleme Notları (v10.3)
 
 - **Log Senkronizasyonu:** Yönetici Paneli logları artık tarayıcıya bir kere indirilir. Sonraki girişlerde arka planda sadece yeni loglar çekilir. Panel hızlı açılır ve Firestore okuma kotası çok daha az harcanır.
