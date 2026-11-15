@@ -1528,9 +1528,11 @@
                         </table>
                     </div>
                     <!-- Bu div'in bitiş (kapanış) etiketi, sayfanın en altındaki adminLogTablosu'nun div'inden hemen sonra olmalıdır. -->
-                    <div id="adminLogBolumu">
+                    <!-- v10.5: Bu kutu artık SADECE "Model ve RPD Yönetimi" bölümünü taşıyor. -->
+                    <!-- Kapanışı aşağıda (özet başlığının hemen üstünde). Yöneticiye özel gösterilir. -->
+                    <div id="adminModelBolumu">
                         <!-- v10.3: LOG SENKRON ÇUBUĞU (içini JS doldurur) -->
-                        <div id="logSenkronBar" style="display:none; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px 16px; border-radius:10px; margin-bottom:16px; color:#fff; font-weight:bold; font-size:14px;"></div>
+                        <!-- v10.5: logSenkronBar buradan kaldırıldı. Yeni yeri: "Log Kayıtları" başlığının sağı. -->
                         <!-- ========================================================================= -->
                         <!-- YAPAY ZEKA MODEL VE RPD YÖNETİMİ -->
                         <!-- ========================================================================= -->
@@ -1561,6 +1563,13 @@
                         </div>
 
                         <!-- ========================================================================= -->
+                    </div> <!-- adminModelBolumu KAPANIŞI -->
+
+                    <!-- v10.5: Buradan sonrası loglara bağlı bölümler. Sadece yöneticiye görünür. -->
+                    <div id="adminLogBolumu">
+
+                        <!-- PARÇA 3 NOTU: "Kanal Bazlı Yapay Zeka Video Analizi Durum Tablosu" buraya gelecek -->
+
                         <!-- YENİ BÖLÜM: YAPAY ZEKA ANALİZ ÖZETİ (Fix 1 & 2) -->
                         <!-- ========================================================================= -->
                         <h3 id="rpdOzetBaslikAlani" style="color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:6px; margin-top:20px;">📊 Kullanıcı Bazlı Yapay Zeka Video Analizi Özeti</h3>
@@ -1583,7 +1592,12 @@
                         <!-- ========================================================================= -->
                         <!-- LOG KAYITLARI VE FİLTRELER -->
                         <!-- ========================================================================= -->
-                        <h3 style="color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:6px;">📋 Log Kayıtları</h3>
+                        <!-- v10.5: Başlık solda, senkron çubuğu sağda. Yer dar olursa çubuk alt satıra iner (flex-wrap). -->
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:2px solid #eee; padding-bottom:6px; margin-bottom:12px;">
+                            <h3 style="color:#2c3e50; margin:0;">📋 Log Kayıtları</h3>
+                            <!-- v10.3: LOG SENKRON ÇUBUĞU (içini JS doldurur). Yeni yeri burası. -->
+                            <div id="logSenkronBar" style="display:none; flex:1 1 420px; max-width:100%; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:8px 14px; border-radius:10px; margin:0; color:#fff; font-weight:bold; font-size:13px;"></div>
+                        </div>
 
                         <div style="background:#ffffff; border-radius:10px; padding:20px; margin-bottom:20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; align-items: end; margin-bottom: 20px;">
@@ -4473,6 +4487,9 @@
                         if (rol === "yonetici") {
                             // YÖNETİCİ GÖRÜNÜMÜ: Tüm alanlar ve başlıklar açık
                             if (logBolumu) logBolumu.style.display = 'block';
+                            // v10.5: Model ve RPD bölümü artık logBolumu'nun dışında. Yöneticiye ayrıca açıyoruz.
+                            const modelBolumuEl = document.getElementById('adminModelBolumu');
+                            if (modelBolumuEl) modelBolumuEl.style.display = 'block';
                             if (yeniUyeFormu) yeniUyeFormu.style.display = 'block';
                             if (btnUst) {
                                 // Butonun Flexbox düzenini ve ortalamasını kesinleştirelim
@@ -4505,6 +4522,10 @@
                             // İZİNLİ KULLANICI GÖRÜNÜMÜ: Formlar kapalı, sadece rehber okuma izni
                             if (btnTalepler) btnTalepler.style.display = 'none'; // Kullanıcıysa gizle
                             if (logBolumu) logBolumu.style.display = 'none';
+                            // v10.5: İzinli (sadece okuyan) kullanıcı model ve RPD ayarlarını GÖRMEMELİ.
+                            // Model bölümü artık logBolumu'nun dışında olduğu için ayrıca gizliyoruz.
+                            const modelBolumuGizle = document.getElementById('adminModelBolumu');
+                            if (modelBolumuGizle) modelBolumuGizle.style.display = 'none';
                             if (yeniUyeFormu) yeniUyeFormu.style.display = 'none';
                             if (btnUst) btnUst.style.display = 'none';
 
