@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.4)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.5)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,17 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## 🧬 Liva AI - Güncelleme Notları (v10.5)
+
+- **Yapay Zeka Ön Koşul Kapısı:** Yapay zeka analizi artık model listesi dolmadan başlamaz. API anahtarı kayıtlıysa sistem modelleri kendisi doğrular. Böylece log kayıtlarında yanlış model adı görünmesi önlendi.
+- **Zorunlu Ayarlar:** Yapay zeka açıkken "Alt Yanıtlar", "Farklı Satırlar" ve "Excel" ayarları her zaman otomatik seçilir. Tarayıcının eski seçimi geri getirmesi artık bu ayarları bozamaz.
+- **Güvenli Devam Etme:** Yarım kalan bir analiz açılırken gerekli ayarlar kendiliğinden işaretlenir. Kayıtlı model listede yoksa işlem başka bir modelle bitmesin diye durdurulur.
+- **RPD Sayacı Düzeltmesi:** Yarım kalan işleme devam edilince harcanan RPD sayısı artık 0 yazılmaz.
+- **Tanı Alanları:** Log kayıtlarına `model_kaynagi` ve `arayuz_durumu` alanları eklendi. Olası bir hatanın sebebi sonradan görülebilir.
+- **Kanal Bazlı Durum Tablosu:** Yönetici panelinde her kanal için "analiz edilen video / toplam video" sayısı gösterilir. Aynı video birden fazla kez analiz edilse de 1 sayılır. Sadece "11 Kriterli Teolojik Analiz" şablonu hesaba katılır.
+- **Analiz Edilmemiş Videolar:** Her kanal satırındaki butonla, henüz analiz edilmemiş videolar listelenir. Yorumsuz ve yorumları kapalı videolar gizlenir.
+- **Yeni Panel Sırası:** Model ve RPD Yönetimi, loglardan ayrıldı ve sadece yöneticiye gösterilir. Senkron çubuğu "Log Kayıtları" başlığının yanına taşındı.
 
 ## 🔖 Liva AI - Güncelleme Notları (v10.4)
 
