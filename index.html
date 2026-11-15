@@ -1044,7 +1044,7 @@
                     <span>Alt Yanıtları da Dahil Et:</span>
                 </div>
                 <div>
-                    <input type="checkbox" id="includeReplies" class="modern-toggle" onchange="toggleFlattenOption()">
+                    <input type="checkbox" id="includeReplies" class="modern-toggle" autocomplete="off" onchange="toggleFlattenOption()">
                 </div>
             </div>
 
@@ -1055,7 +1055,7 @@
                     <span>Alt Yanıtları Farklı Satırlarda Gör:</span>
                 </div>
                 <div>
-                    <input type="checkbox" id="flattenReplies" class="modern-toggle" disabled>
+                    <input type="checkbox" id="flattenReplies" class="modern-toggle" autocomplete="off" disabled>
                 </div>
             </div>
 
@@ -1065,7 +1065,7 @@
                     <span class="row-icon">💾</span>
                     <span>Çıktı Formatı:</span>
                 </div>
-                <select id="exportFormat" class="modern-input" style="max-width: 250px;">
+                <select id="exportFormat" class="modern-input" autocomplete="off" style="max-width: 250px;">
                     <option value="xlsx">Excel Dosyası (.xlsx)</option>
                     <option value="txt">Metin Belgesi (.txt)</option>
                 </select>
@@ -1124,7 +1124,9 @@
                     <span>Yapay Zeka Yorum Analizi (Gemini):</span>
                 </label>
                 <div>
-                    <input type="checkbox" id="aiAnalysisCheck" class="modern-toggle" onchange="yapayZekaAyarla()">
+                    <!-- v10.5: autocomplete="off" => tarayıcı sayfa yenilenince tiki kendi kendine geri getirmesin -->
+                    <!-- v10.5: onchange artık yapayZekaKutusuDegisti (anahtar kayıtlıysa modelleri otomatik doğrular) -->
+                    <input type="checkbox" id="aiAnalysisCheck" class="modern-toggle" autocomplete="off" onchange="yapayZekaKutusuDegisti()">
                 </div>
             </div>
 
@@ -2830,13 +2832,13 @@
                 const btnYes = document.getElementById('btn-resume-yes');
                 const btnNo = document.getElementById('btn-resume-no');
 
+                // v10.5: Pencere açılır açılmaz yapay zeka + alt yanıt + farklı satır + xlsx otomatik tiklenir
+                if (bulkCheckpoint.isAI) window.aiZorunluAyarlariUygula();
+
                 btnYes.onclick = () => {
                     if (btnYes.disabled) return;
-                    if (bulkCheckpoint.isAI && document.getElementById('aiModelSelect').options.length === 0) {
-                        alert("Yarım kalan işlem Yapay Zeka gerektiriyor. Lütfen devam etmeden önce (zaten doldurulmuş olan) API anahtarınız ile 'Doğrula ve Kilidi Aç' butonuna tıklayarak modelleri yükleyin.");
-                        modal.style.display = 'none';
-                        return;
-                    }
+                    // v10.5: Eski "model listesi boş" uyarısı silindi. Artık topluAnaliziBaslat içindeki
+                    // kapı (aiAnalizOnKosuluGarantiEt) modelleri kendisi doğrular ve kayıtlı modeli seçer.
                     modal.style.display = 'none';
                     window.aktifBulkResumeCheckpoint = bulkCheckpoint;
                     window.topluAnaliziBaslat();
@@ -2888,12 +2890,12 @@
 
                 modal.style.display = 'flex';
 
+                // v10.5: Pencere açılır açılmaz yapay zeka + alt yanıt + farklı satır + xlsx otomatik tiklenir
+                if (singleCheckpoint.isAI) window.aiZorunluAyarlariUygula();
+
                 document.getElementById('btn-resume-yes').onclick = () => {
-                    if (singleCheckpoint.isAI && document.getElementById('aiModelSelect').options.length === 0) {
-                        alert("Yarım kalan işlem Yapay Zeka gerektiriyor. Lütfen devam etmeden önce (zaten doldurulmuş olan) API anahtarınız ile 'Doğrula ve Kilidi Aç' butonuna tıklayarak modelleri yükleyin.");
-                        modal.style.display = 'none';
-                        return;
-                    }
+                    // v10.5: Eski "model listesi boş" uyarısı silindi. yorumMotorunuCalistir içindeki
+                    // kapı modelleri kendisi doğrular ve kayıtlı modeli seçer.
                     modal.style.display = 'none';
                     window.aktifResumeCheckpoint = singleCheckpoint;
                     window.yorumMotorunuCalistir(singleCheckpoint.videoId, null);
@@ -3142,6 +3144,91 @@
         };
 
         // =========================================================================
+        // v10.5: YAPAY ZEKA ÖN KOŞUL KAPISI
+        // Amaç: Yapay zeka analizi, şu 4 şart sağlanmadan ASLA başlamasın:
+        //   1) Yapay zeka kutusu tikli   2) Alt yanıtlar tikli   3) Farklı satır tikli
+        //   4) Model listesi dolu ve bir model seçili
+        // Sebep: Eski kod sadece "API anahtarı dolu mu" diye bakıyordu. Model listesi boşken
+        //        yedek metin ("Gemini 3.5 Flash-Lite") loga yazılıyordu.
+        // =========================================================================
+
+        // 3 zorunlu ayarı (alt yanıt + farklı satır + xlsx) zorla tikler ve kilitler.
+        // yapayZekaAyarla() zaten bunları yapıyor; biz sadece önce kutuyu tikliyoruz.
+        window.aiZorunluAyarlariUygula = () => {
+            const aiCheck = document.getElementById('aiAnalysisCheck');
+            if (!aiCheck) return;
+            aiCheck.checked = true;
+            window.yapayZekaAyarla();
+        };
+
+        // Model listesi dolu ve bir model seçili mi?
+        window.aiModelListesiHazirMi = () => {
+            const s = document.getElementById('aiModelSelect');
+            return !!(s && s.options.length > 0 && s.value);
+        };
+
+        // Liste boşsa ve anahtar kayıtlıysa, "Doğrula ve Kilidi Aç" işlemini kendisi yapar.
+        // Dönüş: true = liste hazır, false = hazır değil
+        window.aiOtomatikDogrula = async () => {
+            if (window.aiModelListesiHazirMi()) return true;
+            const keyEl = document.getElementById('geminiApiKey');
+            const key = keyEl ? keyEl.value.trim() : "";
+            if (!key) return false; // Anahtar yoksa yapacak bir şey yok
+            window.__otomatikDogrulama = true; // resume penceresini susturur (bkz. Patch 1.2)
+            try {
+                await window.apiDogrula();
+            } finally {
+                window.__otomatikDogrulama = false;
+            }
+            return window.aiModelListesiHazirMi();
+        };
+
+        // ANA KAPI: Analiz başlamadan önce çağrılır.
+        // aiGerekli      : Bu analiz yapay zeka kullanacak mı?
+        // kayitliModelId : Yarım kalan işlemde kayıtlı model (yeni işlemde null)
+        // Dönüş: true = devam edebilir, false = DURMALI
+        window.aiAnalizOnKosuluGarantiEt = async (aiGerekli, kayitliModelId = null) => {
+            if (!aiGerekli) return true; // Yapay zeka kapalıysa normal indirmeye dokunma
+
+            window.aiZorunluAyarlariUygula();
+
+            const hazir = await window.aiOtomatikDogrula();
+            if (!hazir) {
+                setStatus("⚠️ Yapay zeka analizi başlatılamadı: Model listesi boş. API anahtarını girip 'Doğrula ve Kilidi Aç' butonuna basın.", "#e74c3c");
+                return false;
+            }
+
+            // Yarım kalan işlemde: kayıtlı model listede yoksa DURUR.
+            // Sebep: İşlem başka bir modelle bitmesin, loglar karışmasın.
+            if (kayitliModelId) {
+                const select = document.getElementById('aiModelSelect');
+                const listedeVarMi = Array.from(select.options).some(o => o.value === kayitliModelId);
+                if (!listedeVarMi) {
+                    setStatus(`⚠️ Yarım kalan işlemin modeli (${kayitliModelId}) şu an model listesinde yok. Devam edilemiyor.`, "#e74c3c");
+                    return false;
+                }
+                select.value = kayitliModelId; // Kayıtlı modeli seç
+                window.modelSecildi();         // RPD sayacını bu modele göre göster
+            }
+            return true;
+        };
+
+        // Yapay zeka kutusuna tıklanınca çalışır (HTML'de onchange buna bağlandı)
+        window.yapayZekaKutusuDegisti = async () => {
+            window.yapayZekaAyarla();
+            const acikMi = document.getElementById('aiAnalysisCheck').checked;
+            if (acikMi && !window.aiModelListesiHazirMi()) {
+                await window.aiOtomatikDogrula(); // Anahtar kayıtlıysa kullanıcı butona basmadan liste dolar
+            }
+        };
+
+        // Sayfa açılınca: kutu tikliyse ekranı (panel, alt yanıt, farklı satır) buna eşitler
+        window.aiArayuzunuSenkronla = () => {
+            const aiCheck = document.getElementById('aiAnalysisCheck');
+            if (aiCheck && aiCheck.checked) window.yapayZekaAyarla();
+        };
+
+        // =========================================================================
         // GÜNCELLENMİŞ APİ DOĞRULAMA (İSİM FİLTRESİ + CANLI PİNG TESTİ)
         // Görevi: Sadece Flash, Pro, Flash-Lite isimli metin modellerini filtreler, TTS'leri eler ve sonrasında hepsine tek tek ping atarak gerçekten çalışanları listeler.
         // =========================================================================
@@ -3252,7 +3339,8 @@
                 window.modelSecildi();
 
                 // Kilit açıldıktan sonra, bekleyen bir resume işlemi varsa modalı otomatik tekrar göster
-                window.kontrolEtVeGosterKalanIslem();
+                // v10.5: Otomatik doğrulama sırasında (resume penceresi zaten açıkken) tekrar açma => sonsuz döngü olmasın
+                if (!window.__otomatikDogrulama) window.kontrolEtVeGosterKalanIslem();
 
             } catch (error) {
                 // Olası bir hatada kullanıcıya mesaj gösterip eski haline sıfırlıyoruz (Error handling)
@@ -3686,6 +3774,9 @@
 
                 // 5. ADIM: Arayüzü Güvenle Kullanıma Aç (Bakım ve Giriş ekranları otomatik kapatılır)
                 arayuzEkraniniAyarla('mainApp');
+
+                // v10.5: Tarayıcı tikleri geri getirmiş olabilir. Ekranı (panel, alt yanıt, farklı satır) eşitle.
+                window.aiArayuzunuSenkronla();
 
                 // v10.4: Rozet senkronu açıksa arka planda sessizce çalışır (beklenmez)
                 window.rozetSenkronArayuzunuHazirla().catch(e => console.warn("[Rozet Senkron] Başlatılamadı:", e));
@@ -4315,7 +4406,14 @@
                     yorumlarin_tarih_araligi: String(ekstraDetaylar.tarihAraligi || "Belirtilmedi"),
                     youtube_kanal_id: String(ekstraDetaylar.kanalId || "-").trim().replace(/^@+/, '@'),
                     cekilen_yorum_adedi_ham: Number.isFinite(Number(ekstraDetaylar.hamCekilenYorumAdedi)) ? Number(ekstraDetaylar.hamCekilenYorumAdedi) : 0,
-                    tarih_ayari: String(ekstraDetaylar.tarihAyari || "Belirtilmedi")
+                    tarih_ayari: String(ekstraDetaylar.tarihAyari || "Belirtilmedi"),
+                    // v10.5 TANI ALANLARI (hatanın sebebini sonradan görmek için):
+                    // model_kaynagi: "liste" = model açılır listeden geldi (normal)
+                    //                "yedek-metin" = liste boştu, kodun içindeki yedek isim kullanıldı (HATA)
+                    model_kaynagi: (document.getElementById('aiModelSelect') && document.getElementById('aiModelSelect').options.length > 0) ? "liste" : "yedek-metin",
+                    // arayuz_durumu: Log yazılırken ekrandaki kutuların gerçek durumu (1=tikli, 0=boş)
+                    // Not: Log alanlarıyla (alt_yanitlar_dahil vb.) farklıysa sorun burada görünür.
+                    arayuz_durumu: `ai:${document.getElementById('aiAnalysisCheck')?.checked ? 1 : 0}|alt:${document.getElementById('includeReplies')?.checked ? 1 : 0}|farkli:${document.getElementById('flattenReplies')?.checked ? 1 : 0}|xlsx:${document.getElementById('exportFormat')?.value === 'xlsx' ? 1 : 0}`
                 };
 
                 const docRef = await addDoc(collection(db, "log_kayitlari"), logVerisi);
@@ -7523,6 +7621,15 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             // YENİ: Yarım kalmış bir işlem varsa (resume akışı hariç) yeni analizi başlatmadan durdur
             if (window.yeniIslemOncesiYarimKalaniEngelle()) return;
 
+            // v10.5: YAPAY ZEKA KAPISI. Arayüz kilitlenmeden ÖNCE çalışmalı.
+            // Sebep: Kilitten sonra ayarları değiştirirsek, kilit açılınca eski hâline dönerler.
+            {
+                const gecici = window.aktifResumeCheckpoint; // Henüz tüketilmedi, sadece okuyoruz
+                const aiGerekliMi = gecici ? gecici.isAI : document.getElementById('aiAnalysisCheck').checked;
+                const kayitliModel = gecici ? (gecici.selectedModel || null) : null;
+                if (!(await window.aiAnalizOnKosuluGarantiEt(aiGerekliMi, kayitliModel))) return;
+            }
+
             window.arayuzuKilitle();
             if (!(await window.oturumGuvenlikKontrolu())) {
                 window.arayuzuAktiflestir(); // Kilitlenme (Deadlock) Önlemi
@@ -7536,10 +7643,17 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             const cp = window.aktifResumeCheckpoint;
             window.aktifResumeCheckpoint = null; // Tüketildikten sonra temizle
 
+            // v10.5: RPD SAYACINI HER AŞAMADA GERİ YÜKLE.
+            // Eski hata: Sayaç sadece bazı aşamalarda yükleniyordu. Resume ekran görüntüsü
+            // aşamasından veya inceleme indeks 0'dan başlarsa sayaç 0 kalıyor, log "0 RPD" yazıyordu.
+            if (cp && cp.rpdHarcanan !== undefined) rpdHarcananSayaci = cp.rpdHarcanan;
+
             const isAI = cp ? cp.isAI : document.getElementById('aiAnalysisCheck').checked;
-            const includeReplies = cp ? cp.includeReplies : document.getElementById('includeReplies').checked;
-            const flattenReplies = cp ? cp.flattenReplies : document.getElementById('flattenReplies').checked;
-            const exportFormat = cp ? cp.exportFormat : document.getElementById('exportFormat').value;
+            // v10.5: Yapay zeka açıksa bu 3 ayar HER ZAMAN sabit. Kutunun durumuna veya eski
+            // checkpoint'e bakılmaz. (Eski bozuk kayıtta flatten=false olsa bile düzelir.)
+            const includeReplies = isAI ? true : (cp ? cp.includeReplies : document.getElementById('includeReplies').checked);
+            const flattenReplies = isAI ? true : (cp ? cp.flattenReplies : document.getElementById('flattenReplies').checked);
+            const exportFormat = isAI ? 'xlsx' : (cp ? cp.exportFormat : document.getElementById('exportFormat').value);
 
             const minLikesInput = document.getElementById('minLikes').value.trim();
             const minLikesFilter = cp ? cp.minLikesFilter : guvenliSayiAyristir(minLikesInput, 0);
@@ -9181,6 +9295,14 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
             if (window.yeniIslemOncesiYarimKalaniEngelle && window.yeniIslemOncesiYarimKalaniEngelle()) return;
 
+            // v10.5: YAPAY ZEKA KAPISI (toplu analiz). Arayüz kilitlenmeden önce çalışır.
+            {
+                const gecici = window.aktifBulkResumeCheckpoint;
+                const aiGerekliMi = gecici ? gecici.isAI : document.getElementById('aiAnalysisCheck').checked;
+                const kayitliModel = gecici ? (gecici.selectedModel || null) : null;
+                if (!(await window.aiAnalizOnKosuluGarantiEt(aiGerekliMi, kayitliModel))) return;
+            }
+
             // Seçili videoların listesini tespit et
             const seciliVideoIdleri = Array.from(globalSeciliVideoMap.keys());
             if (!seciliVideoIdleri || seciliVideoIdleri.length === 0) {
@@ -9231,9 +9353,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
             }
 
             const isAI = bcp ? bcp.isAI : document.getElementById('aiAnalysisCheck').checked;
-            const includeReplies = bcp ? bcp.includeReplies : document.getElementById('includeReplies').checked;
-            const flattenReplies = bcp ? bcp.flattenReplies : document.getElementById('flattenReplies').checked;
-            const exportFormat = bcp ? bcp.exportFormat : document.getElementById('exportFormat').value;
+            // v10.5: Yapay zeka açıksa bu 3 ayar sabit (bkz. Patch 1.5)
+            const includeReplies = isAI ? true : (bcp ? bcp.includeReplies : document.getElementById('includeReplies').checked);
+            const flattenReplies = isAI ? true : (bcp ? bcp.flattenReplies : document.getElementById('flattenReplies').checked);
+            const exportFormat = isAI ? 'xlsx' : (bcp ? bcp.exportFormat : document.getElementById('exportFormat').value);
             const minLikesInput = document.getElementById('minLikes').value.trim();
             const minLikesFilter = bcp ? bcp.minLikesFilter : (minLikesInput === "" ? 0 : parseInt(minLikesInput, 10));
             const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
@@ -10899,6 +11022,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
             // Sistemin ilk açılışında "Manuel Giriş" modu seçili gelsin ve kutuların kilidi açık olsun
             window.tarihAyarla('otomatik');
+
+            // v10.5: Bazı tarayıcılar tikleri "load" olayında geri getirir (DOMContentLoaded'dan sonra).
+            // Bu yüzden ikinci bir eşitleme daha yapıyoruz.
+            window.addEventListener('load', () => window.aiArayuzunuSenkronla());
         });
 
         // =========================================================================
