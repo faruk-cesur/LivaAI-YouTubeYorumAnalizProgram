@@ -6613,13 +6613,31 @@
                     await deleteDoc(doc(db, "log_kayitlari", docId));
                     try { await logIdbSil(docId); } catch (e) { console.warn("[Log Depo] Yerel silme hatası:", e); } // v10.3
 
-                    // MİMARİ KORUMA: Silinen log AI ise ve başka başarılı log kalmadıysa rozet özetinden kaldır
+                    // v10.6: Silinen log AI ise rozeti, KALAN loglardan yeniden hesapla.
+                    // Eski hata 1: Sorgu ekip filtresi içermiyordu (başka ekibin logu rozeti ayakta tutuyordu).
+                    // Eski hata 2: "Durduruldu" gibi rozet üretmeyen loglar da sayılıyordu.
                     if (isAI && videoId && videoId !== 'undefined' && videoId !== '-') {
                         try {
-                            const qKalan = query(collection(db, "log_kayitlari"), where("video_id", "==", videoId), where("yapay_zeka_kullanildi", "==", true));
-                            const kalanSnap = await getDocs(qKalan);
+                            const ekipTemiz = (logEkip || "").trim();
+                            // Ekipsiz kullanıcıda rozet belgesi e-posta adıyla tutulur (isimle DEĞİL)
+                            const silinenKayit = (sonYuklenenLoglar || []).find(x => x.firebase_doc_id === docId);
+                            const hedefDokumanId = ekipTemiz || String((silinenKayit && silinenKayit.kullanici) || currentUserEmail).trim();
 
-                            const hedefDokumanId = (logEkip && logEkip.trim()) ? logEkip.trim() : (logIslemYapan ? logIslemYapan.trim() : currentUserEmail);
+                            // Tek alanlı sorgu: ekstra indeks gerekmez. Gerisini bellekte süzeriz.
+                            const qHam = query(collection(db, "log_kayitlari"), where("video_id", "==", videoId));
+                            const hamSnap = await getDocs(qHam);
+                            const SAYILAN_ISLEMLER = ["AI Analizi Yapıldı", "AI Analizi (Sonuç Yok)"];
+
+                            const kalanlar = hamSnap.docs.filter(d => {
+                                const l = d.data();
+                                if (l.yapay_zeka_kullanildi !== true) return false;
+                                if (!SAYILAN_ISLEMLER.includes(l.detay)) return false; // Durduruldu / Manuel rozet üretmez
+                                const lEkip = String(l.ekip || "").trim();
+                                return ekipTemiz
+                                    ? lEkip === ekipTemiz                                         // aynı ekip
+                                    : (lEkip === "" && String(l.kullanici || "").trim() === hedefDokumanId); // ekipsiz: aynı kişi
+                            });
+                            const kalanSnap = { empty: kalanlar.length === 0, forEach: (fn) => kalanlar.forEach(fn) };
                             // : Üst dokümanda alan değil, alt koleksiyonda kendi dokümanı var
                             const rozetDocRef = doc(db, "video_rozetleri", hedefDokumanId, "videolar", videoId);
 
@@ -6661,7 +6679,10 @@
                                 await setDoc(rozetDocRef, { ...guncelRozetObjesi, guncellendi: serverTimestamp() }, { merge: true }); // v10.4: guncellendi eklendi
                             }
                         } catch (rozetSilErr) {
-                            console.warn(`Rozet indeksi güncellenemedi (${videoId}):`, rozetSilErr);
+                            // v10.6: Sessiz geçme. Hata olursa konsolda kırmızı görünsün ve listeye yazılsın.
+                            console.error(`❌ ROZET GÜNCELLENEMEDİ (${videoId}):`, rozetSilErr);
+                            window.__rozetSilmeHatalari = window.__rozetSilmeHatalari || [];
+                            window.__rozetSilmeHatalari.push({ videoId, hata: rozetSilErr.message });
                         }
                     }
                 }
@@ -9904,12 +9925,9 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                             selectedModelName, hamCekilenYorumAdedi: hamCekilenSayac, tarihAyari: globalTarihModu
                         };
 
-                        // Sadece Yapay Zeka analizlerinde rozet gösterimi yapılır (Standart indirmelerde rozet eklenmez)
-                        // DÜZELTME: 3. parametre (tarihAyari) eksikti — Manuel modda hiç analiz edilmemiş
-                        // videoların yanlışlıkla rozetlenmesini engelleyen "Never Downgrade" kuralı bypass ediliyordu.
-                        if (isAI) {
-                            guncelleVideoRozeti(videoId, finalYorumSayisi > 0 ? 'dolu' : 'bos', globalTarihModu);
-                        }
+                        // v10.6: Rozet BURADA yazılmaz. Analiz bitmeden rozet yazarsak, işlem yarıda
+                        // kesildiğinde logu olmayan "hayalet rozet" kalır.
+                        // Rozeti sadece islemLogla() yazar (log başarıyla kaydedilince).
 
                         bulkCheckpoint.basariliVideoSayisi = basariliVideoSayisi;
                         bulkIlerlemeKaydet(bulkCheckpoint);
