@@ -8602,6 +8602,10 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         firebaseVerileriniGuncelle();
                     }
 
+                    // v10.6: "Sonuç Yok" logu yazıldı. Yarım kalan iş kaydı artık gereksiz;
+                    // silmezsek aynı video açılınca "devam et" sorusu çıkıp çift log yazılabiliyordu.
+                    ilerlemeSil(videoId);
+
                     progressContainer.style.display = 'none';
                     window.arayuzuAktiflestir();
                     return;
@@ -8643,6 +8647,11 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                     hamCekilenYorumAdedi: hamCekilenSayac,
                     tarihAyari: window.tarihModu
                 });
+
+                // v10.6: Nihai log yazıldı. Drive/Sheets aşamasında hata olsa bile (satır ~8512 catch)
+                // kayıt silinmeden kalıyordu. İptal edilmediyse artık güvenle silebiliriz.
+                // (Log yazılamazsa buraya gelinmez, kayıt korunur.)
+                if (!isCancelled) ilerlemeSil(videoId);
 
                 if (isCancelled) {
                     setStatus(`İşlem durduruldu! İşlenen yorumlar başarıyla indirildi.`, "#d35400");
