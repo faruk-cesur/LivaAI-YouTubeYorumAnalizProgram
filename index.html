@@ -9595,8 +9595,13 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 if (!(await window.aiAnalizOnKosuluGarantiEt(aiGerekliMi, kayitliModel))) return;
             }
 
-            // Seçili videoların listesini tespit et
-            const seciliVideoIdleri = Array.from(globalSeciliVideoMap.keys());
+            // v10.6: Devam (resume) modunda video listesi EKRANDAKİ seçimden değil,
+            // kayıtlı checkpoint'ten gelir. Sayfa yenilenince seçim haritası boşalır;
+            // eskiden bu yüzden "en az bir video seçin" uyarısı çıkıp devam edilemiyordu.
+            const resumeCp = window.aktifBulkResumeCheckpoint;
+            const seciliVideoIdleri = (resumeCp && Array.isArray(resumeCp.videoIdListesi) && resumeCp.videoIdListesi.length > 0)
+                ? resumeCp.videoIdListesi
+                : Array.from(globalSeciliVideoMap.keys());
             if (!seciliVideoIdleri || seciliVideoIdleri.length === 0) {
                 alert("Lütfen analiz etmek için en az bir video seçin!");
                 return;
