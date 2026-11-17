@@ -2695,6 +2695,13 @@
         }
 
         function bulkIlerlemeKaydet(checkpoint) {
+            // v10.6: Boş (undefined/null) değer gelirse hiçbir şey yazma.
+            // Eskiden JSON.stringify(undefined) => "undefined" yazısı kaydediliyor ve
+            // gerçek toplu ilerleme kaydının üzerine yazılıyordu.
+            if (!checkpoint) {
+                console.warn("bulkIlerlemeKaydet: boş değer geldi, kayıt atlandı.");
+                return;
+            }
             try {
                 localStorage.setItem('liva_bulk_resume', JSON.stringify(checkpoint, (key, value) => {
                     if (key === 'parentRef') return undefined; // Dairesel referansı yoksay
@@ -9862,6 +9869,18 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
 
                             // parentRef kaldırıldı; saveStageData doğrudan bulkIlerlemeKaydet(bulkCheckpoint) tetikler
                             bulkCheckpoint.nestedAI.isBulk = true;
+
+                            // v10.6: parentRef'i "gizli" (enumerable:false) olarak bağlıyoruz.
+                            // Böylece yapay zeka motoru ilerleme kaydederken (satır ~7582)
+                            // bulkIlerlemeKaydet(baseCheckpoint.parentRef) ile TOPLU kaydın tamamını yazar.
+                            // enumerable:false olduğu için JSON.stringify ve {...spread} bu alanı görmez,
+                            // yani eski "dairesel referans" hatası geri gelmez.
+                            Object.defineProperty(bulkCheckpoint.nestedAI, 'parentRef', {
+                                value: bulkCheckpoint,
+                                enumerable: false,
+                                writable: true,
+                                configurable: true
+                            });
 
                             const aiSonuc = await yapayZekaMotorunuCalistir(rawCommentsForAI, geminiApiKey, aiTemplateText, aiTemplateSelect, progressText, progressBar, videoId, bulkCheckpoint.nestedAI);
                             bulkCheckpoint.nestedAI = null;
