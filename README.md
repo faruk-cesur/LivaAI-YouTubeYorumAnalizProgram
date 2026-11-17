@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.5)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.6)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,14 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## 🧩 Liva AI - Güncelleme Notları (v10.6)
+
+- **Hayalet Rozet Düzeltmesi:** Toplu analizde video rozeti artık analiz bitmeden yazılmaz. Rozet sadece log kaydı başarıyla yazılınca oluşur. İşlem yarıda kesilirse fazladan rozet kalmaz.
+- **Log Silince Doğru Rozet:** Log silindiğinde rozet, kalan loglardan yeniden hesaplanır. Hesap ekibe göre filtrelenir ve sadece rozet üreten işlem türlerini sayar. Ekibi olmayan kullanıcıda kullanıcı e-postası esas alınır.
+- **Sessiz Hata Yok:** Rozet güncellenemezse hata konsola yazılır ve `window.__rozetSilmeHatalari` listesine eklenir.
+- **Veri Temizliği:** Silinen loglardan kalan hayalet rozetler temizlendi. Log ve rozet sayıları birbiriyle doğrulandı.
+- **Not:** Log sildikten sonra diğer tarayıcılarda rozetlerin güncellenmesi için "Baştan Yükle" yapılmalıdır.
 
 ## 🧬 Liva AI - Güncelleme Notları (v10.5)
 
