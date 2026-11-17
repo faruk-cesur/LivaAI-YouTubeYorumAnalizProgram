@@ -9771,8 +9771,24 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                         let currentEndTimestamp = globalEndTimestamp;
                         let tarihAraligiMetni = "";
 
-                        if (bcp && bcp.tarihAraligiMetniMap && bcp.tarihAraligiMetniMap[videoId]) {
-                            tarihAraligiMetni = bcp.tarihAraligiMetniMap[videoId];
+                        // v10.6: Kayıtlı tarih metninin aralık SONU 24 saatten eskiyse bu kayıt bayattır
+                        // (örn. 06.11'de yarım kalan toplu işlem 09.11'de devam ettirilmiş).
+                        // Bayat metin kullanılırsa video "En Başından" yeniden analiz edilir.
+                        // Bu durumda metni yeniden hesaplatmak için kayıtlı metni yok sayıyoruz.
+                        let kayitliTarihMetni = (bcp && bcp.tarihAraligiMetniMap) ? bcp.tarihAraligiMetniMap[videoId] : "";
+                        if (kayitliTarihMetni) {
+                            const m = /-\s*(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2})\s*$/.exec(kayitliTarihMetni);
+                            if (m) {
+                                const bitisZamani = new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5]).getTime();
+                                if (Date.now() - bitisZamani > 24 * 60 * 60 * 1000) {
+                                    console.warn(`[Toplu] ${videoId}: kayıtlı tarih metni bayat, yeniden hesaplanıyor:`, kayitliTarihMetni);
+                                    kayitliTarihMetni = "";
+                                }
+                            }
+                        }
+
+                        if (kayitliTarihMetni) {
+                            tarihAraligiMetni = kayitliTarihMetni;
                         } else {
                             // -----------------------------------------------------------------
                             // Akıllı Otomatik (Smart Auto) Hesaplama - Bulk Uyumluluğu
