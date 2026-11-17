@@ -3,7 +3,7 @@
 </h1>
 
 <h2 align="center">
-  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.6)</strong>
+  <strong>Yapay Zeka Destekli YouTube Yorum Analiz Programı (v10.7)</strong>
 </h2>
 
 <h2 align="center">
@@ -57,6 +57,16 @@ Bu aracı kullanmak için bilgisayarınıza ekstra bir yazılım (Node.js, Pytho
 
 <br>
 <hr>
+
+## 🔄 Liva AI - Güncelleme Notları (v10.7)
+
+- **Toplu Analizde Devam Etme Düzeltildi:** Yapay zeka analizi sırasında yarım kalan toplu işlem kaydı bozuluyordu ve "devam et" çalışmıyordu. Kayıt artık bozulmadan saklanır. Sayfa yenilense bile işlem kaldığı videodan devam eder.
+- **"En Az Bir Video Seçin" Uyarısı:** Sayfa yenilenince devam et butonu bu uyarıyı verip duruyordu. Devam ederken video listesi artık kayıtlı işlemden alınır.
+- **Eski Tarih Koruması:** Yarım kalan toplu işlem günler sonra devam ettirilirse, 24 saatten eski tarih metni kullanılmaz. Tarih yeniden hesaplanır. Böylece video baştan analiz edilmez.
+- **Çift Log Önlendi:** Tekli analizde log yazıldıktan sonra yarım kalan iş kaydı silinir. Drive hatası veya sonuçsuz analizden sonra aynı işlemin tekrar loglanması engellendi.
+- **Doğru Log Etiketi:** Toplu analizde incelemeden hiç yorum geçmeyen videolar artık "AI Analizi (Sonuç Yok)" olarak loglanır. Eskiden 0 yorumla "AI Analizi Yapıldı" yazılıyordu.
+- **Log Temizliği:** Çift tekrar eden loglar, yanlış etiketli loglar ve gereksiz boş loglar temizlendi. Rozetlerin loglarla birebir uyumlu olduğu doğrulandı.
+- **Not:** Log temizliğinden sonra diğer tarayıcılarda "Baştan Yükle" yapılması gerekir.
 
 ## 🧩 Liva AI - Güncelleme Notları (v10.6)
 

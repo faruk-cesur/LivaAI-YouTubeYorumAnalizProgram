@@ -7,7 +7,7 @@
     <!-- GÜNCELLENMİŞ GÜVENLİK KALKANI: Google Sheets (Apps Script) bağlantılarına izin verildi -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.gstatic.com https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.gstatic.com; style-src 'self' 'unsafe-inline';">
 
-    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.6</title>
+    <title>Liva AI 🤖 Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.7</title>
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjdlNTlhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNDUlIiBzdG9wLWNvbG9yPSIjZDRhZjM3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzhhNmExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzEiIGZpbGw9IiMwYjFmM2EiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDUiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBUaW1lcywgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXN0eWxlPSJpdGFsaWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InVybCgjZykiPkw8L3RleHQ+Cjwvc3ZnPg==">
 
@@ -971,7 +971,7 @@
                 Liva AI 🤖
             </strong>
             <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.6
+                Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.7
             </span>
             <span style="font-size: 0.85rem; color: #e74c3c; font-weight: bold; display: block; margin-top: 10px; background: #fef2f2; padding: 5px; border-radius: 6px; border: 1px dashed #fca5a5;">
                 🔒 GÜVENLİ YETKİLİ GİRİŞİ
@@ -1012,7 +1012,7 @@
                     Liva AI 🤖
                 </strong>
                 <span style="font-size: 1.1rem; color: #555; font-weight: normal; display: block;">
-                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.6
+                    Yapay Zeka Destekli YouTube Yorum Analiz Programı v10.7
                 </span>
             </h2>
 
@@ -6220,7 +6220,7 @@
                 const yedekPaketi = {
                     _metadata: {
                         uygulama: "Liva AI",
-                        versiyon: "v10.6",
+                        versiyon: "v10.7",
                         yedeklemeZamani: new Date().toISOString(),
                         yedekleyenEposta: currentUserEmail,
                         yedekleyenIsim: currentUserAdSoyad,
@@ -10225,7 +10225,13 @@ CRITICAL CONSTRAINTS & OUTPUT PROTOCOL:
                 // İncelemeden hiçbir yorumu geçemeyen (veya baştan 0 sonuç veren) videoların son loglaması
                 if (bulkCheckpoint.logMetaMap && !isCancelled) {
                     for (const [vid, meta] of Object.entries(bulkCheckpoint.logMetaMap)) {
-                        await islemLogla(vid, meta.videoBaslik, meta.finalYorumSayisi, meta.exportFormat, meta.islemDetayi, {
+                        // v10.7: İncelemeden hiç yorum geçmediyse (0 yorum) etiket "Sonuç Yok" olmalı.
+                        // Eskiden işlem başında hazırlanan "AI Analizi Yapıldı" etiketi 0 yorumla yazılıyordu.
+                        // (Rozet yorum sayısına baktığı için rozet etkilenmez; sadece log etiketi düzelir.)
+                        const dogruDetay = (meta.isAI && Number(meta.finalYorumSayisi) === 0 && meta.islemDetayi === "AI Analizi Yapıldı")
+                            ? "AI Analizi (Sonuç Yok)"
+                            : meta.islemDetayi;
+                        await islemLogla(vid, meta.videoBaslik, meta.finalYorumSayisi, meta.exportFormat, dogruDetay, {
                             isAI: meta.isAI, includeReplies: meta.includeReplies, flattenReplies: meta.flattenReplies, minLikesFilter: meta.minLikesFilter,
                             sablonAdi: meta.sablonAdiForLog,
                             modelAdi: meta.selectedModelName || selectedModelName,
